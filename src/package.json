@@ -1,0 +1,61 @@
+{
+  "name": "nativescript-ar",
+  "version": "0.1.0",
+  "description": "NativeScript Augmented Reality plugin. ARKit on iOS and (in the future) ARCore on Android.",
+  "main": "ar",
+  "typings": "index.d.ts",
+  "nativescript": {
+    "platforms": {
+      "android": "3.0.0",
+      "ios": "3.0.0"
+    }
+  },
+  "scripts": {
+    "tsc": "tsc -skipLibCheck",
+    "build": "npm i && npm run tsc",
+    "postclone": "npm i && node scripts/postclone.js && cd ../demo && npm i && cd ../src && npm run plugin.link",
+    "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
+    "test.ios": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
+    "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude \"**/node_modules/**\" --exclude \"**/typings/**\"",
+    "plugin.link": "npm link && cd ../demo && npm link nativescript-ar && cd ../src",
+    "plugin.tscwatch": "npm run tsc -- -w",
+    "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
+    "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
+    "demo.reset": "cd ../demo && rimraf platforms",
+    "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src",
+    "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
+    "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'"
+  },
+  "keywords": [
+    "ecosystem:nativescript",
+    "NativeScript",
+    "TypeScript",
+    "Android",
+    "iOS",
+    "AR",
+    "ARKit",
+    "ARCore",
+    "Augmented Reality"
+  ],
+  "author": {
+    "name": "Your Name",
+    "email": "youremail@yourdomain.com",
+    "url": "https://github.com/eddyverbruggen"
+  },
+  "bugs": {
+    "url": "https://github.com/EddyVerbruggen/nativescript-ar/issues"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/EddyVerbruggen/nativescript-ar",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "tns-core-modules": "^3.1.0",
+    "tns-platform-declarations": "^3.1.0",
+    "typescript": "~2.3.0",
+    "prompt": "^1.0.0",
+    "rimraf": "^2.5.0",
+    "tslint": "^5.0.0"
+  },
+  "dependencies": {},
+  "bootstrapper": "nativescript-plugin-seed"
+}

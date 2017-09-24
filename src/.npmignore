@@ -1,0 +1,8 @@
+*.map
+*.ts
+!ar.android.d.ts
+!ar.ios.d.ts
+!ar-common.d.ts
+!index.d.ts
+tsconfig.json
+typings/
