@@ -41,7 +41,7 @@
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
-    "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'",
+    "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**' --exclude '**/tns_modules/**'",
     "ns-bundle": "ns-bundle",
     "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
     "generate-android-snapshot": "generate-android-snapshot --targetArchs arm,arm64,ia32 --install",
