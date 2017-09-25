@@ -14,6 +14,15 @@ const debugLevelProperty = new Property<ARBase, ARDebugLevel>({
   defaultValue: ARDebugLevel.NONE
 });
 
+const planeMaterialProperty = new Property<ARBase, string>({
+  name: "planeMaterial"
+});
+
+const planeOpacityProperty = new Property<ARBase, number>({
+  name: "planeOpacity",
+  defaultValue: 0.1
+});
+
 export interface ARNode {
   id: string;
   position: ARPosition;
@@ -72,10 +81,12 @@ export class ARPosition {
 }
 
 export abstract class ARBase extends ContentView {
-
   static arLoadedEvent: string = "arLoaded";
   static planeDetectedEvent: string = "planeDetected";
   static planeTappedEvent: string = "planeTapped";
+
+  planeMaterial: string;
+  planeOpacity: number;
 
   static isSupported(): boolean {
     return false;
@@ -108,6 +119,18 @@ export abstract class ARBase extends ContentView {
       }
     }
   }
+
+  [planeMaterialProperty.setNative](value: string) {
+    this.planeMaterial = value;
+  }
+
+  [planeOpacityProperty.setNative](value: number) {
+    if (!isNaN(value)) {
+      this.planeOpacity = +value;
+    }
+  }
 }
 
 debugLevelProperty.register(ARBase);
+planeMaterialProperty.register(ARBase);
+planeOpacityProperty.register(ARBase);

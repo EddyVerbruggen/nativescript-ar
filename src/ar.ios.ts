@@ -71,9 +71,9 @@ export class AR extends ARBase {
   }
 
   public togglePlaneVisibility(on: boolean): void {
-    // TODO pass in material
+    const material: SCNMaterial = ARMaterial.getMaterial(this.planeMaterial);
     ARState.planes.forEach(plane => {
-      plane.setMaterial(ARMaterial.getMaterial("tron"), !on);
+      plane.setMaterial(material, on ? this.planeOpacity : 0);
     });
   }
 
@@ -412,7 +412,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     if (anchor instanceof ARPlaneAnchor) {
       const owner = this.owner.get();
       // When a new plane is detected we create a new SceneKit plane to visualize it in 3D
-      const plane: ARPlane = ARPlane.create(anchor, false, ARMaterial.getMaterial("tron"));
+      const plane: ARPlane = ARPlane.create(anchor, owner.planeOpacity, ARMaterial.getMaterial(owner.planeMaterial));
       ARState.planes.set(anchor.identifier.UUIDString, plane);
       node.addChildNode(plane.ios);
 

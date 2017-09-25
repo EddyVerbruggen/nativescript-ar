@@ -8,7 +8,7 @@ export class ARPlane implements ARNode {
   position: ARPosition;
   ios: SCNNode;
 
-  static create(anchor: ARAnchor, hidden: boolean, material: SCNMaterial) {
+  static create(anchor: ARAnchor, opacity: number, material: SCNMaterial) {
     const instance = new ARPlane();
     instance.ios = SCNNode.new();
     instance.anchor = anchor;
@@ -28,7 +28,7 @@ export class ARPlane implements ARNode {
     const translationParts = translationStr.split(" ");
     instance.position = new ARPosition(+translationParts[0], +translationParts[1], +translationParts[2]);
 
-    instance.setMaterial(material, false);
+    instance.setMaterial(material, opacity);
 
     const planeNode = SCNNode.nodeWithGeometry(instance.planeGeometry);
     planeNode.position = {x: 0, y: -planeHeight / 2, z: 0};
@@ -43,7 +43,7 @@ export class ARPlane implements ARNode {
     return instance;
   }
 
-  setMaterial(material: SCNMaterial, hidden: boolean): void {
+  setMaterial(material: SCNMaterial, opacity: number): void {
     const transparentMaterial = SCNMaterial.new();
     transparentMaterial.diffuse.contents = UIColor.colorWithWhiteAlpha(1.0, 0.0);
 
@@ -52,17 +52,14 @@ export class ARPlane implements ARNode {
     materialArray.addObject(transparentMaterial);
     materialArray.addObject(transparentMaterial);
     materialArray.addObject(transparentMaterial);
-    if (hidden) {
+    if (opacity === 0) {
       materialArray.addObject(transparentMaterial);
-      materialArray.addObject(transparentMaterial);
-      this.planeGeometry.materials = materialArray;
     } else {
-      // make the plane not stand out too much
-      material.transparency = 0.4;
+      material.transparency = opacity;
       materialArray.addObject(material);
-      materialArray.addObject(transparentMaterial);
-      this.planeGeometry.materials = materialArray;
     }
+    materialArray.addObject(transparentMaterial);
+    this.planeGeometry.materials = materialArray;
   }
 
   update(anchor: any) {

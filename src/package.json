@@ -1,6 +1,6 @@
 {
   "name": "nativescript-ar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "NativeScript Augmented Reality plugin. ARKit on iOS and (in the future) ARCore on Android.",
   "main": "ar",
   "typings": "index.d.ts",

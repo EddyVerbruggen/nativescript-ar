@@ -11,7 +11,7 @@
       "es6",
       "dom"
     ],
-    "sourceMap": true,
+    "sourceMap": false,
     "pretty": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -23,7 +23,8 @@
     "noFallthroughCasesInSwitch": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "typings"
   ],
   "compileOnSave": false
 }

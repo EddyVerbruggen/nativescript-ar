@@ -1,4 +1,3 @@
-*.map
 *.ts
 !ar.android.d.ts
 !ar.ios.d.ts

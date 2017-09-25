@@ -5,8 +5,8 @@ export declare class ARPlane implements ARNode {
     id: string;
     position: ARPosition;
     ios: SCNNode;
-    static create(anchor: ARAnchor, hidden: boolean, material: SCNMaterial): ARPlane;
-    setMaterial(material: SCNMaterial, hidden: boolean): void;
+    static create(anchor: ARAnchor, opacity: number, material: SCNMaterial): ARPlane;
+    setMaterial(material: SCNMaterial, opacity: number): void;
     update(anchor: any): void;
     remove(): void;
     private static setTextureScale(planeGeometry);
