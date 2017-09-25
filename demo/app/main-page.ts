@@ -3,7 +3,7 @@ import * as pages from 'tns-core-modules/ui/page';
 import { AR, ARPlaneTappedEventData } from 'nativescript-ar';
 import { HelloWorldModel } from './main-view-model';
 
-let ar = new AR();
+let ar: AR;
 
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
@@ -52,6 +52,7 @@ export function planeDetected(args): void {
   console.log("Plane detected (object): " + args.object);
 }
 
+// TODO can we get ar from args (instead of caching it in this file globally)?
 export function planeTapped(args: ARPlaneTappedEventData): void {
   console.log("Plane tapped @ x coordinate: " + args.position.x);
   ar.addBox({
