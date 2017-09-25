@@ -100,7 +100,7 @@ Open a view that's in the same module (or you've added it to the global app modu
   <Label row="0" text="Scan a surface.." class="p-20" horizontalAlignment="center"></Label>
   <AR
     row="1"
-    planeOpacity="0.2"
+    [planeOpacity]="thePlaneOpacity"
     (planeTapped)="planeTapped($event)">
     <!-- you can add layouts here if you like to overlay the AR view -->
   </AR>
@@ -114,6 +114,8 @@ Open its component and, for instance, add:
 import { AR, ARPlaneTappedEventData } from "nativescript-ar";
 
 export class MyComponent {
+  thePlaneOpacity: number = 0.2;
+
   constructor() {
     console.log("AR supported? " + AR.isSupported());
   }
@@ -131,8 +133,6 @@ The `<AR>` view tag extends [`ContentView`](), which means you can add regular N
 But to help add behavior to the AR experience, here are the properties and events unique to the `<AR>` tag:
 
 #### Properties
-All optional
-
 |property|default|description
 |---|---|---
 |`debugLevel`|`NONE`|One of the options in the `ARDebugLevel` enum: `NONE`, `WORLD_ORIGIN`, `FEATURE_POINTS`, `PHYSICS_SHAPES`.
@@ -140,8 +140,6 @@ All optional
 |`planeOpacity`|`0.1`|Determines how transparent the planes are, where 0 is invisible, and 1 is 'solid'.
 
 #### Events
-All optional
-
 |event|event data|description
 |---|---|---
 |`arLoaded`|`ARLoadedEventData`|Triggered when the AR view has been drawn.
@@ -150,7 +148,15 @@ All optional
 
 ## API
 
-### `isSupported`
+### `AR`
+```typescript
+import { AR } from "nativescript-ar";
+
+// assuming you'll assign an 'AR' instance to this property from the 'arLoaded' event
+let ar: AR;
+```
+
+#### `isSupported` (static)
 Check whether or not the device is AR-capable.
 
 ##### JavaScript
@@ -165,7 +171,71 @@ import { AR } from "nativescript-ar";
 const supported = AR.isSupported();
 ```
 
+#### `addModel`
+You can add 3D models to the AR scene by passing in `ARAddModelOptions` to the `addModel` function.
+ARKit supports `.dae` files as used in our demo app, but you may need to clean up the model a bit so
+it's properly shown. [Google a bit](https://www.google.nl/search?q=arkit+dae) for details.
 
+```typescript
+import { ARNode } from "nativescript-ar";
 
+ar.addModel({
+  name: "Models.scnassets/Ball.dae", // refers to a file in App_Resources, see the demo app for examples
+  childNodeName: null, // optional; if you only need 1 node within the model, then set its name here
+  position: {
+    x: 1,
+    y: 1,
+    z: 1
+  },
+  scale: 0.25,
+  mass: 0.2, // pass this in so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
+  onTap: ((model: ARNode) => {
+    console.log("Model was tapped");
+  }),
+  onLongPress: ((model: ARNode) => {
+    console.log("Model was longpressed, removing it just for show.");
+    model.remove();
+  })
+}).then(arNode => {
+  // to remove the model after a few seconds you can do this:
+  setTimeout(() => {
+    arNode.remove();
+  }, 2000);
+});
+```
 
+#### `addBox`
+You can add a basic shape, like a box, to the AR scene by passing in `ARAddBoxOptions` to the `addBox` function.
 
+By default boxes are white, but you can pass in a texture to make it look pretty.
+
+```typescript
+import { ARNode } from "nativescript-ar";
+
+ar.addBox({
+  name: "Models.scnassets/Ball.dae", // refers to a file in App_Resources, see the demo app for examples
+  childNodeName: null, // optional; if you only need 1 node within the model, then set its name here
+  position: {
+    x: 1,
+    y: 1,
+    z: 1
+  },
+  scale: 0.25,
+  mass: 0.2, // pass this in so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
+  chamferRadius: 0.01, // 'rounded corners', this is relative to the 'scale'.
+  onTap: ((model: ARNode) => {
+    console.log("Model was tapped");
+  }),
+  onLongPress: ((model: ARNode) => {
+    console.log("Model was longpressed, removing it just for show.");
+    model.remove();
+  })
+}).then(arNode => {
+  // to remove the model after a few seconds you can do this:
+  setTimeout(() => {
+    arNode.remove();
+  }, 2000);
+});
+```
+
+### TODO, other functions..

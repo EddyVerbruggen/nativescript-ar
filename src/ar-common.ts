@@ -50,6 +50,7 @@ export interface ARAddModelOptions extends ARAddOptions {
 
 export interface ARAddBoxOptions extends ARAddGeometryOptions {
   scale: number | ARPosition;
+  chamferRadius?: number;
 }
 
 export interface ARAddSphereOptions extends ARAddGeometryOptions {
@@ -107,6 +108,9 @@ export abstract class AR extends ContentView {
     return false;
   }
 
+  /**
+   * This one seems to need work, so not documented yet.
+   */
   abstract reset(): void;
 
   abstract addModel(options: ARAddModelOptions): Promise<ARNode>;

@@ -10,8 +10,7 @@ export class ARBox extends ARCommonNode {
       z: options.scale
     });
 
-    // TODO pass in chamfer (https://developer.apple.com/documentation/scenekit/scnbox?language=objc)
-    const box = SCNBox.boxWithWidthHeightLengthChamferRadius(scale.x, scale.y, scale.z, 0.0);
+    const box = SCNBox.boxWithWidthHeightLengthChamferRadius(scale.x, scale.y, scale.z, options.chamferRadius || 0.0);
 
     // make the box look nice
     if (options.material) {

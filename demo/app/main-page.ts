@@ -62,6 +62,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       z: args.position.z
     },
     scale: 0.15,
+    chamferRadius: 0.01,
     material: "tnsgranite",
     mass: 0.0000001,
     onTap: node => console.log("box tapped: " + node.id)
