@@ -12,14 +12,6 @@ AR
 TODO: other functions
 
 
-## `AR`
-```typescript
-import { AR } from "nativescript-ar";
-
-// assuming you'll assign an 'AR' instance to this property from the 'arLoaded' event
-let ar: AR;
-```
-
 ### `isSupported` (static)
 Check whether or not the device is AR-capable.
 
@@ -43,6 +35,7 @@ it's properly shown. [Google a bit](https://www.google.nl/search?q=arkit+dae) fo
 ```typescript
 import { ARNode } from "nativescript-ar";
 
+// assuming you have an 'ar' instance from either an event's 'object' property, or simply 'new AR()'.
 ar.addModel({
   name: "Models.scnassets/Ball.dae", // refers to a file in App_Resources, see the demo app for examples
   childNodeName: null, // optional; if you only need 1 node within the model, then set its name here

@@ -43,6 +43,8 @@ export class MyComponent {
 
   planeTapped(args: ARPlaneTappedEventData): void {
     console.log(`Plane tapped at ${args.position.x} y ${args.position.y} z ${args.position.z}`);
+    const ar: AR = args.object;
+    // interact with the 'ar' object here if you like
   }
 }
 ```

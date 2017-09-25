@@ -6,7 +6,7 @@
         debugLevel="FEATURE_POINTS"
         arLoaded="arLoaded"
         planeMaterial="tron"
-        planeOpacity="0.4"
+        planeOpacity="0.25"
         planeDetected="planeDetected"
         planeTapped="planeTapped"/>
   </GridLayout>

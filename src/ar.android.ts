@@ -8,7 +8,7 @@ import {
   ARNode
 } from "./ar-common";
 
-export class AR extends ARBase {
+class AR extends ARBase {
   private _android: any;
 
   togglePlaneVisibility(on: boolean): void {
@@ -46,3 +46,5 @@ export class AR extends ARBase {
     throw new Error("Method not implemented.");
   }
 }
+
+exports.AR = AR;

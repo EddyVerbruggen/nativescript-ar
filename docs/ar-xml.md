@@ -17,6 +17,7 @@ Add the `AR` namespace to the view you want AR-ify, then add use it like any oth
         row="1"
         debugLevel="FEATURE_POINTS"
         planeOpacity="0.2"
+        arLoaded="arLoaded"
         planeTapped="planeTapped" />
   </GridLayout>
 </Page>
@@ -25,17 +26,16 @@ Add the `AR` namespace to the view you want AR-ify, then add use it like any oth
 Now open `your-page.ts` and add:
 
 ```typescript
-import { AR, ARPlaneTappedEventData } from 'nativescript-ar';
+import { AR, ARLoadedEventData, ARPlaneTappedEventData } from 'nativescript-ar';
 
-let ar: AR;
-
-export function arLoaded(args): void {
-  ar = args.object;
+export function arLoaded(args: ARLoadedEventData): void {
+  const ar: AR = args.object;
+  // interact with the 'ar' object here if you like
 }
 
 export function planeTapped(args: ARPlaneTappedEventData): void {
   console.log("Plane tapped @ x coordinate: " + args.position.x);
-  ar.addBox({
+  args.object.addBox({
     position: {
       x: args.position.x,
       y: args.position.y + 1, // drop the box from a meter high

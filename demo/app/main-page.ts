@@ -1,9 +1,7 @@
 import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
-import { AR, ARPlaneTappedEventData } from 'nativescript-ar';
+import { ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData } from 'nativescript-ar';
 import { HelloWorldModel } from './main-view-model';
-
-let ar: AR;
 
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
@@ -12,10 +10,9 @@ export function pageLoaded(args: observable.EventData) {
   page.bindingContext = new HelloWorldModel();
 }
 
-export function arLoaded(args): void {
-  ar = args.object;
+export function arLoaded(args: ARLoadedEventData): void {
   // add a few models
-  ar.addBox({
+  args.object.addBox({
     position: {
       x: 0.6,
       y: 0.6,
@@ -25,7 +22,7 @@ export function arLoaded(args): void {
     material: "tnsgranite"
   }).then(node => console.log("box added: " + node.id));
 
-  ar.addSphere({
+  args.object.addSphere({
     position: {
       x: 0.9,
       y: 0.9,
@@ -34,7 +31,7 @@ export function arLoaded(args): void {
     radius: 0.2
   }).then(node => console.log("sphere added: " + node.id));
 
-  ar.addTube({
+  args.object.addTube({
     position: {
       x: 0.6,
       y: 0.3,
@@ -46,16 +43,14 @@ export function arLoaded(args): void {
   }).then(node => console.log("tube added: " + node.id));
 }
 
-export function planeDetected(args): void {
-  console.log("Plane detected @ " + new Date().getTime());
-  console.log("Plane detected: " + args.plane);
-  console.log("Plane detected (object): " + args.object);
+export function planeDetected(args: ARPlaneDetectedEventData): void {
+  console.log("Plane detected (id): " + args.plane.id);
 }
 
-// TODO can we get ar from args (instead of caching it in this file globally)?
 export function planeTapped(args: ARPlaneTappedEventData): void {
   console.log("Plane tapped @ x coordinate: " + args.position.x);
-  ar.addBox({
+
+  args.object.addBox({
     position: {
       x: args.position.x,
       y: args.position.y + 1, // drop the box from a meter high
