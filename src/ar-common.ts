@@ -9,16 +9,16 @@ export enum ARDebugLevel {
   PHYSICS_SHAPES = <any>"PHYSICS_SHAPES"
 }
 
-const debugLevelProperty = new Property<ARBase, ARDebugLevel>({
+const debugLevelProperty = new Property<AR, ARDebugLevel>({
   name: "debugLevel",
   defaultValue: ARDebugLevel.NONE
 });
 
-const planeMaterialProperty = new Property<ARBase, string>({
+const planeMaterialProperty = new Property<AR, string>({
   name: "planeMaterial"
 });
 
-const planeOpacityProperty = new Property<ARBase, number>({
+const planeOpacityProperty = new Property<AR, number>({
   name: "planeOpacity",
   defaultValue: 0.1
 });
@@ -64,8 +64,23 @@ export interface ARAddTubeOptions extends ARAddGeometryOptions {
   heightSegmentCount?: number;
 }
 
-export interface ARPlaneTappedEventData extends EventData {
+export interface ARPlane extends ARNode {
+}
+
+export interface AREventData extends EventData {
+  object: AR;
+}
+
+export interface ARLoadedEventData extends AREventData {
+  ios: any; /* ARSCNView */
+}
+
+export interface ARPlaneTappedEventData extends AREventData {
   position: ARPosition;
+}
+
+export interface ARPlaneDetectedEventData extends AREventData {
+  plane: ARPlane;
 }
 
 export class ARPosition {
@@ -80,7 +95,7 @@ export class ARPosition {
   }
 }
 
-export abstract class ARBase extends ContentView {
+export abstract class AR extends ContentView {
   static arLoadedEvent: string = "arLoaded";
   static planeDetectedEvent: string = "planeDetected";
   static planeTappedEvent: string = "planeTapped";
@@ -131,6 +146,6 @@ export abstract class ARBase extends ContentView {
   }
 }
 
-debugLevelProperty.register(ARBase);
-planeMaterialProperty.register(ARBase);
-planeOpacityProperty.register(ARBase);
+debugLevelProperty.register(AR);
+planeMaterialProperty.register(AR);
+planeOpacityProperty.register(AR);

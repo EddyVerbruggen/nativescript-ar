@@ -1,6 +1,6 @@
-import { ARNode, ARPosition } from "../../ar-common";
+import { ARPlane as IARPlane, ARPosition } from "../../ar-common";
 
-export class ARPlane implements ARNode {
+export class ARPlane implements IARPlane {
   private planeGeometry: SCNBox;
   private anchor: ARAnchor;
 

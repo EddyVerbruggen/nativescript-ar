@@ -1,5 +1,5 @@
-import { ARNode, ARPosition } from "../../ar-common";
-export declare class ARPlane implements ARNode {
+import { ARPlane as IARPlane, ARPosition } from "../../ar-common";
+export declare class ARPlane implements IARPlane {
     private planeGeometry;
     private anchor;
     id: string;

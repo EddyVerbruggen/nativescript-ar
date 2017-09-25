@@ -14,13 +14,9 @@ NativeScript Augmented Reality
 
 > Work in progress. Implementation-details may change.
 
-> You'll need to install Xcode 9 to run AR on iOS.
-
-> Android support will be added, but there's currently hardly anyone on the planet with an Android device capable of running AR anyway.
-
 ### Supported platforms
 * iPhone SE, 6s, iPad Pro, iPad 2017, or newer. Running iOS 11 or newer.
-* In the future: Google Pixel (1 or 2), or Samsung Galaxy S8. Running Android 8.0 or newer.
+* Android support will be added, but there's currently hardly anyone on the planet with an Android device capable of running AR anyway.
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
@@ -28,32 +24,17 @@ From the command prompt go to your app's root folder and execute:
 tns plugin add nativescript-ar
 ```
 
+You'll need to install at least Xcode 9 to run AR on iOS.
+
 ## Demo app (XML & TypeScript)
 Check out [the embedded demo app](demo).
 
 ## Demo app (Angular)
 This plugin is part of the [plugin showcase app](https://github.com/EddyVerbruggen/nativescript-pluginshowcase/tree/master/app/ar) I built using Angular.
 
-## API
+## Declaring the `<AR>` view
 
-### `isSupported`
-Check whether or not the device is AR-capable.
-
-##### JavaScript
-```js
-var AR = require("nativescript-ar").AR;
-var supported = AR.isSupported();
-```
-
-##### TypeScript
-```typescript
-import { AR } from "nativescript-ar";
-const supported = AR.isSupported();
-```
-
-
-
-## Usage with XML
+### Usage with XML
 > For Angular, see the next section.
 
 Add the `AR` namespace to the view you want AR-ify:
@@ -104,7 +85,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 }
 ```
 
-## Usage with Angular
+### Usage with Angular
 Browse to the module where you want to show off some AR goodness and add:
 
 ```typescript
@@ -142,3 +123,49 @@ export class MyComponent {
   }
 }
 ```
+
+### Available XML/Angular viewtag options
+The `<AR>` view tag extends [`ContentView`](), which means you can add regular NativeScript properties like
+`style`, `row`, `col`, and `horizontalAlignment` as usual.
+
+But to help add behavior to the AR experience, here are the properties and events unique to the `<AR>` tag:
+
+#### Properties
+All optional
+
+|property|default|description
+|---|---|---
+|`debugLevel`|`NONE`|One of the options in the `ARDebugLevel` enum: `NONE`, `WORLD_ORIGIN`, `FEATURE_POINTS`, `PHYSICS_SHAPES`.
+|`planeMaterial`|-|A texture for the planes. For instance, the demo uses ['tron'](https://github.com/EddyVerbruggen/nativescript-ar/tree/master/demo/app/App_Resources/iOS/Assets.scnassets/Materials/tron). 
+|`planeOpacity`|`0.1`|Determines how transparent the planes are, where 0 is invisible, and 1 is 'solid'.
+
+#### Events
+All optional
+
+|event|event data|description
+|---|---|---
+|`arLoaded`|`ARLoadedEventData`|Triggered when the AR view has been drawn.
+|`planeDetected`|`ARPlaneDetectedEventData`|Triggered when a new plane was detected.
+|`planeTapped`|`ARPlaneTappedEventData`|Triggered when a plane was tapped by the user.
+
+## API
+
+### `isSupported`
+Check whether or not the device is AR-capable.
+
+##### JavaScript
+```js
+var AR = require("nativescript-ar").AR;
+var supported = AR.isSupported();
+```
+
+##### TypeScript
+```typescript
+import { AR } from "nativescript-ar";
+const supported = AR.isSupported();
+```
+
+
+
+
+

@@ -1,11 +1,13 @@
 import {
-  ARBase,
+  AR as ARBase,
   ARAddBoxOptions,
   ARAddModelOptions,
   ARAddSphereOptions,
   ARAddTubeOptions,
   ARDebugLevel,
+  ARLoadedEventData,
   ARNode,
+  ARPlaneDetectedEventData,
   ARPlaneTappedEventData,
   ARPosition
 } from "./ar-common";
@@ -24,7 +26,7 @@ const ARState = {
   shapes: new Map<string, ARCommonNode>(),
 };
 
-export class AR extends ARBase {
+class AR extends ARBase {
   sceneView: ARSCNView;
   private configuration: ARWorldTrackingConfiguration;
   private delegate: ARSCNViewDelegateImpl;
@@ -128,11 +130,12 @@ export class AR extends ARBase {
 
     this.nativeView.addSubview(this.sceneView);
 
-    this.notify({
-      eventName: AR.arLoadedEvent,
-      object: this, /* AR */
-      ios: this.sceneView /* ARSCNView */
-    });
+    const eventData: ARLoadedEventData = {
+      eventName: ARBase.arLoadedEvent,
+      object: this,
+      ios: this.sceneView
+    };
+    this.notify(eventData);
   }
 
   private addBottomPlane(scene): void {
@@ -416,11 +419,12 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
       ARState.planes.set(anchor.identifier.UUIDString, plane);
       node.addChildNode(plane.ios);
 
-      owner.notify({
-        eventName: AR.planeDetectedEvent,
-        object: owner, /* AR */
-        plane: plane /* ARPlane */
-      });
+      const eventData: ARPlaneDetectedEventData = {
+        eventName: ARBase.planeDetectedEvent,
+        object: owner,
+        plane: plane
+      };
+      owner.notify(eventData);
     }
   }
 
@@ -474,4 +478,4 @@ class SCNPhysicsContactDelegateImpl extends NSObject implements SCNPhysicsContac
   }
 }
 
-
+exports.AR = AR;

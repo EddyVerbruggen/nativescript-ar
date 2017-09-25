@@ -7,7 +7,7 @@
         style="border-radius: 20"
         arLoaded="arLoaded"
         planeMaterial="tron"
-        planeOpacity="0.2"
+        planeOpacity="0.4"
         planeDetected="planeDetected"
         planeTapped="planeTapped" />
   </GridLayout>
