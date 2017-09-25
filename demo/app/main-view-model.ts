@@ -3,7 +3,6 @@ import { AR } from 'nativescript-ar';
 
 export class HelloWorldModel extends Observable {
   public message: string;
-  private ar: AR;
 
   constructor() {
     super();
@@ -14,7 +13,5 @@ export class HelloWorldModel extends Observable {
     if (!supported) {
       return;
     }
-
-    this.ar = new AR();
   }
 }

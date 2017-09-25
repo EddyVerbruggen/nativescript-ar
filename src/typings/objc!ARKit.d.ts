@@ -255,7 +255,7 @@ declare class ARFrame extends NSObject implements NSCopying {
 
 	readonly camera: ARCamera;
 
-	readonly capturedDepthData: AVDepthData;
+	readonly capturedDepthData: any; /* AVDepthData */
 
 	readonly capturedDepthDataTimestamp: number;
 
