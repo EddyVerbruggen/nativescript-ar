@@ -1,9 +1,11 @@
-import { ARAddOptions, ARNode, ARPosition } from "../../ar-common";
+import { ARAddOptions, ARNode, ARPosition, ARRotation, ARScale } from "../../ar-common";
 
 export abstract class ARCommonNode implements ARNode {
   id: string;
   ios: SCNNode;
   position: ARPosition;
+  scale?: number | ARScale;
+  rotation: ARRotation;
   onTapHandler?: (model: ARNode) => void;
   onLongPressHandler?: (model: ARNode) => void;
 
@@ -11,6 +13,9 @@ export abstract class ARCommonNode implements ARNode {
     this.onTapHandler = options.onTap;
     this.onLongPressHandler = options.onLongPress;
     node.position = this.position = options.position;
+    if (options.rotation) {
+      node.rotation = this.rotation = options.rotation;
+    }
 
     // generate a unique name, used for later reference
     node.name = this.id = (JSON.stringify(options.position) + "_" + new Date().getTime());
@@ -18,6 +23,14 @@ export abstract class ARCommonNode implements ARNode {
     node.physicsBody = SCNPhysicsBody.bodyWithTypeShape(SCNPhysicsBodyType.Dynamic, null);
     node.physicsBody.mass = options.mass || 0;
     node.physicsBody.categoryBitMask = 1; // CollisionCategoryCube
+
+    if (options.scale) {
+      node.scale = <ARPosition>(options.scale instanceof ARScale ? options.scale : {
+        x: options.scale,
+        y: options.scale,
+        z: options.scale
+      });
+    }
 
     this.ios = node;
   }

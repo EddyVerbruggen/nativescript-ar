@@ -1,4 +1,4 @@
-import { ARAddModelOptions, ARPosition } from "../../ar-common";
+import { ARAddModelOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
 export class ARModel extends ARCommonNode {
@@ -7,11 +7,6 @@ export class ARModel extends ARCommonNode {
   static create(options: ARAddModelOptions) {
     let modelScene = SCNScene.sceneNamed(options.name);
     let nodeModel = options.childNodeName ? modelScene.rootNode.childNodeWithNameRecursively(options.childNodeName, true) : modelScene.rootNode;
-    nodeModel.scale = <ARPosition>(options.scale instanceof ARPosition ? options.scale : {
-      x: options.scale,
-      y: options.scale,
-      z: options.scale
-    });
     return new ARModel(options, nodeModel);
   }
 }

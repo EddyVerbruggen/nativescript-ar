@@ -77,9 +77,13 @@ ar.addBox({
     y: 1,
     z: 1
   },
-  scale: 0.25,
+  dimensions: {
+    x: 0.25,
+    y: 0.25,
+    z: 0.25
+  },
+  chamferRadius: 0.01, // 'rounded corners', this is relative to the 'dimensions'.
   mass: 0.2, // pass this in so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
-  chamferRadius: 0.01, // 'rounded corners', this is relative to the 'scale'.
   onTap: ((model: ARNode) => {
     console.log("Model was tapped");
   }),

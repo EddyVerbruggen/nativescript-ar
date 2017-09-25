@@ -18,7 +18,11 @@ export function arLoaded(args: ARLoadedEventData): void {
       y: 0.6,
       z: 0.6
     },
-    scale: 0.2,
+    dimensions: {
+      x: 0.2,
+      y: 0.3,
+      z: 0.4
+    },
     material: "tnsgranite"
   }).then(node => console.log("box added: " + node.id));
 
@@ -31,6 +35,23 @@ export function arLoaded(args: ARLoadedEventData): void {
     radius: 0.2
   }).then(node => console.log("sphere added: " + node.id));
 
+  args.object.addText({
+    text: "{N}",
+    position: {
+      x: 2,
+      y: 0.5,
+      z: 2
+    },
+    scale: 0.2,
+    depth: 0.3,
+    rotation: {
+      x: 20,
+      y: 45,
+      z: 45,
+      w: 45
+    },
+  }).then(node => console.log("text added: " + node.id));
+
   args.object.addTube({
     position: {
       x: 0.6,
@@ -39,7 +60,13 @@ export function arLoaded(args: ARLoadedEventData): void {
     },
     innerRadius: 0.1,
     outerRadius: 0.15,
-    height: 0.2
+    height: 0.2,
+    rotation: {
+      x: 10,
+      y: 0,
+      z: 0,
+      w: 5
+    },
   }).then(node => console.log("tube added: " + node.id));
 }
 
@@ -56,10 +83,22 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       y: args.position.y + 1, // drop the box from a meter high
       z: args.position.z
     },
-    scale: 0.15,
+    dimensions: 0.15,
     chamferRadius: 0.01,
     material: "tnsgranite",
     mass: 0.0000001,
     onTap: node => console.log("box tapped: " + node.id)
-  }).then(node => console.log("box added: " + node.id));
+  }).then(node => {
+    console.log("box added: " + node.id);
+
+    let animation = CABasicAnimation.animationWithKeyPath("morpher.weights[0]");
+    animation.fromValue = 0.0;
+    animation.toValue = 1.0;
+    animation.autoreverses = true;
+    animation.repeatCount = 5;
+    animation.duration = 5;
+    node.ios.addAnimationForKey(animation, null);
+
+    console.log("anim done");
+  });
 }

@@ -15,8 +15,6 @@ export class ARPlane implements IARPlane {
 
     // anchor.extent is undefined so we need to hack to extract it :(
     const anchorstr = "" + anchor;
-    console.log(anchorstr);
-
     const extentStart = anchorstr.indexOf("extent=(") + "extent=(".length;
     const extentStr = anchorstr.substring(extentStart, anchorstr.indexOf(")", extentStart));
     const extendParts = extentStr.split(" ");

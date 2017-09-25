@@ -26,13 +26,18 @@ const planeOpacityProperty = new Property<AR, number>({
 export interface ARNode {
   id: string;
   position: ARPosition;
-  ios?: any; /**/
+  scale?: number | ARScale;
+  rotation?: ARRotation;
+  ios?: any; /* SCNNode */
   android?: any; /**/
   remove(): void;
+  // TODO add animate({});
 }
 
 export interface ARAddOptions {
   position: ARPosition;
+  scale?: number | ARScale;
+  rotation?: ARRotation;
   mass?: number;
   onTap?: (model: ARNode) => void;
   onLongPress?: (model: ARNode) => void;
@@ -45,16 +50,27 @@ export interface ARAddGeometryOptions extends ARAddOptions {
 export interface ARAddModelOptions extends ARAddOptions {
   name: string;
   childNodeName?: string;
-  scale: number | ARPosition;
 }
 
 export interface ARAddBoxOptions extends ARAddGeometryOptions {
-  scale: number | ARPosition;
+  dimensions: number | ARDimensions;
   chamferRadius?: number;
 }
 
 export interface ARAddSphereOptions extends ARAddGeometryOptions {
   radius: number;
+}
+
+export interface ARAddTextOptions extends ARAddGeometryOptions {
+  /**
+   * iOS: DefaultHelvetica 36 point.
+   */
+  // font?: string;
+  text: string;
+  /**
+   * Leaving this out, or specifying 0.0 means 2D text is added.
+   */
+  depth?: number;
 }
 
 export interface ARAddTubeOptions extends ARAddGeometryOptions {
@@ -84,7 +100,7 @@ export interface ARPlaneDetectedEventData extends AREventData {
   plane: ARPlane;
 }
 
-export class ARPosition {
+export class ARDimensions {
   x: number;
   y: number;
   z: number;
@@ -93,6 +109,28 @@ export class ARPosition {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+}
+
+export class ARScale extends ARDimensions {
+  // same as super
+}
+
+export class ARPosition extends ARDimensions {
+  // same as super
+}
+
+export class ARRotation {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+
+  constructor(x: number, y: number, z: number, w: number) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.w = w;
   }
 }
 
@@ -118,6 +156,8 @@ export abstract class AR extends ContentView {
   abstract addBox(options: ARAddBoxOptions): Promise<ARNode>;
 
   abstract addSphere(options: ARAddSphereOptions): Promise<ARNode>;
+
+  abstract addText(options: ARAddTextOptions): Promise<ARNode>;
 
   abstract addTube(options: ARAddTubeOptions): Promise<ARNode>;
 

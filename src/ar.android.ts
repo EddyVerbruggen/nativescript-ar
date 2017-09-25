@@ -3,6 +3,7 @@ import {
   ARAddBoxOptions,
   ARAddModelOptions,
   ARAddSphereOptions,
+  ARAddTextOptions,
   ARAddTubeOptions,
   ARDebugLevel,
   ARNode
@@ -39,6 +40,10 @@ class AR extends ARBase {
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
+    throw new Error("Method not implemented.");
+  }
+
+  addText(options: ARAddTextOptions): Promise<ARNode> {
     throw new Error("Method not implemented.");
   }
 

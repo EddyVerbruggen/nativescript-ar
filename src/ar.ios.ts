@@ -3,6 +3,7 @@ import {
   ARAddBoxOptions,
   ARAddModelOptions,
   ARAddSphereOptions,
+  ARAddTextOptions,
   ARAddTubeOptions,
   ARDebugLevel,
   ARLoadedEventData,
@@ -17,6 +18,7 @@ import { ARCommonNode } from "./nodes/ios/arcommon";
 import { ARPlane } from "./nodes/ios/arplane";
 import { ARModel } from "./nodes/ios/armodel";
 import { ARSphere } from "./nodes/ios/arsphere";
+import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
 
 export { ARDebugLevel };
@@ -96,7 +98,6 @@ class AR extends ARBase {
 
     // TODO depends on properties on the <AR> tag
     this.toggleStatistics(true);
-    // this.setDebugLevel(ARDebugLevel.FEATURE_POINTS);
     this.togglePlaneDetection(true);
 
     // enabling these lines often result in an error: 'sensor failed to deliver [..] Make sure that the application has the required privacy settings'
@@ -268,6 +269,15 @@ class AR extends ARBase {
       ARState.shapes.set(sphere.id, sphere);
       this.sceneView.scene.rootNode.addChildNode(sphere.ios);
       resolve(sphere);
+    });
+  }
+
+  addText(options: ARAddTextOptions): Promise<ARNode> {
+    return new Promise((resolve, reject) => {
+      const text: ARText = ARText.create(options);
+      ARState.shapes.set(text.id, text);
+      this.sceneView.scene.rootNode.addChildNode(text.ios);
+      resolve(text);
     });
   }
 
