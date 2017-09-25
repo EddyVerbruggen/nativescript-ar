@@ -1,6 +1,6 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page" xmlns:AR="nativescript-ar">
   <GridLayout rows="auto, *" columns="*">
-    <Label text="{{ message }}" class="t-20 text-center c-black" textWrap="true"/>
+    <Label text="{{ message }}" class="t-20 p-10 text-center c-black" textWrap="true"/>
     <AR:AR
         row="1"
         debugLevel="FEATURE_POINTS"

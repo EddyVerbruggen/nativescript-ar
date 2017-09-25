@@ -8,7 +8,7 @@ export class HelloWorldModel extends Observable {
     super();
 
     const supported = AR.isSupported();
-    this.message = `Supported? ${supported}`;
+    this.message = `AR supported? ${supported}`;
 
     if (!supported) {
       return;
