@@ -1,5 +1,5 @@
 import { ARAddTubeOptions } from "../../ar-common";
-import { ARCommonNode } from "./arcommon";
-export declare class ARTube extends ARCommonNode {
+import { ARCommonGeometryNode } from "./arcommongeometry";
+export declare class ARTube extends ARCommonGeometryNode {
     static create(options: ARAddTubeOptions): ARTube;
 }

@@ -1,6 +1,7 @@
 import { Property } from "tns-core-modules/ui/core/view";
 import { ContentView } from "tns-core-modules/ui/content-view";
 import { EventData } from "tns-core-modules/data/observable";
+import { Color } from "tns-core-modules/color";
 
 export enum ARDebugLevel {
   NONE = <any>"NONE",
@@ -41,10 +42,34 @@ export interface ARAddOptions {
   mass?: number;
   onTap?: (model: ARNode) => void;
   onLongPress?: (model: ARNode) => void;
+  onPan?: (model: ARNode) => void;
+}
+
+export type ARMaterialWrapMode = "Clamp" | "Repeat" | "ClampToBorder" | "Mirror";
+
+export interface ARMaterialProperty {
+  /**
+   * Refers to a file in App_Resources.
+   */
+  contents: string;
+
+  /**
+   * Default "Repeat"
+   */
+  wrapMode?: ARMaterialWrapMode;
+}
+
+export interface ARMaterial {
+  diffuse?: string | Color | ARMaterialProperty;
+  roughness?: string | Color | ARMaterialProperty;
+  metalness?: string | Color | ARMaterialProperty;
+  normal?: string | Color | ARMaterialProperty;
+  specular?: string | Color | ARMaterialProperty;
+  transparency?: number;
 }
 
 export interface ARAddGeometryOptions extends ARAddOptions {
-  material?: string;
+  materials?: Array<string | Color | ARMaterial>;
 }
 
 export interface ARAddModelOptions extends ARAddOptions {

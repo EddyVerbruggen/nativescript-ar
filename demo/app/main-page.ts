@@ -2,6 +2,7 @@ import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
 import { ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData } from 'nativescript-ar';
 import { HelloWorldModel } from './main-view-model';
+import { Color } from 'tns-core-modules/color';
 
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
@@ -23,47 +24,70 @@ export function arLoaded(args: ARLoadedEventData): void {
       y: 0.3,
       z: 0.4
     },
-    material: "tnsgranite"
+    materials: [{
+      diffuse: {
+        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+        wrapMode: "ClampToBorder"
+      }
+    }]
   }).then(node => console.log("box added: " + node.id));
 
   args.object.addSphere({
+    // at 1.2m in front of the camera, and a bit to the right
     position: {
-      x: 0.9,
-      y: 0.9,
-      z: 0.6
+      x: 0.3,
+      y: 0,
+      z: -1.2
     },
     radius: 0.2,
-    segmentCount: 200
+    materials: [{
+      diffuse: new Color("red"),
+      normal: new Color("blue"),
+      roughness: new Color("green"),
+      specular: new Color("yellow"),
+      metalness: new Color("purple"),
+      transparency: 0.9
+    }],
+    segmentCount: 240
   }).then(node => console.log("sphere added: " + node.id));
 
   args.object.addText({
     text: "{N}",
     position: {
-      x: 2,
-      y: 0.5,
-      z: 2
+      x: 2.7,
+      y: -0.2,
+      z: -5
     },
-    scale: 0.2,
-    depth: 0.3,
+    scale: 0.1,
+    depth: 1,
+    materials: [new Color("blue")],
     rotation: {
-      x: 20,
-      y: 45,
-      z: 45,
+      x: 40,
+      y: 15,
+      z: 90,
       w: 45
     },
   }).then(node => console.log("text added: " + node.id));
 
   args.object.addTube({
     position: {
-      x: 0.6,
-      y: 0.3,
-      z: 0.3
+      x: -0.2,
+      y: -0.4,
+      z: -1.3
     },
     innerRadius: 0.1,
     outerRadius: 0.15,
     height: 0.2,
+    materials: [{
+      diffuse: {
+        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+        wrapMode: "Repeat" // which is the default
+      },
+      roughness: "Assets.scnassets/Materials/tnsgranite/tnsgranite-roughness.png",
+      transparency: 1 // solid (which is the default)
+    }],
     rotation: {
-      x: 10,
+      x: 70,
       y: 0,
       z: 0,
       w: 5
@@ -86,20 +110,16 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     },
     dimensions: 0.15,
     chamferRadius: 0.01,
-    material: "tnsgranite",
+    // material elements can either be a string or an 'ARMaterial' object
+    materials: [
+      "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+      {
+        name: "Assets.scnassets/Materials/tnsgranite2/tnsgranite2-diffuse.png",
+        transparency: 0.8 // 0 - 1, lower number is more transparent
+      }
+    ],
     mass: 0.0000001,
-    onTap: node => console.log("box tapped: " + node.id)
-  }).then(node => {
-    console.log("box added: " + node.id);
-
-    let animation = CABasicAnimation.animationWithKeyPath("morpher.weights[0]");
-    animation.fromValue = 0.0;
-    animation.toValue = 1.0;
-    animation.autoreverses = true;
-    animation.repeatCount = 5;
-    animation.duration = 5;
-    node.ios.addAnimationForKey(animation, null);
-
-    console.log("anim done");
+    onTap: node => console.log("box tapped: " + node.id),
+    onPan: node => console.log("box panned: " + node.id)
   });
 }

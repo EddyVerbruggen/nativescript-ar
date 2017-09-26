@@ -12,7 +12,7 @@ import {
   ARPlaneTappedEventData,
   ARPosition
 } from "./ar-common";
-import { ARMaterial } from "./nodes/ios/armaterial";
+import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARCommonNode } from "./nodes/ios/arcommon";
 import { ARPlane } from "./nodes/ios/arplane";
@@ -35,6 +35,7 @@ class AR extends ARBase {
   private physicsWorldContactDelegate: SCNPhysicsContactDelegateImpl;
   private sceneTapHandler: SceneTapHandlerImpl;
   private sceneLongPressHandler: SceneLongPressHandlerImpl;
+  private scenePanHandler: ScenePanHandlerImpl;
 
   static isSupported(): boolean {
     try {
@@ -75,7 +76,7 @@ class AR extends ARBase {
   }
 
   public togglePlaneVisibility(on: boolean): void {
-    const material: SCNMaterial = ARMaterial.getMaterial(this.planeMaterial);
+    const material: SCNMaterial = ARMaterialFactory.getMaterial(this.planeMaterial);
     ARState.planes.forEach(plane => {
       plane.setMaterial(material, on ? this.planeOpacity : 0);
     });
@@ -114,17 +115,23 @@ class AR extends ARBase {
 
     this.addBottomPlane(scene);
 
-    // register a tap handler to add an object to the scene (this will become an 'onTap' callback in the plugin)
+    // register a tap handler
     this.sceneTapHandler = SceneTapHandlerImpl.initWithOwner(new WeakRef(this));
     const tapGestureRecognizer = UITapGestureRecognizer.alloc().initWithTargetAction(this.sceneTapHandler, "tap");
     tapGestureRecognizer.numberOfTapsRequired = 1;
     this.sceneView.addGestureRecognizer(tapGestureRecognizer);
 
-    // register a longPress handler to remove an object fromn the scene (this will become an 'onLongPress' callback in the plugin)
+    // register a longPress handler
     this.sceneLongPressHandler = SceneLongPressHandlerImpl.initWithOwner(new WeakRef(this));
     const longPressGestureRecognizer = UILongPressGestureRecognizer.alloc().initWithTargetAction(this.sceneLongPressHandler, "longpress");
     longPressGestureRecognizer.minimumPressDuration = 0.5;
     this.sceneView.addGestureRecognizer(longPressGestureRecognizer);
+
+    // register a pan handler
+    this.scenePanHandler = ScenePanHandlerImpl.initWithOwner(new WeakRef(this));
+    const panGestureRecognizer = UIPanGestureRecognizer.alloc().initWithTargetAction(this.scenePanHandler, "pan");
+    panGestureRecognizer.minimumNumberOfTouches = 1;
+    this.sceneView.addGestureRecognizer(panGestureRecognizer);
 
     // make things look pretty
     this.sceneView.antialiasingMode = SCNAntialiasingMode.Multisampling4X;
@@ -198,6 +205,49 @@ class AR extends ARBase {
 
     if (savedModel) {
       savedModel.onLongPress();
+    }
+  }
+
+  public scenePanned(recognizer: UIPanGestureRecognizer): void {
+    const hitTestResults: NSArray<SCNHitTestResult> =
+        this.sceneView.hitTestOptions(
+            recognizer.locationInView(this.sceneView),
+            <any>{
+              SCNHitTestBoundingBoxOnlyKey: true,
+              SCNHitTestFirstFoundOnlyKey: true
+            });
+
+    if (hitTestResults.count === 0) {
+      return;
+    }
+
+    const hitResult: SCNHitTestResult = hitTestResults.firstObject;
+    const savedModel: ARCommonNode = ARState.shapes.get(hitResult.node.name);
+
+    if (savedModel) {
+      if (recognizer.state == UIGestureRecognizerState.Ended) {
+        savedModel.onPan();
+
+        /* This is not ready yet..
+        let translation = recognizer.translationInView(recognizer.view);
+        let velocity = recognizer.velocityInView(recognizer.view);
+        const pi = 3.1415926536;
+
+        let newAngleX = translation.x * (pi / 180.0);
+        let newAngleY = translation.y * (pi / 180.0);
+
+        newAngleX += this.oldAngleX;
+        newAngleY += this.oldAngleY;
+
+        console.log(">>> newAngleX: " + newAngleX);
+        console.log(">>> newAngleY: " + newAngleY);
+
+        this.oldAngleX = newAngleX;
+        this.oldAngleY = newAngleY;
+
+        savedModel.ios.runAction(SCNAction.rotateByXYZDuration(newAngleX, newAngleY, 0, 1));
+        */
+      }
     }
   }
 
@@ -335,6 +385,24 @@ class SceneLongPressHandlerImpl extends NSObject {
   };
 }
 
+class ScenePanHandlerImpl extends NSObject {
+  private _owner: WeakRef<AR>;
+
+  public static initWithOwner(owner: WeakRef<AR>): ScenePanHandlerImpl {
+    let handler = <ScenePanHandlerImpl>ScenePanHandlerImpl.new();
+    handler._owner = owner;
+    return handler;
+  }
+
+  public pan(args: UIPanGestureRecognizer): void {
+    this._owner.get().scenePanned(args);
+  }
+
+  public static ObjCExposedMethods = {
+    "pan": {returns: interop.types.void, params: [interop.types.id]}
+  };
+}
+
 class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
   public static ObjCProtocols = [];
 
@@ -425,7 +493,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     if (anchor instanceof ARPlaneAnchor) {
       const owner = this.owner.get();
       // When a new plane is detected we create a new SceneKit plane to visualize it in 3D
-      const plane: ARPlane = ARPlane.create(anchor, owner.planeOpacity, ARMaterial.getMaterial(owner.planeMaterial));
+      const plane: ARPlane = ARPlane.create(anchor, owner.planeOpacity, ARMaterialFactory.getMaterial(owner.planeMaterial));
       ARState.planes.set(anchor.identifier.UUIDString, plane);
       node.addChildNode(plane.ios);
 

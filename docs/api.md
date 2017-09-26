@@ -3,14 +3,13 @@ API
 
 [🔙](../README.md)
 
-
-AR
+## Functions
 - [isSupported](#issupported-static)
 - [addModel](#addmodel)
 - [addBox](#addbox)
+- [addSphere](#addsphere)
 - [addTube](#addtube)
-
-TODO: other functions
+- [addText](#addtext)
 
 
 ### `isSupported` (static)
@@ -32,6 +31,11 @@ const supported = AR.isSupported();
 You can add 3D models to the AR scene by passing in `ARAddModelOptions` to the `addModel` function.
 ARKit supports `.dae` files as used in our demo app, but you may need to clean up the model a bit so
 it's properly shown. [Google a bit](https://www.google.nl/search?q=arkit+dae) for details.
+
+Here are a few nice resources for `.dae` models:
+- [Free3D.com](https://free3d.com/3d-models/all/1/dae)
+- [Turbosquid.com, free](https://www.turbosquid.com/Search/Index.cfm?keyword=&search_type=free&media_typeid=2&file_type=194&=true&sort_column=A8&sort_order=desc)
+- [Turbosquid.com, all](https://www.turbosquid.com/Search/Index.cfm?keyword=&media_typeid=2&file_type=194&=true&sort_column=A8&sort_order=desc)
 
 ```typescript
 import { ARNode } from "nativescript-ar";
@@ -62,10 +66,13 @@ ar.addModel({
 
 #### `addBox`
 You can add a basic shape, like a box, to the AR scene by passing in `ARAddBoxOptions` to the `addBox` function.
-
 By default boxes are white, but you can pass in a texture to make it look pretty.
 
 <img src="images/scnbox.png" width="278px"/>
+
+Note that the `materials` array can be specified in a number of ways.
+Its contents are either of type `string` (referring to an image), `Color`, or `ARMaterial`.
+See the TS definitions and these examples for details.
 
 ```typescript
 import { ARNode } from "nativescript-ar";
@@ -83,18 +90,18 @@ ar.addBox({
   },
   chamferRadius: 0.01, // 'rounded corners', this is relative to the 'dimensions'.
   mass: 0.2, // pass this in, so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
+  materials: ["Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"], // must be in App_Resources
   onTap: (model: ARNode) => console.log("Box was tapped"),
   onLongPress: (model: ARNode) => console.log("Box was longpressed")
 }).then(arNode => console.log("Box was added"));
 ```
 
 #### `addSphere`
-Add a sphere to the scene:
-
 <img src="images/scnsphere.png" width="316px"/>
 
 ```typescript
 import { ARNode } from "nativescript-ar";
+import { Color } from "tns-core-modules/color";
 
 ar.addSphere({
   position: {
@@ -105,15 +112,13 @@ ar.addSphere({
   radius: 0.5,
   segmentCount: 100,
   mass: 0.001,
+  materials: [new Color("red")],
   onTap: (model: ARNode) => console.log("Sphere was tapped"),
   onLongPress: (model: ARNode) => console.log("Sphere was longpressed")
 });
 ```
 
-
 #### `addTube`
-Add a tube to the scene:
-
 <img src="images/scntube.png" width="308px"/>
 
 ```typescript
@@ -131,7 +136,46 @@ ar.addTube({
   radialSegmentCount: 80,
   radialSegmentCount: 4,
   mass: 0.001,
+  materials: [{
+    diffuse: {
+      contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+      wrapMode: "Repeat" // which is the default, see ARMaterialWrapMode for other options
+    },
+    roughness: "Assets.scnassets/Materials/tnsgranite/tnsgranite-roughness.png",
+    transparency: 1 // 0 - 1, where 1 is solid (which is the default)
+  }],
+  rotation: {
+    x: 70,
+    y: 0,
+    z: 0,
+    w: 5
+  },
   onTap: (model: ARNode) => console.log("Tube was tapped"),
   onLongPress: (model: ARNode) => console.log("Tube was longpressed")
+});
+```
+
+#### `addText`
+
+```typescript
+import { ARNode } from "nativescript-ar";
+import { Color } from "tns-core-modules/color";
+
+ar.addText({
+  text: "{N}",
+  position: {
+    x: 2.7,
+    y: -0.2,
+    z: -5
+  },
+  scale: 0.1,
+  depth: 1,
+  materials: [new Color("blue")],
+  rotation: {
+    x: 40,
+    y: 15,
+    z: 90,
+    w: 45
+  }
 });
 ```

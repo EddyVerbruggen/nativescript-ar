@@ -5,7 +5,7 @@
         row="1"
         debugLevel="FEATURE_POINTS"
         arLoaded="arLoaded"
-        planeMaterial="tron"
+        planeMaterial="Assets.scnassets/Materials/tron/tron-diffuse.png"
         planeOpacity="0.25"
         planeDetected="planeDetected"
         planeTapped="planeTapped"/>

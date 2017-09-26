@@ -8,10 +8,13 @@ export abstract class ARCommonNode implements ARNode {
   rotation: ARRotation;
   onTapHandler?: (model: ARNode) => void;
   onLongPressHandler?: (model: ARNode) => void;
+  onPanHandler?: (model: ARNode) => void;
 
   constructor(options: ARAddOptions, node: SCNNode) {
     this.onTapHandler = options.onTap;
     this.onLongPressHandler = options.onLongPress;
+    this.onPanHandler = options.onPan;
+
     node.position = this.position = options.position;
     if (options.rotation) {
       node.rotation = this.rotation = options.rotation;
@@ -41,6 +44,10 @@ export abstract class ARCommonNode implements ARNode {
 
   onLongPress(): void {
     this.onLongPressHandler && this.onLongPressHandler(this);
+  }
+
+  onPan(): void {
+    this.onPanHandler && this.onPanHandler(this);
   }
 
   remove(): void {

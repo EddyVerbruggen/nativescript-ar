@@ -1,18 +1,9 @@
 import { ARAddSphereOptions } from "../../ar-common";
-import { ARCommonNode } from "./arcommon";
-import { ARMaterial } from "./armaterial";
+import { ARCommonGeometryNode } from "./arcommongeometry";
 
-export class ARSphere extends ARCommonNode {
-
+export class ARSphere extends ARCommonGeometryNode {
   static create(options: ARAddSphereOptions) {
     const sphere = SCNSphere.sphereWithRadius(options.radius);
-
-    // make the sphere look nice (TODO move this to a new superclass that's not a parent to ARModel)
-    if (options.material) {
-      const materialArray: NSMutableArray<any> = NSMutableArray.alloc().initWithCapacity(1);
-      materialArray.addObject(ARMaterial.getMaterial(options.material));
-      sphere.materials = materialArray;
-    }
 
     if (options.segmentCount) {
       sphere.segmentCount = options.segmentCount;
