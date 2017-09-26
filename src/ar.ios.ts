@@ -225,7 +225,7 @@ class AR extends ARBase {
     const savedModel: ARCommonNode = ARState.shapes.get(hitResult.node.name);
 
     if (savedModel) {
-      if (recognizer.state == UIGestureRecognizerState.Ended) {
+      if (recognizer.state === UIGestureRecognizerState.Ended) {
         savedModel.onPan();
 
         /* This is not ready yet..
