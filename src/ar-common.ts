@@ -59,6 +59,7 @@ export interface ARAddBoxOptions extends ARAddGeometryOptions {
 
 export interface ARAddSphereOptions extends ARAddGeometryOptions {
   radius: number;
+  segmentCount?: number;
 }
 
 export interface ARAddTextOptions extends ARAddGeometryOptions {

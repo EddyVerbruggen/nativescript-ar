@@ -8,6 +8,7 @@ AR
 - [isSupported](#issupported-static)
 - [addModel](#addmodel)
 - [addBox](#addbox)
+- [addTube](#addtube)
 
 TODO: other functions
 
@@ -45,16 +46,14 @@ ar.addModel({
     z: 1
   },
   scale: 0.25,
-  mass: 0.2, // pass this in so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
-  onTap: ((model: ARNode) => {
-    console.log("Model was tapped");
-  }),
+  mass: 0.2, // pass this in, so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
+  onTap: (model: ARNode) => console.log("Model was tapped"),
   onLongPress: ((model: ARNode) => {
     console.log("Model was longpressed, removing it just for show.");
     model.remove();
   })
 }).then(arNode => {
-  // to remove the model after a few seconds you can do this:
+  // to remove the model after a few seconds, you can do this:
   setTimeout(() => {
     arNode.remove();
   }, 2000);
@@ -66,12 +65,12 @@ You can add a basic shape, like a box, to the AR scene by passing in `ARAddBoxOp
 
 By default boxes are white, but you can pass in a texture to make it look pretty.
 
+<img src="images/scnbox.png" width="278px"/>
+
 ```typescript
 import { ARNode } from "nativescript-ar";
 
 ar.addBox({
-  name: "Models.scnassets/Ball.dae", // refers to a file in App_Resources, see the demo app for examples
-  childNodeName: null, // optional; if you only need 1 node within the model, then set its name here
   position: {
     x: 1,
     y: 1,
@@ -83,20 +82,56 @@ ar.addBox({
     z: 0.25
   },
   chamferRadius: 0.01, // 'rounded corners', this is relative to the 'dimensions'.
-  mass: 0.2, // pass this in so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
-  onTap: ((model: ARNode) => {
-    console.log("Model was tapped");
-  }),
-  onLongPress: ((model: ARNode) => {
-    console.log("Model was longpressed, removing it just for show.");
-    model.remove();
-  })
-}).then(arNode => {
-  // to remove the model after a few seconds you can do this:
-  setTimeout(() => {
-    arNode.remove();
-  }, 2000);
+  mass: 0.2, // pass this in, so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
+  onTap: (model: ARNode) => console.log("Box was tapped"),
+  onLongPress: (model: ARNode) => console.log("Box was longpressed")
+}).then(arNode => console.log("Box was added"));
+```
+
+#### `addSphere`
+Add a sphere to the scene:
+
+<img src="images/scnsphere.png" width="316px"/>
+
+```typescript
+import { ARNode } from "nativescript-ar";
+
+ar.addSphere({
+  position: {
+    x: 1,
+    y: 1,
+    z: 1
+  },
+  radius: 0.5,
+  segmentCount: 100,
+  mass: 0.001,
+  onTap: (model: ARNode) => console.log("Sphere was tapped"),
+  onLongPress: (model: ARNode) => console.log("Sphere was longpressed")
 });
 ```
 
-### TODO: other functions..
+
+#### `addTube`
+Add a tube to the scene:
+
+<img src="images/scntube.png" width="308px"/>
+
+```typescript
+import { ARNode } from "nativescript-ar";
+
+ar.addTube({
+  position: {
+    x: 1,
+    y: 1,
+    z: 1
+  },
+  innerRadius: 0.3,
+  outerRadius: 0.5,
+  height: 0.8,
+  radialSegmentCount: 80,
+  radialSegmentCount: 4,
+  mass: 0.001,
+  onTap: (model: ARNode) => console.log("Tube was tapped"),
+  onLongPress: (model: ARNode) => console.log("Tube was longpressed")
+});
+```

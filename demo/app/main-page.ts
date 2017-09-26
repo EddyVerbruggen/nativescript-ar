@@ -32,7 +32,8 @@ export function arLoaded(args: ARLoadedEventData): void {
       y: 0.9,
       z: 0.6
     },
-    radius: 0.2
+    radius: 0.2,
+    segmentCount: 200
   }).then(node => console.log("sphere added: " + node.id));
 
   args.object.addText({

@@ -14,6 +14,10 @@ export class ARSphere extends ARCommonNode {
       sphere.materials = materialArray;
     }
 
+    if (options.segmentCount) {
+      sphere.segmentCount = options.segmentCount;
+    }
+
     return new ARSphere(options, SCNNode.nodeWithGeometry(sphere));
   }
 }
