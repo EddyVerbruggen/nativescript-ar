@@ -16,6 +16,8 @@ Add the `AR` namespace to the view you want AR-ify, then add use it like any oth
     <AR:AR
         row="1"
         debugLevel="FEATURE_POINTS"
+        detectPlanes="true"
+        showStatistics="true"
         planeOpacity="0.2"
         arLoaded="arLoaded"
         planeTapped="planeTapped" />

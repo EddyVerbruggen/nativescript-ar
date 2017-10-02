@@ -21,6 +21,8 @@ Open a view that's in the same module (or you've added it to the global app modu
   <Label row="0" text="Scan a surface.." class="p-20" horizontalAlignment="center"></Label>
   <AR
     row="1"
+    detectPlanes="true"
+    showStatistics="true"
     [planeOpacity]="thePlaneOpacity"
     (planeTapped)="planeTapped($event)">
     <!-- you can add layouts here if you like to overlay the AR view -->
