@@ -2,6 +2,7 @@ import { Property } from "tns-core-modules/ui/core/view";
 import { ContentView } from "tns-core-modules/ui/content-view";
 import { EventData } from "tns-core-modules/data/observable";
 import { Color } from "tns-core-modules/color";
+import { booleanConverter } from "tns-core-modules/ui/core/view-base";
 
 export enum ARDebugLevel {
   NONE = <any>"NONE",
@@ -22,6 +23,18 @@ const planeMaterialProperty = new Property<AR, string>({
 const planeOpacityProperty = new Property<AR, number>({
   name: "planeOpacity",
   defaultValue: 0.1
+});
+
+const detectPlanesProperty = new Property<AR, boolean>({
+  name: "detectPlanes",
+  defaultValue: false,
+  valueConverter: booleanConverter
+});
+
+const showStatisticsProperty = new Property<AR, boolean>({
+  name: "showStatistics",
+  defaultValue: false,
+  valueConverter: booleanConverter
 });
 
 export interface ARNode {
@@ -122,6 +135,10 @@ export interface ARPlaneTappedEventData extends AREventData {
   position: ARPosition;
 }
 
+export interface ARSceneTappedEventData extends AREventData {
+  position: ARPosition;
+}
+
 export interface ARPlaneDetectedEventData extends AREventData {
   plane: ARPlane;
 }
@@ -162,11 +179,14 @@ export class ARRotation {
 
 export abstract class AR extends ContentView {
   static arLoadedEvent: string = "arLoaded";
+  static sceneTappedEvent: string = "sceneTapped";
   static planeDetectedEvent: string = "planeDetected";
   static planeTappedEvent: string = "planeTapped";
 
   planeMaterial: string;
   planeOpacity: number;
+  detectPlanes: boolean;
+  showStatistics: boolean;
 
   static isSupported(): boolean {
     return false;
@@ -209,6 +229,14 @@ export abstract class AR extends ContentView {
     this.planeMaterial = value;
   }
 
+  [detectPlanesProperty.setNative](value: boolean) {
+    this.detectPlanes = value;
+  }
+
+  [showStatisticsProperty.setNative](value: boolean) {
+    this.showStatistics = value;
+  }
+
   [planeOpacityProperty.setNative](value: number) {
     if (!isNaN(value)) {
       this.planeOpacity = +value;
@@ -216,6 +244,8 @@ export abstract class AR extends ContentView {
   }
 }
 
+showStatisticsProperty.register(AR);
+detectPlanesProperty.register(AR);
 debugLevelProperty.register(AR);
 planeMaterialProperty.register(AR);
 planeOpacityProperty.register(AR);

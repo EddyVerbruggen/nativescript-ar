@@ -12,7 +12,7 @@ NativeScript Augmented Reality
 [twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
 [twitter-url]:https://twitter.com/eddyverbruggen
 
-> Work in progress. Implementation-details may change.
+> Work in progress, but please give it a try!
 
 ### Supported platforms
 * iPhone SE, 6s, iPad Pro, iPad 2017, or newer. Running iOS 11 or newer.

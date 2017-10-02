@@ -1,6 +1,6 @@
 import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
-import { ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData } from 'nativescript-ar';
+import { ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARSceneTappedEventData } from 'nativescript-ar';
 import { HelloWorldModel } from './main-view-model';
 import { Color } from 'tns-core-modules/color';
 
@@ -122,4 +122,8 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     onTap: node => console.log("box tapped: " + node.id),
     onPan: node => console.log("box panned: " + node.id)
   });
+}
+
+export function sceneTapped(args: ARSceneTappedEventData): void {
+  console.log(`Scene tapped @ x / y coordinate: ${args.position.x} / ${args.position.y}`);
 }

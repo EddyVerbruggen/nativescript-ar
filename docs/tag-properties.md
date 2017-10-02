@@ -12,6 +12,8 @@ But to help add behavior to the AR experience, here are the properties and event
 |property|default|description
 |---|---|---
 |`debugLevel`|`NONE`|One of the options in the `ARDebugLevel` enum: `NONE`, `WORLD_ORIGIN`, `FEATURE_POINTS`, `PHYSICS_SHAPES`.
+|`detectPlanes`|`false`|You can have the plugin detecting planes right away by setting this to `true`.
+|`showStatistics`|`false`|Draw a few statistics at the bottom.
 |`planeMaterial`|-|A texture for the planes. For instance, the demo uses ['tron'](https://github.com/EddyVerbruggen/nativescript-ar/tree/master/demo/app/App_Resources/iOS/Assets.scnassets/Materials/tron). 
 |`planeOpacity`|`0.1`|Determines how transparent the planes are, where 0 is invisible, and 1 is 'solid'.
 
@@ -20,7 +22,8 @@ But to help add behavior to the AR experience, here are the properties and event
 |---|---|---
 |`arLoaded`|`ARLoadedEventData`|Triggered when the AR view has been drawn.
 |`planeDetected`|`ARPlaneDetectedEventData`|Triggered when a new plane was detected.
-|`planeTapped`|`ARPlaneTappedEventData`|Triggered when a plane was tapped by the user.
+|`planeTapped`|`ARPlaneTappedEventData`|Triggered when a plane was tapped by the user. Will return the x, y, and z coordinates in the 3D space.
+|`sceneTapped`|`ARSceneTappedEventData`|Triggered when a scene was tapped by the user. Will return the x and y screen coordinates.
 
 ## Continue reading
 - [Tell me about the API](api.md)

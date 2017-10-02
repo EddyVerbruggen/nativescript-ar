@@ -4,9 +4,12 @@
     <AR:AR
         row="1"
         debugLevel="FEATURE_POINTS"
-        arLoaded="arLoaded"
         planeMaterial="Assets.scnassets/Materials/tron/tron-diffuse.png"
         planeOpacity="0.25"
+        detectPlanes="true"
+        showStatistics="true"
+        arLoaded="arLoaded"
+        sceneTapped="sceneTapped"
         planeDetected="planeDetected"
         planeTapped="planeTapped"/>
   </GridLayout>

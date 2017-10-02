@@ -10,6 +10,7 @@ import {
   ARNode,
   ARPlaneDetectedEventData,
   ARPlaneTappedEventData,
+  ARSceneTappedEventData,
   ARPosition
 } from "./ar-common";
 import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
@@ -97,9 +98,8 @@ class AR extends ARBase {
         },
         {});
 
-    // TODO depends on properties on the <AR> tag
-    this.toggleStatistics(true);
-    this.togglePlaneDetection(true);
+    this.toggleStatistics(this.showStatistics);
+    this.togglePlaneDetection(this.detectPlanes);
 
     // enabling these lines often result in an error: 'sensor failed to deliver [..] Make sure that the application has the required privacy settings'
     this.sceneView.autoenablesDefaultLighting = true;
@@ -255,6 +255,16 @@ class AR extends ARBase {
     const tapPoint = recognizer.locationInView(this.sceneView);
     const hitTestResults: NSArray<ARHitTestResult> = this.sceneView.hitTestTypes(tapPoint, ARHitTestResultType.ExistingPlaneUsingExtent);
     if (hitTestResults.count === 0) {
+      const eventData: ARSceneTappedEventData = {
+        eventName: ARBase.sceneTappedEvent,
+        object: this,
+        position: {
+          x: tapPoint.x,
+          y: tapPoint.y,
+          z: 0 // irrelevant
+        }
+      };
+      this.notify(eventData);
       return;
     }
 
