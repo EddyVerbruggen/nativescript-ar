@@ -473,29 +473,39 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
 
   sessionCameraDidChangeTrackingState(session: ARSession, camera: ARCamera): void {
     const trackingState = camera.trackingState;
-    console.log(">>> sessionCameraDidChangeTrackingState: " + trackingState);
     if (this.currentTrackingState === trackingState) {
       return;
     }
 
     this.currentTrackingState = trackingState;
+
+    let trackingState = null;
+    let limitedTrackingStateReason = null;
+
     if (trackingState === ARTrackingState.NotAvailable) {
-
+      trackingState = "Not available";
     } else if (trackingState === ARTrackingState.Limited) {
+      trackingState = "Limited";
       const reason = camera.trackingStateReason;
-      console.log(">>> sessionCameraDidChangeTrackingState, reason: " + reason);
       if (reason === ARTrackingStateReason.ExcessiveMotion) {
-
+        limitedTrackingStateReason = "Excessive motion";
       } else if (reason === ARTrackingStateReason.InsufficientFeatures) {
-
+        limitedTrackingStateReason = "Insufficient features";
       } else if (reason === ARTrackingStateReason.Initializing) {
-
+        limitedTrackingStateReason = "Initializing";
       } else if (reason === ARTrackingStateReason.None) {
-
+        limitedTrackingStateReason = "None";
       }
-
     } else if (trackingState === ARTrackingState.Normal) {
+      trackingState = "Normal";
+    }
 
+    // perhaps one day we can expose these as an event, but for now we'll just log them
+    if (trackingState !== null) {
+      console.log(`Tracking state changed to: ${trackingState}`);
+      if (limitedTrackingStateReason !== null) {
+        console.log(`Limited tracking state reason: ${limitedTrackingStateReason}`);
+      }
     }
   }
 
