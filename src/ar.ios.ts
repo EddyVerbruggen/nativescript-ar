@@ -472,19 +472,17 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
   }
 
   sessionCameraDidChangeTrackingState(session: ARSession, camera: ARCamera): void {
-    const trackingState = camera.trackingState;
-    if (this.currentTrackingState === trackingState) {
+    if (this.currentTrackingState === camera.trackingState) {
       return;
     }
+    this.currentTrackingState = camera.trackingState;
 
-    this.currentTrackingState = trackingState;
+    let trackingState = null,
+        limitedTrackingStateReason = null;
 
-    let trackingState = null;
-    let limitedTrackingStateReason = null;
-
-    if (trackingState === ARTrackingState.NotAvailable) {
+    if (camera.trackingState === ARTrackingState.NotAvailable) {
       trackingState = "Not available";
-    } else if (trackingState === ARTrackingState.Limited) {
+    } else if (camera.trackingState === ARTrackingState.Limited) {
       trackingState = "Limited";
       const reason = camera.trackingStateReason;
       if (reason === ARTrackingStateReason.ExcessiveMotion) {
@@ -496,7 +494,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
       } else if (reason === ARTrackingStateReason.None) {
         limitedTrackingStateReason = "None";
       }
-    } else if (trackingState === ARTrackingState.Normal) {
+    } else if (camera.trackingState === ARTrackingState.Normal) {
       trackingState = "Normal";
     }
 
