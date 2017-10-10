@@ -1,6 +1,6 @@
 {
   "name": "nativescript-ar",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "NativeScript Augmented Reality plugin. ARKit on iOS and (in the future) ARCore on Android.",
   "main": "ar",
   "typings": "index.d.ts",
@@ -13,7 +13,7 @@
   "scripts": {
     "tsc": "tsc -skipLibCheck",
     "build": "npm i && npm run tsc",
-    "postclone": "npm i && node scripts/postclone.js && cd ../demo && npm i && cd ../src && npm run plugin.link",
+    "postclone": "npm i && cd ../demo && npm i && cd ../src && npm run plugin.link",
     "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
     "test.ios": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
     "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude \"**/node_modules/**\" --exclude \"**/typings/**\"",

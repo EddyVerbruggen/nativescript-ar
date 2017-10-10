@@ -41,7 +41,7 @@ export class ARPlane implements IARPlane {
     return instance;
   }
 
-  setMaterial(material: SCNMaterial, opacity: number): void {
+  setMaterial(material: SCNMaterial | null, opacity: number): void {
     const transparentMaterial = SCNMaterial.new();
     transparentMaterial.diffuse.contents = UIColor.colorWithWhiteAlpha(1.0, 0.0);
 
@@ -50,7 +50,7 @@ export class ARPlane implements IARPlane {
     materialArray.addObject(transparentMaterial);
     materialArray.addObject(transparentMaterial);
     materialArray.addObject(transparentMaterial);
-    if (opacity === 0) {
+    if (opacity === 0 || material === null) {
       materialArray.addObject(transparentMaterial);
     } else {
       material.transparency = opacity;

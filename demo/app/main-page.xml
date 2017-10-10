@@ -4,7 +4,7 @@
     <AR:AR
         row="1"
         debugLevel="FEATURE_POINTS"
-        planeMaterial="Assets.scnassets/Materials/tron/tron-diffuse.png"
+        planeMaterial="{{ planeMaterial }}"
         planeOpacity="0.25"
         detectPlanes="true"
         showStatistics="true"

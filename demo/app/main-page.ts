@@ -115,7 +115,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
       {
         name: "Assets.scnassets/Materials/tnsgranite2/tnsgranite2-diffuse.png",
-        transparency: 0.8 // 0 - 1, lower number is more transparent
+        transparency: 0.9 // 0 - 1, lower number is more transparent
       }
     ],
     mass: 0.0000001,

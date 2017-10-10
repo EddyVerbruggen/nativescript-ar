@@ -14,7 +14,7 @@ But to help add behavior to the AR experience, here are the properties and event
 |`debugLevel`|`NONE`|One of the options in the `ARDebugLevel` enum: `NONE`, `WORLD_ORIGIN`, `FEATURE_POINTS`, `PHYSICS_SHAPES`.
 |`detectPlanes`|`false`|You can have the plugin detecting planes right away by setting this to `true`.
 |`showStatistics`|`false`|Draw a few statistics at the bottom.
-|`planeMaterial`|-|A texture for the planes. For instance, the demo uses ['tron'](https://github.com/EddyVerbruggen/nativescript-ar/tree/master/demo/app/App_Resources/iOS/Assets.scnassets/Materials/tron). 
+|`planeMaterial`|-|A `string` referencing a texture for the planes. For instance, the demo uses ['tron'](https://github.com/EddyVerbruggen/nativescript-ar/tree/master/demo/app/App_Resources/iOS/Assets.scnassets/Materials/tron). Can also be a `Color` or `ARMaterial` instance. You won't see the planes if not set.  
 |`planeOpacity`|`0.1`|Determines how transparent the planes are, where 0 is invisible, and 1 is 'solid'.
 
 ## Events

@@ -3,7 +3,11 @@ import { Color } from "tns-core-modules/color";
 
 export class ARMaterialFactory {
 
-  static getMaterial(material: string | Color | ARMaterial): SCNMaterial {
+  static getMaterial(material?: string | Color | ARMaterial): SCNMaterial | null {
+    if (!material) {
+      return null;
+    }
+
     const mat = SCNMaterial.new(); // I'm sure these can be cached
     mat.lightingModelName = SCNLightingModelPhysicallyBased;
     if (typeof material === "string") {
@@ -49,6 +53,7 @@ export class ARMaterialFactory {
     }
 
     if (typeof materialProperty === "string") {
+      console.log(">>> UIImage.imageNamed(materialProperty): " + UIImage.imageNamed(materialProperty));
       scnMaterialProperty.contents = UIImage.imageNamed(materialProperty);
       scnMaterialProperty.wrapS = SCNWrapMode.Repeat;
       scnMaterialProperty.wrapT = SCNWrapMode.Repeat;

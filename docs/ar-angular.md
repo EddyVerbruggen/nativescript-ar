@@ -21,9 +21,10 @@ Open a view that's in the same module (or you've added it to the global app modu
   <Label row="0" text="Scan a surface.." class="p-20" horizontalAlignment="center"></Label>
   <AR
     row="1"
+    debugLevel="FEATURE_POINTS"
     detectPlanes="true"
     showStatistics="true"
-    [planeOpacity]="thePlaneOpacity"
+    [planeMaterial]="planeMaterial"
     (planeTapped)="planeTapped($event)">
     <!-- you can add layouts here if you like to overlay the AR view -->
   </AR>
@@ -34,10 +35,17 @@ Open its component and, for instance, add:
 
 ```typescript
 // add to imports
-import { AR, ARPlaneTappedEventData } from "nativescript-ar";
+import { AR, ARMaterial,ARPlaneTappedEventData } from "nativescript-ar";
+import { Color } from "tns-core-modules/color";
 
 export class MyComponent {
-  thePlaneOpacity: number = 0.2;
+  // All these are valid plane materials:
+  // public planeMaterial = "Assets.scnassets/Materials/tron/tron-diffuse.png";
+  // public planeMaterial = new Color("red");
+  public planeMaterial = <ARMaterial>{
+    diffuse: new Color("white"),
+    transparency: 0.2
+  };
 
   constructor() {
     console.log("AR supported? " + AR.isSupported());
