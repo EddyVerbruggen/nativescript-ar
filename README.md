@@ -16,7 +16,7 @@ NativeScript Augmented Reality
 
 ### Supported platforms
 * iPhone SE, 6s, iPad Pro, iPad 2017, or newer. Running iOS 11 or newer.
-* Android support will be added, but there's currently hardly anyone on the planet with an Android device capable of running AR anyway.
+* Android support is work in progress - but there's currently hardly anyone on the planet with an Android device capable of running AR anyway.
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
