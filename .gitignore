@@ -1,10 +1,11 @@
-.vscode
-.idea
+.vscode/
+.idea/
 .DS_Store
 *.js
 *.js.map
-*.log
+*.log.*
 src/*.d.ts
+build/
 !src/index.d.ts
 !src/references.d.ts
 !src/scripts/*.js

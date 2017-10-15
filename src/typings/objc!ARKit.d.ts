@@ -1,4 +1,4 @@
-
+// TODO remove when iOS typings are updated to iOS 11's SDK
 declare class ARAnchor extends NSObject implements NSCopying {
 
 	static alloc(): ARAnchor; // inherited from NSObject

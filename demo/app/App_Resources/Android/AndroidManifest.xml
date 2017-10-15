@@ -10,6 +10,7 @@
 		android:largeScreens="true"
 		android:xlargeScreens="true"/>
 
+	<!-- for ARCore a minSdkVersion of 19 is required -  set in app.gradle -->
 	<uses-sdk
 		android:minSdkVersion="17"
 		android:targetSdkVersion="__APILEVEL__"/>
