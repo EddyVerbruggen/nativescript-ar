@@ -12,7 +12,7 @@ import {
   ARNode
 } from "./ar-common";
 
-declare const com, android, org: any;
+declare const android: any;
 
 const CAMERA_PERMISSION_REQUEST_CODE = 853;
 
@@ -31,11 +31,10 @@ org.nativescript.tns.arlib.TNSSurfaceRenderer.setSurfaceEventCallbackListener(
 );
 
 // see https://developers.google.com/ar/reference/java
-// TODO generate typings based on .aar
 class AR extends ARBase {
   private _android: any;
-  private config: any; // com.google.ar.core.Config
-  private session: any; // com.google.ar.core.Session
+  private config: com.google.ar.core.Config;
+  private session: com.google.ar.core.Session;
   private surfaceView: any; // android.opengl.GLSurfaceView;
 
   constructor() {
