@@ -29,7 +29,9 @@ export function arLoaded(args: ARLoadedEventData): void {
         contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
         wrapMode: "ClampToBorder"
       }
-    }]
+    }],
+    onTap: node => console.log("box tapped: " + node.id),
+    onPan: node => console.log("box panned: " + node.id),
   }).then(node => console.log("box added: " + node.id));
 
   args.object.addSphere({
@@ -52,10 +54,29 @@ export function arLoaded(args: ARLoadedEventData): void {
   }).then(node => console.log("sphere added: " + node.id));
 
   args.object.addText({
-    text: "{N}",
+    text: "NativeScript",
     position: {
       x: 2.7,
       y: -0.2,
+      z: -5
+    },
+    scale: 0.1,
+    depth: 1,
+    materials: [new Color("blue")],
+    rotation: {
+      x: 40,
+      y: 15,
+      z: 90,
+      w: 45
+    },
+    onPan: node => console.log("text panned: " + node.id),
+  }).then(node => console.log("text added: " + node.id));
+
+  args.object.addText({
+    text: "is COOL",
+    position: {
+      x: 2.7,
+      y: -0.6,
       z: -5
     },
     scale: 0.1,

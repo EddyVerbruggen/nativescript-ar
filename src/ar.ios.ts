@@ -208,6 +208,9 @@ class AR extends ARBase {
     }
   }
 
+  private oldAngleX: number = 0;
+  private oldAngleY: number = 0;
+
   public scenePanned(recognizer: UIPanGestureRecognizer): void {
     const hitTestResults: NSArray<SCNHitTestResult> =
         this.sceneView.hitTestOptions(
@@ -228,7 +231,6 @@ class AR extends ARBase {
       if (recognizer.state === UIGestureRecognizerState.Ended) {
         savedModel.onPan();
 
-        /* This is not ready yet..
         let translation = recognizer.translationInView(recognizer.view);
         let velocity = recognizer.velocityInView(recognizer.view);
         const pi = 3.1415926536;
@@ -246,7 +248,6 @@ class AR extends ARBase {
         this.oldAngleY = newAngleY;
 
         savedModel.ios.runAction(SCNAction.rotateByXYZDuration(newAngleX, newAngleY, 0, 1));
-        */
       }
     }
   }

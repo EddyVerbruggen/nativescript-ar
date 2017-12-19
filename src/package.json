@@ -51,10 +51,11 @@
   "devDependencies": {
     "prompt": "^1.0.0",
     "rimraf": "^2.5.0",
-    "tns-core-modules": "^3.2.0",
-    "tns-platform-declarations": "^3.2.0",
-    "tslint": "^5.0.0",
-    "typescript": "~2.3.0"
+    "nativescript-dev-typescript": "libs",
+    "tns-core-modules": "~3.3.0",
+    "tns-platform-declarations": "~3.3.0",
+    "tslint": "~5.4.3",
+    "typescript": "~2.4.0"
   },
   "dependencies": {},
   "bootstrapper": "nativescript-plugin-seed"
