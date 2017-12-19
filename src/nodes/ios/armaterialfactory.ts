@@ -15,7 +15,7 @@ export class ARMaterialFactory {
     } else if (material.constructor.name === "Color") {
       ARMaterialFactory.applyMaterialByColor(mat, <Color>material);
     } else {
-      ARMaterialFactory.applyMaterialByARMaterial(mat, material);
+      ARMaterialFactory.applyMaterialByARMaterial(mat, <ARMaterial>material);
     }
     return mat;
   }
