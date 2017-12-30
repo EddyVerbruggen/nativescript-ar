@@ -55,7 +55,9 @@ export interface ARAddOptions {
   mass?: number;
   onTap?: (model: ARNode) => void;
   onLongPress?: (model: ARNode) => void;
-  onPan?: (model: ARNode) => void;
+  // onPan?: (model: ARNode) => void;
+  draggingEnabled?: boolean;
+  rotatingEnabled?: boolean;
 }
 
 export type ARMaterialWrapMode = "Clamp" | "Repeat" | "ClampToBorder" | "Mirror";

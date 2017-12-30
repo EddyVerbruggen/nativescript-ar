@@ -15,9 +15,9 @@ export function arLoaded(args: ARLoadedEventData): void {
   // add a few models
   args.object.addBox({
     position: {
-      x: 0.6,
-      y: 0.6,
-      z: 0.6
+      x: -0.2,
+      y: -0.2,
+      z: -1.0
     },
     dimensions: {
       x: 0.2,
@@ -31,9 +31,35 @@ export function arLoaded(args: ARLoadedEventData): void {
       }
     }],
     onTap: node => console.log("box tapped: " + node.id),
-    onPan: node => console.log("box panned: " + node.id),
+    draggingEnabled: true,
+    rotatingEnabled: true
+    // onPan: node => console.log("box panned: " + node.id),
   }).then(node => console.log("box added: " + node.id));
 
+  args.object.addBox({
+    position: {
+      x: -0.8,
+      y: -0.2,
+      z: -1.0
+    },
+    dimensions: {
+      x: 0.2,
+      y: 0.3,
+      z: 0.4
+    },
+    materials: [{
+      diffuse: {
+        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+        wrapMode: "ClampToBorder"
+      }
+    }],
+    onTap: node => console.log("box tapped: " + node.id),
+    draggingEnabled: true,
+    rotatingEnabled: true
+    // onPan: node => console.log("box panned: " + node.id),
+  }).then(node => console.log("box added: " + node.id));
+
+  /*
   args.object.addSphere({
     // at 1.2m in front of the camera, and a bit to the right
     position: {
@@ -52,13 +78,14 @@ export function arLoaded(args: ARLoadedEventData): void {
     }],
     segmentCount: 240
   }).then(node => console.log("sphere added: " + node.id));
+  */
 
   args.object.addText({
     text: "NativeScript",
     position: {
       x: 2.7,
       y: -0.2,
-      z: -5
+      z: -4
     },
     scale: 0.1,
     depth: 1,
@@ -69,14 +96,14 @@ export function arLoaded(args: ARLoadedEventData): void {
       z: 90,
       w: 45
     },
-    onPan: node => console.log("text panned: " + node.id),
+    // onPan: node => console.log("text panned: " + node.id),
   }).then(node => console.log("text added: " + node.id));
 
   args.object.addText({
     text: "is COOL",
     position: {
       x: 2.7,
-      y: -0.6,
+      y: -1,
       z: -5
     },
     scale: 0.1,
@@ -92,9 +119,9 @@ export function arLoaded(args: ARLoadedEventData): void {
 
   args.object.addTube({
     position: {
-      x: -0.2,
-      y: -0.4,
-      z: -1.3
+      x: 0.3,
+      y: 0.3,
+      z: -1.2
     },
     innerRadius: 0.1,
     outerRadius: 0.15,
@@ -141,7 +168,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     ],
     mass: 0.0000001,
     onTap: node => console.log("box tapped: " + node.id),
-    onPan: node => console.log("box panned: " + node.id)
+    // onPan: node => console.log("box panned: " + node.id)
   });
 }
 

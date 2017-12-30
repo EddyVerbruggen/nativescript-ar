@@ -37,6 +37,7 @@ class AR extends ARBase {
   private sceneTapHandler: SceneTapHandlerImpl;
   private sceneLongPressHandler: SceneLongPressHandlerImpl;
   private scenePanHandler: ScenePanHandlerImpl;
+  private sceneRotationHandler: SceneRotationHandlerImpl;
 
   static isSupported(): boolean {
     try {
@@ -133,6 +134,11 @@ class AR extends ARBase {
     panGestureRecognizer.minimumNumberOfTouches = 1;
     this.sceneView.addGestureRecognizer(panGestureRecognizer);
 
+    // register a rotation handler
+    this.sceneRotationHandler = SceneRotationHandlerImpl.initWithOwner(new WeakRef(this));
+    const rotationGestureRecognizer = UIRotationGestureRecognizer.alloc().initWithTargetAction(this.sceneRotationHandler, "rotate");
+    this.sceneView.addGestureRecognizer(rotationGestureRecognizer);
+
     // make things look pretty
     this.sceneView.antialiasingMode = SCNAntialiasingMode.Multisampling4X;
 
@@ -208,46 +214,104 @@ class AR extends ARBase {
     }
   }
 
-  private oldAngleX: number = 0;
-  private oldAngleY: number = 0;
+  lastPositionForPanning: CGPoint;
+  targetNodeForPanning: SCNNode;
+  targetNodeForRotating: SCNNode;
 
   public scenePanned(recognizer: UIPanGestureRecognizer): void {
-    const hitTestResults: NSArray<SCNHitTestResult> =
-        this.sceneView.hitTestOptions(
-            recognizer.locationInView(this.sceneView),
-            <any>{
-              SCNHitTestBoundingBoxOnlyKey: true,
-              SCNHitTestFirstFoundOnlyKey: true
-            });
-
-    if (hitTestResults.count === 0) {
+    let state = recognizer.state;
+    if (state === UIGestureRecognizerState.Failed || state === UIGestureRecognizerState.Cancelled) {
       return;
     }
 
-    const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-    const savedModel: ARCommonNode = ARState.shapes.get(hitResult.node.name);
+    let position = recognizer.locationInView(this.sceneView);
 
-    if (savedModel) {
-      if (recognizer.state === UIGestureRecognizerState.Ended) {
-        savedModel.onPan();
+    if (state === UIGestureRecognizerState.Began) {
+      this.lastPositionForPanning = position;
 
-        let translation = recognizer.translationInView(recognizer.view);
-        let velocity = recognizer.velocityInView(recognizer.view);
-        const pi = 3.1415926536;
+      const hitTestResults: NSArray<SCNHitTestResult> =
+          this.sceneView.hitTestOptions(
+              position,
+              <any>{
+                SCNHitTestBoundingBoxOnlyKey: true,
+                SCNHitTestFirstFoundOnlyKey: true
+              });
 
-        let newAngleX = translation.x * (pi / 180.0);
-        let newAngleY = translation.y * (pi / 180.0);
+      if (hitTestResults.count === 0) {
+        this.targetNodeForPanning = undefined;
+        return;
+      }
 
-        newAngleX += this.oldAngleX;
-        newAngleY += this.oldAngleY;
+      const hitResult: SCNHitTestResult = hitTestResults.firstObject;
+      const savedModel: ARCommonNode = ARState.shapes.get(hitResult.node.name);
+      if (savedModel && savedModel.draggingEnabled && savedModel.ios) {
+        this.targetNodeForPanning = savedModel.ios;
+      } else {
+        this.targetNodeForPanning = undefined;
+      }
 
-        console.log(">>> newAngleX: " + newAngleX);
-        console.log(">>> newAngleY: " + newAngleY);
+    } else if (this.targetNodeForPanning) {
+      if (state === UIGestureRecognizerState.Changed) {
+        // no real need for this
+        // savedModel.onPan();
 
-        this.oldAngleX = newAngleX;
-        this.oldAngleY = newAngleY;
+        let deltaX = (position.x - this.lastPositionForPanning.x) / 700;
+        let deltaY = (position.y - this.lastPositionForPanning.y) / 700;
+        // TODO when the object is to the RIGHT of the camera, x should 0, when it's to the left, z should be 0..
+        this.targetNodeForPanning.localTranslateBy({x: deltaX, y: -deltaY, z: 0});
+        this.lastPositionForPanning = position;
 
-        savedModel.ios.runAction(SCNAction.rotateByXYZDuration(newAngleX, newAngleY, 0, 1));
+      } else if (state === UIGestureRecognizerState.Ended) {
+        this.targetNodeForPanning = undefined;
+      }
+    }
+  }
+
+  public sceneRotated(recognizer: UIRotationGestureRecognizer): void {
+    let state = recognizer.state;
+    if (state === UIGestureRecognizerState.Failed || state === UIGestureRecognizerState.Cancelled) {
+      return;
+    }
+
+    let position = recognizer.locationInView(this.sceneView);
+
+    if (state === UIGestureRecognizerState.Began) {
+      const hitTestResults: NSArray<SCNHitTestResult> =
+          this.sceneView.hitTestOptions(
+              position,
+              <any>{
+                SCNHitTestBoundingBoxOnlyKey: true,
+                SCNHitTestFirstFoundOnlyKey: true
+              });
+
+      if (hitTestResults.count === 0) {
+        this.targetNodeForRotating = undefined;
+        return;
+      }
+
+      const hitResult: SCNHitTestResult = hitTestResults.firstObject;
+      const savedModel: ARCommonNode = ARState.shapes.get(hitResult.node.name);
+      if (savedModel && savedModel.rotatingEnabled && savedModel.ios) {
+        this.targetNodeForRotating = savedModel.ios;
+      } else {
+        this.targetNodeForRotating = undefined;
+      }
+
+    } else if (this.targetNodeForRotating) {
+      if (state === UIGestureRecognizerState.Changed) {
+        // no real need for this
+        // savedModel.onRotate();
+
+        const previousAngles = this.targetNodeForRotating.eulerAngles;
+        this.targetNodeForRotating.eulerAngles = {
+          x: previousAngles.x,
+          y: previousAngles.y - recognizer.rotation,
+          z: previousAngles.z
+        };
+        recognizer.rotation = 0;
+
+      } else if (state === UIGestureRecognizerState.Ended) {
+        this.targetNodeForRotating = undefined;
       }
     }
   }
@@ -352,11 +416,12 @@ class AR extends ARBase {
   }
 
   public reset(): void {
+    this.configuration.planeDetection = ARPlaneDetection.Horizontal;
+    this.sceneView.session.runWithConfigurationOptions(this.configuration, ARSessionRunOptions.RemoveExistingAnchors);
     ARState.planes.forEach(plane => plane.remove());
     ARState.planes.clear();
     ARState.shapes.forEach(node => node.remove());
     ARState.shapes.clear();
-    // I think we need to reset more in order for plane detection to work again..
   }
 }
 
@@ -411,6 +476,24 @@ class ScenePanHandlerImpl extends NSObject {
 
   public static ObjCExposedMethods = {
     "pan": {returns: interop.types.void, params: [interop.types.id]}
+  };
+}
+
+class SceneRotationHandlerImpl extends NSObject {
+  private _owner: WeakRef<AR>;
+
+  public static initWithOwner(owner: WeakRef<AR>): SceneRotationHandlerImpl {
+    let handler = <SceneRotationHandlerImpl>SceneRotationHandlerImpl.new();
+    handler._owner = owner;
+    return handler;
+  }
+
+  public rotate(args: UIRotationGestureRecognizer): void {
+    this._owner.get().sceneRotated(args);
+  }
+
+  public static ObjCExposedMethods = {
+    "rotate": {returns: interop.types.void, params: [interop.types.id]}
   };
 }
 
