@@ -26,6 +26,10 @@
     "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
     "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**' --exclude '**/typings/**'"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eddyverbruggen/nativescript-ar.git"
+  },
   "keywords": [
     "ecosystem:nativescript",
     "NativeScript",
