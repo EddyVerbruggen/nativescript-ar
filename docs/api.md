@@ -51,6 +51,11 @@ ar.addModel({
   },
   scale: 0.25,
   mass: 0.2, // pass this in, so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
+  rotation: { // in degrees (0 - 360)
+    x: 0,
+    y: 180, // if the backside of the model is facing you, this will make the front face you
+    z: 0
+  },
   onTap: (model: ARNode) => console.log("Model was tapped"),
   onLongPress: ((model: ARNode) => {
     console.log("Model was longpressed, removing it just for show.");
@@ -144,12 +149,6 @@ ar.addTube({
     roughness: "Assets.scnassets/Materials/tnsgranite/tnsgranite-roughness.png",
     transparency: 1 // 0 - 1, where 1 is solid (which is the default)
   }],
-  rotation: {
-    x: 70,
-    y: 0,
-    z: 0,
-    w: 5
-  },
   onTap: (model: ARNode) => console.log("Tube was tapped"),
   onLongPress: (model: ARNode) => console.log("Tube was longpressed")
 });
@@ -173,9 +172,8 @@ ar.addText({
   materials: [new Color("blue")],
   rotation: {
     x: 40,
-    y: 15,
-    z: 90,
-    w: 45
+    y: 10,
+    z: 10
   }
 });
 ```

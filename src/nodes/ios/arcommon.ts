@@ -1,11 +1,9 @@
-import { ARAddOptions, ARNode, ARPosition, ARRotation, ARScale } from "../../ar-common";
+import { ARAddOptions, ARNode, ARPosition, ARScale } from "../../ar-common";
 
 export abstract class ARCommonNode implements ARNode {
   id: string;
   ios: SCNNode;
   position: ARPosition;
-  scale?: number | ARScale;
-  rotation: ARRotation;
   onTapHandler?: (model: ARNode) => void;
   onLongPressHandler?: (model: ARNode) => void;
   onPanHandler?: (model: ARNode) => void;
@@ -21,7 +19,11 @@ export abstract class ARCommonNode implements ARNode {
 
     node.position = this.position = options.position;
     if (options.rotation) {
-      node.rotation = this.rotation = options.rotation;
+      node.eulerAngles = {
+        x: ARCommonNode.degToRadians(options.rotation.x),
+        y: ARCommonNode.degToRadians(options.rotation.y),
+        z: ARCommonNode.degToRadians(options.rotation.z)
+      };
     }
 
     // generate a unique name, used for later reference
@@ -66,6 +68,10 @@ export abstract class ARCommonNode implements ARNode {
     // TODO would be nice if we could delete it from the cache.. perhaps move it to this common class as a static prop?
     // ARState.shapes.delete(this.id);
     this.ios.removeFromParentNode();
+  }
+
+  private static degToRadians(degrees: number): number {
+    return degrees * (3.14159265359 / 180);
   }
 }
 
