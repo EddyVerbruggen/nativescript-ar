@@ -52,50 +52,6 @@ export function arLoaded(args: ARLoadedEventData): void {
     // onPan: node => console.log("box panned: " + node.id),
   }).then(node => console.log("box added: " + node.id));
 
-  args.object.addBox({
-    position: {
-      x: 1,
-      y: 1,
-      z: 1
-    },
-    dimensions: {
-      x: 0.4,
-      y: 0.4,
-      z: 0.4
-    },
-    materials: [{
-      diffuse: {
-        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
-        wrapMode: "Repeat"
-      }
-    }],
-    onTap: node => console.log("box tapped: " + node.id),
-    draggingEnabled: true,
-    rotatingEnabled: false
-    // onPan: node => console.log("box panned: " + node.id),
-  }).then(node => console.log("box added: " + node.id));
-
-  /*
-  args.object.addSphere({
-    // at 1.2m in front of the camera, and a bit to the right
-    position: {
-      x: 0.3,
-      y: 0,
-      z: -1.2
-    },
-    radius: 0.2,
-    materials: [{
-      diffuse: new Color("red"),
-      normal: new Color("blue"),
-      roughness: new Color("green"),
-      specular: new Color("yellow"),
-      metalness: new Color("purple"),
-      transparency: 0.9
-    }],
-    segmentCount: 240
-  }).then(node => console.log("sphere added: " + node.id));
-  */
-
   args.object.addText({
     text: "NativeScript",
     position: {
