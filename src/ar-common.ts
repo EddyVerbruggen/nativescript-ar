@@ -165,16 +165,8 @@ export class ARPosition extends ARDimensions {
   // same as super
 }
 
-export class ARRotation {
-  x: number;
-  y: number;
-  z: number;
-
-  constructor(x: number, y: number, z: number) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
+export class ARRotation extends ARDimensions {
+  // same as super
 }
 
 export abstract class AR extends ContentView {
