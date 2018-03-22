@@ -4,27 +4,68 @@ API
 [🔙](../README.md)
 
 ## Functions
-- [isSupported](#issupported-static)
+- [add*](#add)
 - [addModel](#addmodel)
 - [addBox](#addbox)
 - [addSphere](#addsphere)
 - [addTube](#addtube)
 - [addText](#addtext)
+- [isSupported](#issupported-static)
 
 
-### `isSupported` (static)
-Check whether or not the device is AR-capable.
+#### `add*`
+Shared properties of all `add*` functions are:
 
-##### JavaScript
-```js
-var AR = require("nativescript-ar").AR;
-var supported = AR.isSupported();
+##### `position`
+<img src="images/xyz.png" width="300px"/>
+
+Looking at the image above, you can see the `0,0,0` coordinate is your device (not the floor),
+and for instance, if you want to place an object in front of you, pass in a negative `z` value (in meters).
+
+```typescript
+position: ARPosition = {
+  x: number,
+  y: number,
+  z: number
+}
 ```
 
-##### TypeScript
+##### `scale` (optional)
+This can either be a `number` or an `ARScale`:
+
 ```typescript
-import { AR } from "nativescript-ar";
-const supported = AR.isSupported();
+// either a number..
+scale: number = 2.5;
+
+// .. or an ARScale
+scale: ARScale = {
+  x: number,
+  y: number,
+  z: number
+}
+```
+
+##### `rotation` (optional)
+If you're not happy with the default placement of an object,
+you can rotate it by a certain amount of degrees (0 - 360) relative to the x, y, and z axes.
+
+For instance, if the backside of the model is facing you, setting y to `180` will make the front face you.
+
+```typescript
+rotation: ARRotation = {
+  x: number,
+  y: number,
+  z: number
+}
+```
+
+##### `mass` (optional)
+By default objects don't have a mass so they're not subject to gravity and don't 'fall'.
+
+If you want the object to fall you may also want to increase the `position.y` (for a higher drop).
+
+```typescript
+mass: number = 0.1;
 ```
 
 #### `addModel`
@@ -50,10 +91,10 @@ ar.addModel({
     z: 1
   },
   scale: 0.25,
-  mass: 0.2, // pass this in, so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
-  rotation: { // in degrees (0 - 360)
+  mass: 0.2,
+  rotation: {
     x: 0,
-    y: 180, // if the backside of the model is facing you, this will make the front face you
+    y: 180,
     z: 0
   },
   onTap: (model: ARNode) => console.log("Model was tapped"),
@@ -94,7 +135,7 @@ ar.addBox({
     z: 0.25
   },
   chamferRadius: 0.01, // 'rounded corners', this is relative to the 'dimensions'.
-  mass: 0.2, // pass this in, so the model can 'fall'. Increase the 'position.y' value for a higher drop :)
+  mass: 0.2,
   materials: ["Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"], // must be in App_Resources
   onTap: (model: ARNode) => console.log("Box was tapped"),
   onLongPress: (model: ARNode) => console.log("Box was longpressed")
@@ -176,4 +217,19 @@ ar.addText({
     z: 10
   }
 });
+```
+
+### `isSupported` (static)
+Check whether or not the device is AR-capable.
+
+##### JavaScript
+```js
+var AR = require("nativescript-ar").AR;
+var supported = AR.isSupported();
+```
+
+##### TypeScript
+```typescript
+import { AR } from "nativescript-ar";
+const supported = AR.isSupported();
 ```
