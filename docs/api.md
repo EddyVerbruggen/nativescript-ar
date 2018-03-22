@@ -3,7 +3,6 @@ API
 
 [🔙](../README.md)
 
-## Functions
 - [add*](#add)
 - [addModel](#addmodel)
 - [addBox](#addbox)
@@ -12,8 +11,7 @@ API
 - [addText](#addtext)
 - [isSupported](#issupported-static)
 
-
-### `add*`
+## `add*`
 Shared properties of all `add*` functions are:
 
 #### `position`
@@ -68,7 +66,7 @@ If you want the object to fall you may also want to increase the `position.y` (f
 mass: number = 0.1;
 ```
 
-### `addModel`
+## `addModel`
 You can add 3D models to the AR scene by passing in `ARAddModelOptions` to the `addModel` function.
 ARKit supports `.dae` files as used in our demo app, but you may need to clean up the model a bit so
 it's properly shown. [Google a bit](https://www.google.nl/search?q=arkit+dae) for details.
@@ -110,7 +108,7 @@ ar.addModel({
 });
 ```
 
-### `addBox`
+## `addBox`
 You can add a basic shape, like a box, to the AR scene by passing in `ARAddBoxOptions` to the `addBox` function.
 By default boxes are white, but you can pass in a texture to make it look pretty.
 
@@ -142,7 +140,7 @@ ar.addBox({
 }).then(arNode => console.log("Box was added"));
 ```
 
-### `addSphere`
+## `addSphere`
 <img src="images/scnsphere.png" width="316px"/>
 
 ```typescript
@@ -164,7 +162,7 @@ ar.addSphere({
 });
 ```
 
-### `addTube`
+## `addTube`
 <img src="images/scntube.png" width="308px"/>
 
 ```typescript
@@ -195,7 +193,7 @@ ar.addTube({
 });
 ```
 
-### `addText`
+## `addText`
 
 ```typescript
 import { ARNode } from "nativescript-ar";
@@ -219,7 +217,7 @@ ar.addText({
 });
 ```
 
-### `isSupported` (static)
+## `isSupported` (static)
 Check whether or not the device is AR-capable.
 
 #### JavaScript
