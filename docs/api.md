@@ -13,10 +13,10 @@ API
 - [isSupported](#issupported-static)
 
 
-#### `add*`
+### `add*`
 Shared properties of all `add*` functions are:
 
-##### `position`
+#### `position`
 <img src="images/xyz.png" width="300px"/>
 
 Looking at the image above, you can see the `0,0,0` coordinate is your device (not the floor),
@@ -30,7 +30,7 @@ position: ARPosition = {
 }
 ```
 
-##### `scale` (optional)
+#### `scale` (optional)
 This can either be a `number` or an `ARScale`:
 
 ```typescript
@@ -45,7 +45,7 @@ scale: ARScale = {
 }
 ```
 
-##### `rotation` (optional)
+#### `rotation` (optional)
 If you're not happy with the default placement of an object,
 you can rotate it by a certain amount of degrees (0 - 360) relative to the x, y, and z axes.
 
@@ -59,7 +59,7 @@ rotation: ARRotation = {
 }
 ```
 
-##### `mass` (optional)
+#### `mass` (optional)
 By default objects don't have a mass so they're not subject to gravity and don't 'fall'.
 
 If you want the object to fall you may also want to increase the `position.y` (for a higher drop).
@@ -68,7 +68,7 @@ If you want the object to fall you may also want to increase the `position.y` (f
 mass: number = 0.1;
 ```
 
-#### `addModel`
+### `addModel`
 You can add 3D models to the AR scene by passing in `ARAddModelOptions` to the `addModel` function.
 ARKit supports `.dae` files as used in our demo app, but you may need to clean up the model a bit so
 it's properly shown. [Google a bit](https://www.google.nl/search?q=arkit+dae) for details.
@@ -110,7 +110,7 @@ ar.addModel({
 });
 ```
 
-#### `addBox`
+### `addBox`
 You can add a basic shape, like a box, to the AR scene by passing in `ARAddBoxOptions` to the `addBox` function.
 By default boxes are white, but you can pass in a texture to make it look pretty.
 
@@ -142,7 +142,7 @@ ar.addBox({
 }).then(arNode => console.log("Box was added"));
 ```
 
-#### `addSphere`
+### `addSphere`
 <img src="images/scnsphere.png" width="316px"/>
 
 ```typescript
@@ -164,7 +164,7 @@ ar.addSphere({
 });
 ```
 
-#### `addTube`
+### `addTube`
 <img src="images/scntube.png" width="308px"/>
 
 ```typescript
@@ -195,7 +195,7 @@ ar.addTube({
 });
 ```
 
-#### `addText`
+### `addText`
 
 ```typescript
 import { ARNode } from "nativescript-ar";
@@ -222,13 +222,13 @@ ar.addText({
 ### `isSupported` (static)
 Check whether or not the device is AR-capable.
 
-##### JavaScript
+#### JavaScript
 ```js
 var AR = require("nativescript-ar").AR;
 var supported = AR.isSupported();
 ```
 
-##### TypeScript
+#### TypeScript
 ```typescript
 import { AR } from "nativescript-ar";
 const supported = AR.isSupported();
