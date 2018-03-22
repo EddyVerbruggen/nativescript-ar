@@ -12,17 +12,33 @@ export function pageLoaded(args: observable.EventData) {
 }
 
 export function arLoaded(args: ARLoadedEventData): void {
-  // add a few models
+  // add some stuff to the scene
+
+  args.object.addModel({
+    name: "Models.scnassets/Car.dae",
+    position: {
+      x: 0,
+      y: 0,
+      z: -1
+    },
+    rotation: {
+      x: 0,
+      y: 180, // face towards camera
+      z: 0
+    },
+    scale: 0.1
+  });
+
   args.object.addBox({
     position: {
-      x: -0.2,
-      y: -0.2,
-      z: -1.0
+      x: -0.5,
+      y: -0.5,
+      z: -1
     },
     dimensions: {
-      x: 0.2,
-      y: 0.3,
-      z: 0.4
+      x: 0.25,
+      y: 0.25,
+      z: 0.52
     },
     materials: [{
       diffuse: {
@@ -38,24 +54,24 @@ export function arLoaded(args: ARLoadedEventData): void {
 
   args.object.addBox({
     position: {
-      x: -0.8,
-      y: -0.2,
-      z: -1.0
+      x: 1,
+      y: 1,
+      z: 1
     },
     dimensions: {
-      x: 0.2,
-      y: 0.3,
+      x: 0.4,
+      y: 0.4,
       z: 0.4
     },
     materials: [{
       diffuse: {
         contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
-        wrapMode: "ClampToBorder"
+        wrapMode: "Repeat"
       }
     }],
     onTap: node => console.log("box tapped: " + node.id),
     draggingEnabled: true,
-    rotatingEnabled: true
+    rotatingEnabled: false
     // onPan: node => console.log("box panned: " + node.id),
   }).then(node => console.log("box added: " + node.id));
 
@@ -91,10 +107,9 @@ export function arLoaded(args: ARLoadedEventData): void {
     depth: 1,
     materials: [new Color("blue")],
     rotation: {
-      x: 40,
-      y: 15,
-      z: 90,
-      w: 45
+      x: 5,
+      y: 5,
+      z: 5
     },
     // onPan: node => console.log("text panned: " + node.id),
   }).then(node => console.log("text added: " + node.id));
@@ -110,10 +125,9 @@ export function arLoaded(args: ARLoadedEventData): void {
     depth: 1,
     materials: [new Color("blue")],
     rotation: {
-      x: 40,
-      y: 15,
-      z: 90,
-      w: 45
+      x: 5,
+      y: 5,
+      z: 5
     },
   }).then(node => console.log("text added: " + node.id));
 
@@ -135,10 +149,9 @@ export function arLoaded(args: ARLoadedEventData): void {
       transparency: 1 // solid (which is the default)
     }],
     rotation: {
-      x: 70,
+      x: 20,
       y: 0,
-      z: 0,
-      w: 5
+      z: 0
     },
   }).then(node => console.log("tube added: " + node.id));
 }
@@ -156,6 +169,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       y: args.position.y + 1, // drop the box from a meter high
       z: args.position.z
     },
+    scale: 0.5,
     dimensions: 0.15,
     chamferRadius: 0.01,
     // material elements can either be a string or an 'ARMaterial' object
@@ -166,7 +180,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
         transparency: 0.9 // 0 - 1, lower number is more transparent
       }
     ],
-    mass: 0.0000001,
+    mass: 0.01,
     onTap: node => console.log("box tapped: " + node.id),
     // onPan: node => console.log("box panned: " + node.id)
   });
