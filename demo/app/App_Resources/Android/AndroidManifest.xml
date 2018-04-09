@@ -10,9 +10,9 @@
 		android:largeScreens="true"
 		android:xlargeScreens="true"/>
 
-	<!-- for ARCore a minSdkVersion of 19 is required -  set in app.gradle -->
+	<!-- for ARCore a minSdkVersion of 24 is required -  set in app.gradle -->
 	<uses-sdk
-		android:minSdkVersion="17"
+		android:minSdkVersion="24"
 		android:targetSdkVersion="__APILEVEL__"/>
 
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>

@@ -12,7 +12,7 @@ import {
   ARNode
 } from "./ar-common";
 
-declare const android: any;
+declare const com, android: any;
 
 const CAMERA_PERMISSION_REQUEST_CODE = 853;
 
@@ -20,32 +20,42 @@ const CAMERA_PERMISSION_REQUEST_CODE = 853;
 let bla;
 let sv;
 
-// TODO do as much as possible in Java (for perf), but all relevant events need to be passed to JS
-const renderer = new org.nativescript.tns.arlib.TNSSurfaceRenderer();
 org.nativescript.tns.arlib.TNSSurfaceRenderer.setSurfaceEventCallbackListener(
     new org.nativescript.tns.arlib.TNSSurfaceRendererListener({
       callback: obj => {
-        console.log(">>>>>>> from native");
+        console.log(">>>>>>> from native: " + obj);
       }
     })
 );
 
+
 // see https://developers.google.com/ar/reference/java
 class AR extends ARBase {
-  private _android: any;
-  private config: com.google.ar.core.Config;
-  private session: com.google.ar.core.Session;
+  private session: any; // com.google.ar.core.Session;
   private surfaceView: any; // android.opengl.GLSurfaceView;
+  private static installRequested = false;
+  private renderer: any; // TODO generate new typings, then use: org.nativescript.tns.arlib.TNSSurfaceRenderer;
 
   constructor() {
     super();
     console.log(">> constructor");
     bla = this;
+
+    // TODO do as much as possible in Java (for perf), but all relevant events need to be passed to JS
+    this.renderer = new org.nativescript.tns.arlib.TNSSurfaceRenderer();
   }
 
   static isSupported(): boolean {
-    const arSession = new com.google.ar.core.Session(application.android.foregroundActivity);
-    return arSession.isSupported(com.google.ar.core.Config.createDefaultConfig());
+    return true;
+    // can't use this before the ARCore lib is downloaded 🤔
+    /*
+    const availability = com.google.ar.core.ArCoreApk.getInstance().checkAvailability(utils.ad.getApplicationContext(), !AR.installRequested);
+    if (availability.isTransient()) {
+      console.log(">>> transient availability");
+      // see https://developers.google.com/ar/develop/java/enable-arcore
+    }
+    return availability.isSupported();
+    */
   }
 
   private cameraPermissionGranted(): boolean {
@@ -83,33 +93,48 @@ class AR extends ARBase {
     console.log(">> initAR");
 
     application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
-      this.session.resume(this.config);
-      this.surfaceView.onResume();
+      console.log(">> activityResumedEvent, AR.installRequested: " + AR.installRequested);
+      if (this.session && this.surfaceView) {
+        console.log(">> activityResumedEvent, resuming now!");
+        this.session.resume();
+        this.surfaceView.onResume();
+      }
     });
 
     application.android.on(application.AndroidApplication.activityPausedEvent, (args: any) => {
-      this.surfaceView.onPause();
-      this.session.pause();
+      console.log(">> activityPausedEvent, AR.installRequested: " + AR.installRequested);
+      if (this.session && this.surfaceView) {
+        this.surfaceView.onPause();
+        this.session.pause();
+      }
     });
 
-    this.config = com.google.ar.core.Config.createDefaultConfig();
+    try {
+      const installStatus = com.google.ar.core.ArCoreApk.getInstance().requestInstall(application.android.foregroundActivity || application.android.startActivity, !AR.installRequested);
+      console.log(">> installStatus: " + installStatus);
+      if (installStatus != "INSTALLED") { // com.google.ar.core.InstallStatus.INSTALL_REQUESTED)
+        console.log(">> installStatus.. not installed ");
+        AR.installRequested = true;
+        return;
+      }
+    } catch (e) {
+      console.log(">>> e: " + e);
+    }
+
     this.surfaceView = sv = new android.opengl.GLSurfaceView(this._context);
     this.nativeView.addView(this.surfaceView);
-    this.session = new com.google.ar.core.Session(application.android.foregroundActivity);
-    renderer.setContext(this._context);
-    renderer.setSession(this.session);
 
-    // TODO set up tap listener
+    this.session = new com.google.ar.core.Session(application.android.foregroundActivity || application.android.startActivity);
+    this.renderer.setContext(this._context);
+    this.renderer.setSession(this.session);
+    this.renderer.setSurfaceView(this.surfaceView); // this also sets a touch listener
 
     this.surfaceView.setPreserveEGLContextOnPause(true);
     this.surfaceView.setEGLContextClientVersion(2);
     this.surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
 
-
-    // check https://github.com/kazemihabib/nativescript-vlc-player/blob/master/src/app/components/vlc.component.ts#L501
-    // and https://developer.android.com/reference/android/opengl/GLSurfaceView.html#setRenderer(android.opengl.GLSurfaceView.Renderer)
-    this.surfaceView.setRenderer(renderer);
-    this.surfaceView.setRenderMode(android.opengl.GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+    this.surfaceView.setRenderer(this.renderer);
+    this.surfaceView.setRenderMode(android.opengl.GLSurfaceView.RENDERMODE_CONTINUOUSLY); // this is the default btw
   }
 
   get android(): any {
@@ -117,7 +142,7 @@ class AR extends ARBase {
   }
 
   public createNativeView(): Object {
-    let nativeView = super.createNativeView(); // ContentLayout
+    let nativeView = super.createNativeView(); // ContentView
 
     if (AR.isSupported()) {
       setTimeout(() => {
@@ -128,7 +153,7 @@ class AR extends ARBase {
             this.initAR();
           });
         }
-      }, 500); // TODO remove
+      }, 0); // TODO remove
     }
 
     return nativeView;

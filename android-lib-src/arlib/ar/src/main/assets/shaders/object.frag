@@ -19,6 +19,7 @@ uniform sampler2D u_Texture;
 
 uniform vec4 u_LightingParameters;
 uniform vec4 u_MaterialParameters;
+uniform vec4 u_ColorCorrectionParameters;
 
 varying vec3 v_ViewPosition;
 varying vec3 v_ViewNormal;
@@ -28,10 +29,12 @@ void main() {
     // We support approximate sRGB gamma.
     const float kGamma = 0.4545454;
     const float kInverseGamma = 2.2;
+    const float kMiddleGrayGamma = 0.466;
 
     // Unpack lighting and material parameters for better naming.
     vec3 viewLightDirection = u_LightingParameters.xyz;
-    float lightIntensity = u_LightingParameters.w;
+    vec3 colorShift = u_ColorCorrectionParameters.rgb;
+    float averagePixelIntensity = u_ColorCorrectionParameters.a;
 
     float materialAmbient = u_MaterialParameters.x;
     float materialDiffuse = u_MaterialParameters.y;
@@ -51,16 +54,20 @@ void main() {
     float ambient = materialAmbient;
 
     // Approximate a hemisphere light (not a harsh directional light).
-    float diffuse = lightIntensity * materialDiffuse *
+    float diffuse = materialDiffuse *
             0.5 * (dot(viewNormal, viewLightDirection) + 1.0);
 
     // Compute specular light.
     vec3 reflectedLightDirection = reflect(viewLightDirection, viewNormal);
     float specularStrength = max(0.0, dot(viewFragmentDirection, reflectedLightDirection));
-    float specular = lightIntensity * materialSpecular *
+    float specular = materialSpecular *
             pow(specularStrength, materialSpecularPower);
 
+    vec3 color = objectColor.rgb * (ambient + diffuse) + specular;
     // Apply SRGB gamma before writing the fragment color.
+    color.rgb = pow(color, vec3(kGamma));
+    // Apply average pixel intensity and color shift
+    color *= colorShift * (averagePixelIntensity / kMiddleGrayGamma);
+    gl_FragColor.rgb = color;
     gl_FragColor.a = objectColor.a;
-    gl_FragColor.rgb = pow(objectColor.rgb * (ambient + diffuse) + specular, vec3(kGamma));
 }
