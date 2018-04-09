@@ -93,16 +93,13 @@ class AR extends ARBase {
     console.log(">> initAR");
 
     application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
-      console.log(">> activityResumedEvent, AR.installRequested: " + AR.installRequested);
       if (this.session && this.surfaceView) {
-        console.log(">> activityResumedEvent, resuming now!");
         this.session.resume();
         this.surfaceView.onResume();
       }
     });
 
     application.android.on(application.AndroidApplication.activityPausedEvent, (args: any) => {
-      console.log(">> activityPausedEvent, AR.installRequested: " + AR.installRequested);
       if (this.session && this.surfaceView) {
         this.surfaceView.onPause();
         this.session.pause();
@@ -111,8 +108,7 @@ class AR extends ARBase {
 
     try {
       const installStatus = com.google.ar.core.ArCoreApk.getInstance().requestInstall(application.android.foregroundActivity || application.android.startActivity, !AR.installRequested);
-      console.log(">> installStatus: " + installStatus);
-      if (installStatus != "INSTALLED") { // com.google.ar.core.InstallStatus.INSTALL_REQUESTED)
+      if ("" + installStatus !== "INSTALLED") {
         console.log(">> installStatus.. not installed ");
         AR.installRequested = true;
         return;
@@ -135,6 +131,8 @@ class AR extends ARBase {
 
     this.surfaceView.setRenderer(this.renderer);
     this.surfaceView.setRenderMode(android.opengl.GLSurfaceView.RENDERMODE_CONTINUOUSLY); // this is the default btw
+
+    this.session.resume();
   }
 
   get android(): any {
