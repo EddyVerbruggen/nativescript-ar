@@ -36,6 +36,8 @@ declare module org {
 					public static setSurfaceEventCallbackListener(param0: org.nativescript.tns.arlib.TNSSurfaceRendererListener): void;
 					public constructor();
 					public setContext(param0: androidcontentContext): void;
+					public setDrawPlanes(param0: boolean): void;
+					public setDrawPointCloud(param0: boolean): void;
 					public setSession(param0: comgooglearcoreSession): void;
 					public onSurfaceCreated(param0: javaxmicroeditionkhronosopenglesGL10, param1: javaxmicroeditionkhronoseglEGLConfig): void;
 				}

@@ -7,9 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
 
 import org.nativescript.tns.arlib.helpers.TapHelper;
@@ -44,7 +42,9 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
     private static TNSSurfaceRendererListener onSurfaceEventCallbackListener;
     private Session mSession;
     private Context context;
-    private GestureDetector gestureDetector;
+
+    private boolean drawPointCloud;
+    private boolean drawPlanes;
 
     private BackgroundRenderer mBackgroundRenderer = new BackgroundRenderer();
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();
@@ -79,6 +79,16 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
     public void setContext(final Context context) {
         Log.d(TAG, "TNSSurfaceRenderer.setContext");
         this.context = context;
+    }
+
+    public void setDrawPointCloud(final boolean drawPointCloud) {
+        Log.d(TAG, "TNSSurfaceRenderer.setDrawPointCloud");
+        this.drawPointCloud = drawPointCloud;
+    }
+
+    public void setDrawPlanes(final boolean drawPlanes) {
+        Log.d(TAG, "TNSSurfaceRenderer.setDrawPlanes");
+        this.drawPlanes = drawPlanes;
     }
 
     public void setSurfaceView(final GLSurfaceView surfaceView) {
@@ -233,13 +243,15 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
             final float[] colorCorrectionRgba = new float[4];
             frame.getLightEstimate().getColorCorrection(colorCorrectionRgba, 0);
 
-            // Visualize tracked points.
-            PointCloud pointCloud = frame.acquirePointCloud();
-            pointCloudRenderer.update(pointCloud);
-            pointCloudRenderer.draw(viewmtx, projmtx);
+            // Visualize tracked points if requested
+            if (this.drawPointCloud) {
+                PointCloud pointCloud = frame.acquirePointCloud();
+                pointCloudRenderer.update(pointCloud);
+                pointCloudRenderer.draw(viewmtx, projmtx);
 
-            // Application is responsible for releasing the point cloud resources after using it.
-            pointCloud.release();
+                // Application is responsible for releasing the point cloud resources after using it.
+                pointCloud.release();
+            }
 
             // Check if we detected at least one plane. If so, hide the loading message.
 //            if (mLoadingMessageSnackbar != null) {
@@ -253,8 +265,9 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
 //            }
 
             // Visualize planes.
-            mPlaneRenderer.drawPlanes(
-                    mSession.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtx);
+            if (this.drawPlanes) {
+                mPlaneRenderer.drawPlanes(mSession.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtx);
+            }
 
             // Visualize anchors created by touch.
             float scaleFactor = 1.0f;

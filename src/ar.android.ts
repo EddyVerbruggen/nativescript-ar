@@ -38,10 +38,6 @@ class AR extends ARBase {
 
   constructor() {
     super();
-    console.log(">> constructor");
-    bla = this;
-
-    // TODO do as much as possible in Java (for perf), but all relevant events need to be passed to JS
     this.renderer = new org.nativescript.tns.arlib.TNSSurfaceRenderer();
   }
 
@@ -90,10 +86,9 @@ class AR extends ARBase {
   }
 
   private initAR() {
-    console.log(">> initAR");
-
     application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
       if (this.session && this.surfaceView) {
+        console.log(">> resuming");
         this.session.resume();
         this.surfaceView.onResume();
       }
@@ -163,11 +158,14 @@ class AR extends ARBase {
   }
 
   togglePlaneVisibility(on: boolean): void {
-    throw new Error("Method not implemented: togglePlaneVisibility");
+    console.log(">> togglePlaneVisibility: " + on);
+    this.renderer.setDrawPlanes(on);
   }
 
   togglePlaneDetection(on: boolean): void {
-    throw new Error("Method not implemented: togglePlaneDetection");
+    // TODO this is just 'faking it' for now (by calling togglePlaneVisibility)
+    console.log(">> togglePlaneDetection: " + on);
+    this.togglePlaneVisibility(on);
   }
 
   toggleStatistics(on: boolean): void {
@@ -175,8 +173,7 @@ class AR extends ARBase {
   }
 
   setDebugLevel(to: ARDebugLevel): void {
-    // surfaceview has a method 'setDebugFlags'
-    console.log("TODO implement setDebugLevel");
+    this.renderer.setDrawPointCloud(to === ARDebugLevel.FEATURE_POINTS || to === ARDebugLevel.PHYSICS_SHAPES);
   }
 
   reset(): void {
