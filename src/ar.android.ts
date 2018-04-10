@@ -9,7 +9,7 @@ import {
   ARAddTextOptions,
   ARAddTubeOptions,
   ARDebugLevel,
-  ARNode
+  ARNode, ARPlaneTappedEventData
 } from "./ar-common";
 
 declare const com, android: any;
@@ -17,13 +17,26 @@ declare const com, android: any;
 const CAMERA_PERMISSION_REQUEST_CODE = 853;
 
 // temp
-let bla;
+let ar: AR;
 let sv;
 
 org.nativescript.tns.arlib.TNSSurfaceRenderer.setSurfaceEventCallbackListener(
     new org.nativescript.tns.arlib.TNSSurfaceRendererListener({
       callback: obj => {
         console.log(">>>>>>> from native: " + obj);
+      }
+    })
+);
+
+org.nativescript.tns.arlib.TNSSurfaceRenderer.setOnPlaneTappedListener(
+    new org.nativescript.tns.arlib.TNSSurfaceRendererListener({
+      callback: obj => {
+        const eventData: ARPlaneTappedEventData = {
+          eventName: ARBase.planeTappedEvent,
+          object: ar,
+          position: <any>obj
+        };
+        ar.notify(eventData);
       }
     })
 );
@@ -38,6 +51,7 @@ class AR extends ARBase {
 
   constructor() {
     super();
+    ar = this;
     this.renderer = new org.nativescript.tns.arlib.TNSSurfaceRenderer();
   }
 
@@ -169,35 +183,44 @@ class AR extends ARBase {
   }
 
   toggleStatistics(on: boolean): void {
-    throw new Error("Method not implemented: toggleStatistics");
+    console.log("Method not implemented: toggleStatistics");
   }
 
   setDebugLevel(to: ARDebugLevel): void {
-    this.renderer.setDrawPointCloud(to === ARDebugLevel.FEATURE_POINTS || to === ARDebugLevel.PHYSICS_SHAPES);
+    const drawPlanesAndPointClound = to === ARDebugLevel.FEATURE_POINTS || to === ARDebugLevel.PHYSICS_SHAPES;
+    console.log(">> drawPlanesAndPointClound: " + drawPlanesAndPointClound);
+    this.renderer.setDrawPointCloud(drawPlanesAndPointClound);
+    this.renderer.setDrawPlanes(drawPlanesAndPointClound);
   }
 
   reset(): void {
-    throw new Error("Method not implemented: reset");
+    console.log("Method not implemented: reset");
+    return null;
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
-    throw new Error("Method not implemented: addModel");
+    console.log("Method not implemented: addModel");
+    return null;
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
-    throw new Error("Method not implemented: addBox");
+    console.log("Method not implemented: addBox");
+    return null;
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
-    throw new Error("Method not implemented: addSphere");
+    console.log("Method not implemented: addSphere");
+    return null;
   }
 
   addText(options: ARAddTextOptions): Promise<ARNode> {
-    throw new Error("Method not implemented: addText");
+    console.log("Method not implemented: addText");
+    return null;
   }
 
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
-    throw new Error("Method not implemented: addTube");
+    console.log("Method not implemented: addTube");
+    return null;
   }
 }
 

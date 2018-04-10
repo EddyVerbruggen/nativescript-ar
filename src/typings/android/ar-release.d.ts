@@ -34,6 +34,7 @@ declare module org {
 					public onDrawFrame(param0: javaxmicroeditionkhronosopenglesGL10): void;
 					public onSurfaceChanged(param0: javaxmicroeditionkhronosopenglesGL10, param1: number, param2: number): void;
 					public static setSurfaceEventCallbackListener(param0: org.nativescript.tns.arlib.TNSSurfaceRendererListener): void;
+					public static setOnPlaneTappedListener(param0: org.nativescript.tns.arlib.TNSSurfaceRendererListener): void;
 					public constructor();
 					public setContext(param0: androidcontentContext): void;
 					public setDrawPlanes(param0: boolean): void;

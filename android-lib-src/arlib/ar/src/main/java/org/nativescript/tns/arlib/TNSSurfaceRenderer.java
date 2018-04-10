@@ -10,6 +10,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
+import org.json.JSONObject;
 import org.nativescript.tns.arlib.helpers.TapHelper;
 import org.nativescript.tns.arlib.rendering.BackgroundRenderer;
 import org.nativescript.tns.arlib.rendering.ObjectRenderer;
@@ -23,6 +24,7 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Point;
 import com.google.ar.core.PointCloud;
+import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
@@ -40,6 +42,7 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
     private static final String TAG = "JS";
 
     private static TNSSurfaceRendererListener onSurfaceEventCallbackListener;
+    private static TNSSurfaceRendererListener onPlaneTappedListener;
     private Session mSession;
     private Context context;
 
@@ -69,6 +72,11 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
     public static void setSurfaceEventCallbackListener(final TNSSurfaceRendererListener listener) {
         Log.d(TAG, "TNSSurfaceRenderer.setSurfaceEventCallbackListener");
         onSurfaceEventCallbackListener = listener;
+    }
+
+    public static void setOnPlaneTappedListener(final TNSSurfaceRendererListener listener) {
+        Log.d(TAG, "TNSSurfaceRenderer.setOnPlaneTappedListener");
+        onPlaneTappedListener = listener;
     }
 
     public void setSession(final Session session) {
@@ -202,12 +210,12 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
                     Trackable trackable = hit.getTrackable();
                     // Creates an anchor if a plane or an oriented point was hit.
                     onSurfaceEventCallbackListener.callback("onDrawFrame, tap > plane? " + (trackable instanceof Plane));
-                    if ((trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(hit.getHitPose())) ||
+                    final Pose hitPose = hit.getHitPose();
+                    if ((trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(hitPose)) ||
                             (trackable instanceof Point && ((Point) trackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
                         // Hits are sorted by depth. Consider only closest hit on a plane or oriented point.
-                        // Cap the number of objects created. This avoids overloading both the
-                        // rendering system and ARCore.
-                        if (anchors.size() >= 20) {
+                        // Cap the number of objects created. This avoids overloading both the rendering system and ARCore.
+                        if (anchors.size() >= 20) { // TODO this should be a configurable property (can also use this on iOS, methinks)
                             anchors.get(0).detach();
                             anchors.remove(0);
                         }
@@ -216,6 +224,16 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
                         // in the correct position relative both to the world and to the plane.
                         anchors.add(hit.createAnchor());
                         onSurfaceEventCallbackListener.callback("onDrawFrame, tap > anchor created");
+
+
+                        if (onPlaneTappedListener != null) {
+                            final JSONObject result = new JSONObject();
+                            result.put("x", hitPose.tx());
+                            result.put("y", hitPose.ty());
+                            result.put("z", hitPose.tz());
+                            onPlaneTappedListener.callback(result);
+                        }
+
                         break;
                     }
                 }
