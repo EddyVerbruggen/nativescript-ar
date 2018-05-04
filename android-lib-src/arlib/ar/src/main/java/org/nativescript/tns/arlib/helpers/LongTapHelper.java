@@ -15,11 +15,11 @@
 package org.nativescript.tns.arlib.helpers;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -27,41 +27,24 @@ import java.util.concurrent.BlockingQueue;
  * Helper to detect taps using Android GestureDetector, and pass the taps between UI thread and
  * render thread.
  */
-public final class TapHelper implements OnTouchListener {
-    private static final String TAG = "JS";
-
+public final class LongTapHelper implements OnTouchListener {
     private final GestureDetector gestureDetector;
     private final BlockingQueue<MotionEvent> queuedTaps = new ArrayBlockingQueue<>(16);
-    private final BlockingQueue<MotionEvent> queuedLongTaps = new ArrayBlockingQueue<>(16);
 
     /**
      * Creates the tap helper.
      *
      * @param context the application's context.
      */
-    public TapHelper(Context context) {
+    public LongTapHelper(Context context) {
         gestureDetector =
                 new GestureDetector(
                         context,
                         new GestureDetector.SimpleOnGestureListener() {
                             @Override
-                            public boolean onSingleTapUp(MotionEvent e) {
-                                Log.d(TAG, "TapHelper.onSingleTapUp");
+                            public void onLongPress(MotionEvent e) {
                                 // Queue tap if there is space. Tap is lost if queue is full.
                                 queuedTaps.offer(e);
-                                return true;
-                            }
-
-                            @Override
-                            public void onLongPress(MotionEvent e) {
-                                Log.d(TAG, "TapHelper.onLongPress");
-                                // Queue tap if there is space. Tap is lost if queue is full.
-                                queuedLongTaps.offer(e);
-                            }
-
-                            @Override
-                            public boolean onDown(MotionEvent e) {
-                                return true;
                             }
                         });
     }
@@ -71,12 +54,8 @@ public final class TapHelper implements OnTouchListener {
      *
      * @return if a tap was queued, a MotionEvent for the tap. Otherwise null if no taps are queued.
      */
-    public MotionEvent pollTaps() {
+    public MotionEvent poll() {
         return queuedTaps.poll();
-    }
-
-    public MotionEvent pollLongTaps() {
-        return queuedLongTaps.poll();
     }
 
     @Override

@@ -3,8 +3,6 @@ package org.nativescript.tns.arlib;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -31,7 +29,6 @@ import com.google.ar.core.TrackingState;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -60,11 +57,7 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
     private final ObjectRenderer virtualObject = new ObjectRenderer();
     private final ObjectRenderer virtualObjectShadow = new ObjectRenderer();
 
-//    private final ObjectRenderer virtualObject = new ObjectRenderer();
-//    private final ObjectRenderer virtualObjectShadow = new ObjectRenderer();
-
     // Tap handling and UI.
-    private final ArrayBlockingQueue<MotionEvent> queuedSingleTaps = new ArrayBlockingQueue<>(16);
     private final ArrayList<Anchor> anchors = new ArrayList<>();
 
     private GLSurfaceView surfaceView;
@@ -103,14 +96,28 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
         Log.d(TAG, "TNSSurfaceRenderer.setSurfaceView");
         this.surfaceView = surfaceView;
 
-        // Set up tap listener.
+        // Set up tap listeners
         tapHelper = new TapHelper(this.context);
         this.surfaceView.setOnTouchListener(tapHelper);
     }
 
-    private void onSingleTap(MotionEvent e) {
-        // Queue tap if there is space. Tap is lost if queue is full.
-        queuedSingleTaps.offer(e);
+    // TODO also try this in JS
+    private boolean modelAdded;
+    public void addModel() {
+        if (modelAdded) {
+            return;
+        }
+        Log.d(TAG, "TNSSurfaceRenderer.addModel");
+        try {
+            virtualObject.createOnGlThread(/*context=*/ this.context, "models/andy.obj", "models/andy.png");
+            virtualObject.setMaterialProperties(0.0f, 2.0f, 0.5f, 6.0f);
+            virtualObjectShadow.createOnGlThread(this.context, "models/andy_shadow.obj", "models/andy_shadow.png");
+            virtualObjectShadow.setBlendMode(ObjectRenderer.BlendMode.Shadow);
+            virtualObjectShadow.setMaterialProperties(1.0f, 0.0f, 0.0f, 1.0f);
+            modelAdded = true;
+        } catch (IOException e) {
+            Log.e(TAG, ">>>>>>>>> Failed to read shader!", e);
+        }
     }
 
     @Override
@@ -119,57 +126,26 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-        // Prepare the other rendering objects.
-        /*
-        try {
-            virtualObject.createOnGlThread(this.context, "andy.obj", "andy.png");
-            virtualObject.setMaterialProperties(0.0f, 3.5f, 1.0f, 6.0f);
-
-            virtualObjectShadow.createOnGlThread(this.context, "andy_shadow.obj", "andy_shadow.png");
-            virtualObjectShadow.setBlendMode(BlendMode.Shadow);
-            virtualObjectShadow.setMaterialProperties(1.0f, 0.0f, 0.0f, 1.0f);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to read obj file");
-        }
-        */
-
         try {
             // Create the texture and pass it to ARCore session to be filled during update().
             mBackgroundRenderer.createOnGlThread(this.context);
             mPlaneRenderer.createOnGlThread(this.context, "models/trigrid.png");
             pointCloudRenderer.createOnGlThread(this.context);
-
-
-            // these are a bit more app-specific, but it's useful for this PoC
-            virtualObject.createOnGlThread(/*context=*/ this.context, "models/andy.obj", "models/andy.png");
-            virtualObject.setMaterialProperties(0.0f, 2.0f, 0.5f, 6.0f);
-            virtualObjectShadow.createOnGlThread(this.context, "models/andy_shadow.obj", "models/andy_shadow.png");
-            virtualObjectShadow.setBlendMode(ObjectRenderer.BlendMode.Shadow);
-            virtualObjectShadow.setMaterialProperties(1.0f, 0.0f, 0.0f, 1.0f);
         } catch (IOException e) {
             Log.e(TAG, ">>>>>>>>> Failed to read shader!", e);
         }
 
 
-        Handler mainHandler = new Handler(Looper.getMainLooper());
-
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                onSurfaceEventCallbackListener.callback("blaaaaaaat");
-            } // This is your code
-        };
-        mainHandler.post(myRunnable);
+//        Handler mainHandler = new Handler(Looper.getMainLooper());
+//        Runnable myRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                onSurfaceEventCallbackListener.callback("blaaaaaaat");
+//            } // This is your code
+//        };
+//        mainHandler.post(myRunnable);
 
         onSurfaceEventCallbackListener.callback("blaaaaaaat2");
-
-//        try {
-//            onSurfaceEventCallbackListener.callback(new JSONObject().put("foo", "bar"));
-//            onSurfaceEventCallbackListener.callback("blaaaaaaat");
-//        } catch (JSONException e) {
-//            Log.e(LOG_TAG, e.getMessage());
-//            e.printStackTrace();
-//        }
     }
 
     @Override
@@ -201,15 +177,14 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
             Frame frame = mSession.update();
             Camera camera = frame.getCamera();
 
-            // Handle taps. Handling only one tap per frame, as taps are usually low frequency compared to frame rate.
-            MotionEvent tap = tapHelper.poll();
+            // Handle taps (see if it hit a plane or model). Handling only one tap per frame, as taps are usually low frequency compared to frame rate.
+            MotionEvent tap = tapHelper.pollTaps();
             if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
-                onSurfaceEventCallbackListener.callback("onDrawFrame, tap");
                 for (HitResult hit : frame.hitTest(tap)) {
                     // Check if any plane was hit, and if it was hit inside the plane polygon
                     Trackable trackable = hit.getTrackable();
                     // Creates an anchor if a plane or an oriented point was hit.
-                    onSurfaceEventCallbackListener.callback("onDrawFrame, tap > plane? " + (trackable instanceof Plane));
+                    onSurfaceEventCallbackListener.callback("onDrawFrame, tapped " + trackable.getClass());
                     final Pose hitPose = hit.getHitPose();
                     if ((trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(hitPose)) ||
                             (trackable instanceof Point && ((Point) trackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
@@ -271,6 +246,7 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
                 pointCloud.release();
             }
 
+            // TODO use this to send a 'plane detected' event (keep track of planes we sent the event for already)
             // Check if we detected at least one plane. If so, hide the loading message.
 //            if (mLoadingMessageSnackbar != null) {
 //                for (Plane plane : mSession.getAllPlanes()) {
@@ -288,20 +264,22 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
             }
 
             // Visualize anchors created by touch.
-            float scaleFactor = 1.0f;
-            for (Anchor anchor : anchors) {
-                if (anchor.getTrackingState() != TrackingState.TRACKING) {
-                    continue;
-                }
-                // Get the current pose of an Anchor in world space. The Anchor pose is updated
-                // during calls to session.update() as ARCore refines its estimate of the world.
-                anchor.getPose().toMatrix(anchorMatrix, 0);
+            if (modelAdded) {
+                float scaleFactor = 1.0f;
+                for (Anchor anchor : anchors) {
+                    if (anchor.getTrackingState() != TrackingState.TRACKING) {
+                        continue;
+                    }
+                    // Get the current pose of an Anchor in world space. The Anchor pose is updated
+                    // during calls to session.update() as ARCore refines its estimate of the world.
+                    anchor.getPose().toMatrix(anchorMatrix, 0);
 
-                // Update and draw the model and its shadow.
-                virtualObject.updateModelMatrix(anchorMatrix, scaleFactor);
-                virtualObjectShadow.updateModelMatrix(anchorMatrix, scaleFactor);
-                virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba);
-                virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba);
+                    // Update and draw the model and its shadow.
+                    virtualObject.updateModelMatrix(anchorMatrix, scaleFactor);
+                    virtualObjectShadow.updateModelMatrix(anchorMatrix, scaleFactor);
+                    virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba);
+                    virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba);
+                }
             }
 
         } catch (Throwable t) {

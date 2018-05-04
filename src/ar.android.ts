@@ -9,7 +9,9 @@ import {
   ARAddTextOptions,
   ARAddTubeOptions,
   ARDebugLevel,
-  ARNode, ARPlaneTappedEventData
+  ARLoadedEventData,
+  ARNode,
+  ARPlaneTappedEventData
 } from "./ar-common";
 
 declare const com, android: any;
@@ -30,11 +32,11 @@ org.nativescript.tns.arlib.TNSSurfaceRenderer.setSurfaceEventCallbackListener(
 
 org.nativescript.tns.arlib.TNSSurfaceRenderer.setOnPlaneTappedListener(
     new org.nativescript.tns.arlib.TNSSurfaceRendererListener({
-      callback: obj => {
+      callback: (obj: any) => {
         const eventData: ARPlaneTappedEventData = {
           eventName: ARBase.planeTappedEvent,
           object: ar,
-          position: <any>obj
+          position: JSON.parse(obj)
         };
         ar.notify(eventData);
       }
@@ -118,7 +120,6 @@ class AR extends ARBase {
     try {
       const installStatus = com.google.ar.core.ArCoreApk.getInstance().requestInstall(application.android.foregroundActivity || application.android.startActivity, !AR.installRequested);
       if ("" + installStatus !== "INSTALLED") {
-        console.log(">> installStatus.. not installed ");
         AR.installRequested = true;
         return;
       }
@@ -142,6 +143,13 @@ class AR extends ARBase {
     this.surfaceView.setRenderMode(android.opengl.GLSurfaceView.RENDERMODE_CONTINUOUSLY); // this is the default btw
 
     this.session.resume();
+
+    const eventData: ARLoadedEventData = {
+      eventName: ARBase.arLoadedEvent,
+      object: this,
+      android: this.renderer
+    };
+    this.notify(eventData);
   }
 
   get android(): any {
@@ -199,8 +207,11 @@ class AR extends ARBase {
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
-    console.log("Method not implemented: addModel");
-    return null;
+    return new Promise((resolve, reject) => {
+      // TODO less PoC-like code ;)
+      this.renderer.addModel();
+      resolve(null);
+    });
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
