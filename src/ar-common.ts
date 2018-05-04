@@ -43,7 +43,7 @@ export interface ARNode {
   scale?: number | ARScale;
   rotation?: ARRotation;
   ios?: any; /* SCNNode */
-  android?: any; /**/
+  android?: any; /* TODO Anchor? */
   remove(): void;
   // TODO add animate({});
 }
@@ -130,7 +130,8 @@ export interface AREventData extends EventData {
 }
 
 export interface ARLoadedEventData extends AREventData {
-  ios: any; /* ARSCNView */
+  ios?: any; /* ARSCNView */
+  android?: any; /* org.nativescript.tns.arlib.TNSSurfaceRenderer */
 }
 
 export interface ARPlaneTappedEventData extends AREventData {
