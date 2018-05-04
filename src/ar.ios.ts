@@ -99,6 +99,12 @@ class AR extends ARBase {
         },
         {});
 
+    // this.sceneView.session.delegate = ARSessionDelegateImpl.createWithOwnerResultCallbackAndOptions(
+    //     new WeakRef(this),
+    //     data => {
+    //     },
+    //     {});
+
     this.toggleStatistics(this.showStatistics);
     this.togglePlaneDetection(this.detectPlanes);
 
@@ -317,8 +323,9 @@ class AR extends ARBase {
   }
 
   public sceneTapped(recognizer: UITapGestureRecognizer): void {
-    const tapPoint = recognizer.locationInView(this.sceneView);
-    const hitTestResults: NSArray<ARHitTestResult> = this.sceneView.hitTestTypes(tapPoint, ARHitTestResultType.ExistingPlaneUsingExtent);
+    const sceneView = <ARSCNView>recognizer.view;
+    const tapPoint = recognizer.locationInView(sceneView);
+    const hitTestResults: NSArray<SCNHitTestResult> = sceneView.hitTestOptions(tapPoint, null);
     if (hitTestResults.count === 0) {
       const eventData: ARSceneTappedEventData = {
         eventName: ARBase.sceneTappedEvent,
@@ -333,40 +340,41 @@ class AR extends ARBase {
       return;
     }
 
-    const hitResult: ARHitTestResult = hitTestResults.firstObject;
-
-    // Currently, in {N} hitResult.worldTransform is undefined so let's hack around it :(
-    const hitResultStr = "" + hitResult;
-    const transformStart = hitResultStr.indexOf("worldTransform=<translation=(") + "worldTransform=<translation=(".length;
-    const transformStr = hitResultStr.substring(transformStart, hitResultStr.indexOf(")", transformStart));
-    const transformParts = transformStr.split(" ");
-
-    // also figure out if an object was tapped:
-    let node: SCNNode = this.sceneView.nodeForAnchor(hitResult.anchor);
-
-    // only send a 'plane tapped' event if no object (on that plane) was tapped
+    const hitResult: SCNHitTestResult = hitTestResults.firstObject;
+    let node: SCNNode = hitResult.node;
     let existingItemTapped = false;
 
     if (node !== undefined) {
-      const parentNode = node.parentNode;
-      const savedModel = ARState.shapes.get(parentNode.name);
-      if (savedModel) {
+      let savedModel = ARState.shapes.get(node.name) || ARState.shapes.get(node.parentNode.name);
+      if (savedModel !== undefined) {
         savedModel.onTap();
         existingItemTapped = true;
       }
     }
 
     if (!existingItemTapped) {
-      const eventData: ARPlaneTappedEventData = {
-        eventName: ARBase.planeTappedEvent,
-        object: this,
-        position: {
-          x: +transformParts[0],
-          y: +transformParts[1],
-          z: +transformParts[2]
-        }
-      };
-      this.notify(eventData);
+      // let's see if a plane was tapped instead
+      const planeTapResults: NSArray<ARHitTestResult> = this.sceneView.hitTestTypes(tapPoint, ARHitTestResultType.ExistingPlaneUsingExtent);
+      if (planeTapResults.count > 0) {
+        const planeHitResult: ARHitTestResult = planeTapResults.firstObject;
+
+        // Currently, in {N} hitResult.worldTransform is undefined so let's hack around it
+        const hitResultStr = "" + planeHitResult;
+        const transformStart = hitResultStr.indexOf("worldTransform=<translation=(") + "worldTransform=<translation=(".length;
+        const transformStr = hitResultStr.substring(transformStart, hitResultStr.indexOf(")", transformStart));
+        const transformParts = transformStr.split(" ");
+
+        const eventData: ARPlaneTappedEventData = {
+          eventName: ARBase.planeTappedEvent,
+          object: this,
+          position: {
+            x: +transformParts[0],
+            y: +transformParts[1],
+            z: +transformParts[2]
+          }
+        };
+        this.notify(eventData);
+      }
     }
   }
 
@@ -617,6 +625,35 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
 
   rendererDidRemoveNodeForAnchor(renderer: SCNSceneRenderer, node: SCNNode, anchor: ARAnchor): void {
     ARState.planes.delete(anchor.identifier.UUIDString);
+  }
+}
+
+class ARSessionDelegateImpl extends NSObject implements ARSessionDelegate {
+  public static ObjCProtocols = [];
+
+  private owner: WeakRef<AR>;
+  private resultCallback: (message: any) => void;
+  private options?: any;
+  private currentTrackingState = ARTrackingState.Normal;
+
+  public static new(): ARSessionDelegateImpl {
+    try {
+      ARSessionDelegateImpl.ObjCProtocols.push(ARSessionDelegate);
+    } catch (ignore) {
+    }
+    return <ARSessionDelegateImpl>super.new();
+  }
+
+  public static createWithOwnerResultCallbackAndOptions(owner: WeakRef<AR>, callback: (message: any) => void, options?: any): ARSessionDelegateImpl {
+    let delegate = <ARSessionDelegateImpl>ARSessionDelegateImpl.new();
+    delegate.owner = owner;
+    delegate.options = options;
+    delegate.resultCallback = callback;
+    return delegate;
+  }
+
+  sessionDidUpdateFrame(session: ARSession, frame: ARFrame): void {
+    console.log("frame updated @ " + new Date().getTime());
   }
 }
 

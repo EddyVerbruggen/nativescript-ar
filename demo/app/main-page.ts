@@ -1,6 +1,11 @@
 import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
-import { ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARSceneTappedEventData } from 'nativescript-ar';
+import {
+  ARLoadedEventData,
+  ARPlaneDetectedEventData,
+  ARPlaneTappedEventData,
+  ARSceneTappedEventData
+} from 'nativescript-ar';
 import { HelloWorldModel } from './main-view-model';
 const flashlight = require("nativescript-flashlight");
 
@@ -18,21 +23,25 @@ export function pageLoaded(args: observable.EventData) {
 
 export function arLoaded(args: ARLoadedEventData): void {
   // add some stuff to the scene
+  console.log(">> arLoaded, object: " + args.object);
 
-  args.object.addModel({
-    name: "Models.scnassets/Car.dae",
-    position: {
-      x: 0,
-      y: 0,
-      z: -1
-    },
-    rotation: {
-      x: 0,
-      y: 180, // face towards camera
-      z: 0
-    },
-    scale: 0.1
-  });
+  setTimeout(() => {
+    args.object.addModel({
+      name: "Models.scnassets/Car.dae",
+      position: {
+        x: 0,
+        y: 0,
+        z: -1
+      },
+      rotation: {
+        x: 0,
+        y: 180, // face towards camera
+        z: 0
+      },
+      scale: 0.1,
+      onTap: node => console.log("model tapped: " + node.id)
+    });
+  }, 1000);
 
   args.object.addBox({
     position: {
@@ -52,11 +61,13 @@ export function arLoaded(args: ARLoadedEventData): void {
       }
     }],
     onTap: node => console.log("box tapped: " + node.id),
+    // onLongPress: node => console.log("box longpressed: " + node.id),
     draggingEnabled: true,
     rotatingEnabled: true
     // onPan: node => console.log("box panned: " + node.id),
   }).then(node => console.log("box added: " + node.id));
 
+  /*
   args.object.addText({
     text: "NativeScript",
     position: {
@@ -72,6 +83,7 @@ export function arLoaded(args: ARLoadedEventData): void {
       y: 5,
       z: 5
     },
+    onTap: node => console.log("text tapped: " + node.id),
     // onPan: node => console.log("text panned: " + node.id),
   }).then(node => console.log("text added: " + node.id));
 
@@ -90,7 +102,9 @@ export function arLoaded(args: ARLoadedEventData): void {
       y: 5,
       z: 5
     },
+    onTap: node => console.log("text tapped: " + node.id),
   }).then(node => console.log("text added: " + node.id));
+*/
 
   args.object.addTube({
     position: {
@@ -114,6 +128,7 @@ export function arLoaded(args: ARLoadedEventData): void {
       y: 0,
       z: 0
     },
+    onTap: node => console.log("tube tapped: " + node.id),
   }).then(node => console.log("tube added: " + node.id));
 }
 
@@ -122,7 +137,7 @@ export function planeDetected(args: ARPlaneDetectedEventData): void {
 }
 
 export function planeTapped(args: ARPlaneTappedEventData): void {
-  console.log("Plane tapped @ x coordinate: " + args.position.x);
+  console.log("Plane tapped. Adding a box @ x coordinate: " + args.position.x);
 
   args.object.addBox({
     position: {
@@ -130,7 +145,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       y: args.position.y + 1, // drop the box from a meter high
       z: args.position.z
     },
-    scale: 0.5,
+    // scale: 0.5,
     dimensions: 0.15,
     chamferRadius: 0.01,
     // material elements can either be a string or an 'ARMaterial' object
@@ -141,8 +156,12 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
         transparency: 0.9 // 0 - 1, lower number is more transparent
       }
     ],
-    mass: 0.01,
+    mass: 1,
     onTap: node => console.log("box tapped: " + node.id),
+    onLongPress: node => {
+      console.log("removing longpressed box: " + node.id);
+      node.remove();
+    },
     // onPan: node => console.log("box panned: " + node.id)
   });
 }
