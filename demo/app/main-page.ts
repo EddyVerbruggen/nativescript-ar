@@ -2,13 +2,18 @@ import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
 import { ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARSceneTappedEventData } from 'nativescript-ar';
 import { HelloWorldModel } from './main-view-model';
-import { Color } from 'tns-core-modules/color';
+const flashlight = require("nativescript-flashlight");
 
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
   // Get the event sender
   let page = <pages.Page>args.object;
   page.bindingContext = new HelloWorldModel();
+
+  const flashlightSwitch = page.getViewById("flashlightSwitch");
+  flashlightSwitch.on("checkedChange", (args: any) => {
+    args.value ? flashlight.on() : flashlight.off();
+  });
 }
 
 export function arLoaded(args: ARLoadedEventData): void {

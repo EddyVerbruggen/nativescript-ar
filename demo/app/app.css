@@ -1,1 +1,10 @@
 ﻿@import '~nativescript-theme-core/css/core.light.css';
+
+.toggle-flashlight {
+  margin-bottom: 64;
+  opacity: 0.6;
+  padding: 8 0 8 12;
+  border-radius: 5;
+  border-width: 1;
+  border-color: #fff;
+}

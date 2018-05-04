@@ -11,6 +11,11 @@
         arLoaded="arLoaded"
         sceneTapped="sceneTapped"
         planeDetected="planeDetected"
-        planeTapped="planeTapped"/>
+        planeTapped="planeTapped">
+      <GridLayout columns="*, 80" horizontalAlignment="right" verticalAlignment="bottom" class="m-b-30 m-r-10 bg-primary toggle-flashlight">
+        <Label text="Flashlight" class="m-r-10" horizontalAlignment="right"/>
+        <Switch id="flashlightSwitch" col="1" checked="false"/>
+      </GridLayout>
+    </AR:AR>
   </GridLayout>
 </Page>
