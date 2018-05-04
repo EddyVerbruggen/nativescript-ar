@@ -24,7 +24,7 @@ export function pageLoaded(args: observable.EventData) {
 export function arLoaded(args: ARLoadedEventData): void {
   // add some stuff to the scene
   console.log(">> arLoaded, object: " + args.object);
-
+  /*
   setTimeout(() => {
     args.object.addModel({
       name: "Models.scnassets/Car.dae",
@@ -67,7 +67,6 @@ export function arLoaded(args: ARLoadedEventData): void {
     // onPan: node => console.log("box panned: " + node.id),
   }).then(node => console.log("box added: " + node.id));
 
-  /*
   args.object.addText({
     text: "NativeScript",
     position: {
@@ -104,7 +103,6 @@ export function arLoaded(args: ARLoadedEventData): void {
     },
     onTap: node => console.log("text tapped: " + node.id),
   }).then(node => console.log("text added: " + node.id));
-*/
 
   args.object.addTube({
     position: {
@@ -130,6 +128,7 @@ export function arLoaded(args: ARLoadedEventData): void {
     },
     onTap: node => console.log("tube tapped: " + node.id),
   }).then(node => console.log("tube added: " + node.id));
+  */
 }
 
 export function planeDetected(args: ARPlaneDetectedEventData): void {
@@ -145,24 +144,23 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       y: args.position.y + 1, // drop the box from a meter high
       z: args.position.z
     },
-    // scale: 0.5,
+    // scale: 0.5, // TODO this messes up positioning
     dimensions: 0.15,
     chamferRadius: 0.01,
-    // material elements can either be a string or an 'ARMaterial' object
-    materials: [
-      "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
-      {
-        name: "Assets.scnassets/Materials/tnsgranite2/tnsgranite2-diffuse.png",
-        transparency: 0.9 // 0 - 1, lower number is more transparent
+    materials: [{
+      diffuse: {
+        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+        wrapMode: "ClampToBorder"
       }
-    ],
-    mass: 1,
-    onTap: node => console.log("box tapped: " + node.id),
-    onLongPress: node => {
-      console.log("removing longpressed box: " + node.id);
-      node.remove();
-    },
-    // onPan: node => console.log("box panned: " + node.id)
+    }],
+    mass: 0.3,
+    onTap: model => console.log(`Box tapped: ${model.id}`),
+    onLongPress: model => model.remove()
+  }).then(arNode => {
+    console.log("Box successfully added");
+    if (arNode.ios) {
+      // do something iOS specific here if you like
+    }
   });
 }
 
