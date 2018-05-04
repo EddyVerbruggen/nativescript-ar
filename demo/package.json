@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "nativescript-ar": "../src",
+    "nativescript-flashlight": "^1.2.1",
     "nativescript-theme-core": "^1.0.4",
     "nativescript-unit-test-runner": "^0.3.4",
     "tns-core-modules": "~3.4.0"
