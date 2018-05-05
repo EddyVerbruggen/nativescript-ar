@@ -215,23 +215,27 @@ class AR extends ARBase {
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
-    console.log("Method not implemented: addBox");
-    return null;
+    return new Promise((resolve, reject) => {
+      reject("Method not implemented: addBox");
+    });
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
-    console.log("Method not implemented: addSphere");
-    return null;
+    return new Promise((resolve, reject) => {
+      reject("Method not implemented: addSphere");
+    });
   }
 
   addText(options: ARAddTextOptions): Promise<ARNode> {
-    console.log("Method not implemented: addText");
-    return null;
+    return new Promise((resolve, reject) => {
+      reject("Method not implemented: addText");
+    });
   }
 
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
-    console.log("Method not implemented: addTube");
-    return null;
+    return new Promise((resolve, reject) => {
+      reject("Method not implemented: addTube");
+    });
   }
 }
 
