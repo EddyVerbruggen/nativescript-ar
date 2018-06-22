@@ -10,6 +10,7 @@ API
 - [addTube](#addtube)
 - [addText](#addtext)
 - [isSupported](#issupported-static)
+- [grabScreenshot](#grabScreenshot)
 
 ## `add*`
 Shared properties of all `add*` functions are:
@@ -230,4 +231,21 @@ var supported = AR.isSupported();
 ```typescript
 import { AR } from "nativescript-ar";
 const supported = AR.isSupported();
+```
+
+## `grabScreenshot` (iOS)
+Added in 0.5.0, currently iOS-only.
+
+Grab whatever the camera is showing, and get back a native image (`UIImage` on iOS).
+You can show it on-screen afterwards as [shown here, in the demo app](https://github.com/EddyVerbruggen/nativescript-ar/blob/49fe472b1d53461c51423182c46168e17dbe5b64/demo/app/main-view-model.ts#L32).
+
+
+#### JavaScript
+```js
+var img = ar.grabScreenshot();
+```
+
+#### TypeScript
+```typescript
+const img = ar.grabScreenshot();
 ```
