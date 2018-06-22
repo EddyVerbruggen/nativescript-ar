@@ -10,7 +10,7 @@ API
 - [addTube](#addtube)
 - [addText](#addtext)
 - [isSupported](#issupported-static)
-- [grabScreenshot](#grabScreenshot-ios)
+- [grabScreenshot](#grabscreenshot-ios)
 
 ## `add*`
 Shared properties of all `add*` functions are:
