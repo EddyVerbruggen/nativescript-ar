@@ -8,6 +8,7 @@ src/**/*.d.ts
 build/
 !src/index.d.ts
 !src/references.d.ts
+!src/typings/**/*.d.ts
 !src/scripts/*.js
 !demo/karma.conf.js
 !demo/app/tests/*.js
