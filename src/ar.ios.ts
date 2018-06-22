@@ -62,6 +62,10 @@ class AR extends ARBase {
     }
   }
 
+  public grabScreenshot(): any {
+    return this.sceneView ? this.sceneView.snapshot() : null;
+  }
+
   public toggleStatistics(on: boolean): void {
     if (!this.sceneView) {
       return;

@@ -201,6 +201,11 @@ class AR extends ARBase {
     this.renderer.setDrawPlanes(drawPlanesAndPointClound);
   }
 
+  public grabScreenshot(): any {
+    console.log("Method not implemented: grabScreenshot");
+    return null;
+  }
+
   reset(): void {
     console.log("Method not implemented: reset");
     return null;

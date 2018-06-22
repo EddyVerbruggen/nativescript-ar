@@ -1,10 +1,28 @@
 ﻿@import '~nativescript-theme-core/css/core.light.css';
 
+.grab-screenshot {
+  margin-bottom: 12;
+  margin-right: 10;
+  opacity: 0.6;
+  padding: 10 12;
+  border-radius: 5;
+  border-width: 1;
+  border-color: #fff;
+}
+
 .toggle-flashlight {
-  margin-bottom: 64;
+  margin-bottom: 46;
+  margin-right: 10;
   opacity: 0.6;
   padding: 8 0 8 12;
   border-radius: 5;
   border-width: 1;
   border-color: #fff;
+}
+
+.screenshot {
+  opacity: 0;
+  border-radius: 10;
+  border-color: #fff;
+  border-width: 10;
 }

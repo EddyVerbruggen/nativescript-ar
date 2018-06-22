@@ -14,10 +14,15 @@
         planeTapped="planeTapped">
     </AR:AR>
     <iOS>
-      <GridLayout row="1" columns="*, 80" horizontalAlignment="right" verticalAlignment="bottom" class="m-b-30 m-r-10 bg-primary toggle-flashlight">
-        <Label text="Flashlight" class="m-r-10" horizontalAlignment="right"/>
-        <Switch id="flashlightSwitch" col="1" checked="false"/>
-      </GridLayout>
+      <StackLayout row="1" horizontalAlignment="right" verticalAlignment="bottom">
+        <Button text="Grab screenshot" class="bg-primary grab-screenshot" horizontalAlignment="right" tap="{{ grabScreenshot }}"/>
+
+        <GridLayout rows="auto" columns="*, 80" horizontalAlignment="right" verticalAlignment="bottom" class="bg-primary toggle-flashlight">
+          <Label text="Flashlight" class="m-r-10" horizontalAlignment="right"/>
+          <Switch id="flashlightSwitch" col="1" checked="false"/>
+        </GridLayout>
+      </StackLayout>
+      <Image row="1" id="screenshot" width="180" class="screenshot" horizontalAlignment="left" verticalAlignment="bottom"/>
     </iOS>
   </GridLayout>
 </Page>

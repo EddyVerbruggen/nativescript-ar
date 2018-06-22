@@ -208,6 +208,8 @@ export abstract class AR extends ContentView {
 
   abstract setDebugLevel(to: ARDebugLevel): void;
 
+  abstract grabScreenshot(): any /* UIImage on iOS */;
+
   [debugLevelProperty.setNative](value?: string | ARDebugLevel) {
     if (value) {
       if (typeof value === "string") {

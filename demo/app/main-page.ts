@@ -2,6 +2,7 @@ import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
 import { isIOS } from 'tns-core-modules/ui/page';
 import {
+  AR,
   ARLoadedEventData,
   ARPlaneDetectedEventData,
   ARPlaneTappedEventData,
@@ -11,11 +12,16 @@ import { HelloWorldModel } from './main-view-model';
 
 const flashlight = require("nativescript-flashlight");
 
+let ar: AR;
+
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
   // Get the event sender
-  let page = <pages.Page>args.object;
-  page.bindingContext = new HelloWorldModel();
+  const page = <pages.Page>args.object;
+  const model = new HelloWorldModel();
+  model.ar = ar;
+  model.screenshot = page.getViewById("screenshot");
+  page.bindingContext = model;
 
   if (isIOS) {
     const flashlightSwitch = page.getViewById("flashlightSwitch");
@@ -26,6 +32,7 @@ export function pageLoaded(args: observable.EventData) {
 }
 
 export function arLoaded(args: ARLoadedEventData): void {
+  ar = args.object;
   // add some stuff to the scene
   console.log(">> arLoaded, object: " + args.object);
   /*
@@ -140,7 +147,25 @@ export function planeDetected(args: ARPlaneDetectedEventData): void {
 }
 
 export function planeTapped(args: ARPlaneTappedEventData): void {
-  console.log("Plane tapped. Adding a box @ x coordinate: " + args.position.x);
+  console.log("Plane tapped @ x coordinate: " + args.position.x);
+
+  /*
+  args.object.addModel({
+    name: "Models.scnassets/Car.dae",
+    position: {
+      x: 0,
+      y: 0,
+      z: -1
+    },
+    rotation: {
+      x: 0,
+      y: 180, // face towards camera
+      z: 0
+    },
+    scale: 0.1,
+    onTap: node => console.log("model tapped: " + node.id)
+  });
+  */
 
   args.object.addBox({
     position: {
