@@ -41,6 +41,6 @@ export class ARModel extends ARCommonNode {
           },
           (e: any) => reject(e)
       );
-    })
+    });
   }
 }
