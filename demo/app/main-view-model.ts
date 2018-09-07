@@ -33,7 +33,7 @@ export class HelloWorldModel extends Observable {
 
       // let's animate the grabbed image on and off screen in an iOS-screenshot style fashion
       this.screenshot.animate({
-        opacity:0.8,
+        opacity: 0.8,
         scale: {
           x: 0.5,
           y: 0.5
