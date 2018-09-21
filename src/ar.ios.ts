@@ -273,8 +273,7 @@ class AR extends ARBase {
     }
 
     const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-    const savedModel = ARState.shapes.get(hitResult.node.name);
-
+    const savedModel = ARState.shapes.get(hitResult.node.name) || ARState.shapes.get(hitResult.node.parentNode.name);
     if (savedModel) {
       savedModel.onLongPress();
     }
