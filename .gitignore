@@ -5,6 +5,7 @@
 *.js.map
 *.log.*
 src/**/*.d.ts
+src/platforms/android/nativescript_ar.aar
 build/
 !src/index.d.ts
 !src/references.d.ts

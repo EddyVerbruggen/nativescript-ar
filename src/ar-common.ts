@@ -222,6 +222,10 @@ export abstract class AR extends ContentView {
     return false;
   }
 
+  static isImageTrackingSupported(): boolean {
+    return false;
+  }
+
   /**
    * This one seems to need work, so not documented yet.
    */

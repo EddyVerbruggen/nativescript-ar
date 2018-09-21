@@ -22,6 +22,8 @@ export class HelloWorldModel extends Observable {
     const supported = AR.isSupported();
     this.message = `AR supported? ${supported}`;
 
+    console.log(`Image tracking supported? ${AR.isImageTrackingSupported()}`);
+
     if (!supported) {
       return;
     }

@@ -70,6 +70,14 @@ class AR extends ARBase {
     }
   }
 
+  static isImageTrackingSupported(): boolean {
+    try {
+      return !!ARImageTrackingConfiguration;
+    } catch (ignore) {
+      return false;
+    }
+  }
+
   public setDebugLevel(to: ARDebugLevel): void {
     if (!this.sceneView) {
       return;
@@ -113,11 +121,16 @@ class AR extends ARBase {
 
   private initAR() {
     if (!AR.isSupported()) {
+      console.log("############### AR is not supported on this device.");
       return;
     }
 
     if (this.trackingMode === ARTrackingMode.IMAGE) {
-      // TODO check for runtime availability of ARImageTrackingConfiguration
+      if (!AR.isImageTrackingSupported()) {
+        console.log("############### Image tracking is not supported on this device. It's probably not running iOS 12+.");
+        return;
+      }
+
       const imageTrackingConfig = ARImageTrackingConfiguration.new();
       if (this.trackingImagesBundle) {
         const trackingImages = ARReferenceImage.referenceImagesInGroupNamedBundle(this.trackingImagesBundle, null);
