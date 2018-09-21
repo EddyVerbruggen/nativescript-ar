@@ -2,7 +2,7 @@ import { ARAddBoxOptions, ARDimensions } from "../../ar-common";
 import { ARCommonGeometryNode } from "./arcommongeometry";
 
 export class ARBox extends ARCommonGeometryNode {
-  static create(options: ARAddBoxOptions) {
+  static create(options: ARAddBoxOptions): ARBox {
     const dimensions: ARDimensions = <ARDimensions>(typeof options.dimensions !== "number" ? options.dimensions : {
       x: options.dimensions,
       y: options.dimensions,

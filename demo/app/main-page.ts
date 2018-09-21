@@ -4,13 +4,17 @@ import { isIOS } from 'tns-core-modules/ui/page';
 import {
   AR,
   ARLoadedEventData,
+  ARCommonNode,
   ARPlaneDetectedEventData,
   ARPlaneTappedEventData,
-  ARSceneTappedEventData
+  ARSceneTappedEventData,
+  ARTrackingImageDetectedEventData
 } from 'nativescript-ar';
 import { HelloWorldModel } from './main-view-model';
 
 const flashlight = require("nativescript-flashlight");
+
+declare const NSBundle: any;
 
 let ar: AR;
 
@@ -142,6 +146,75 @@ export function arLoaded(args: ARLoadedEventData): void {
   */
 }
 
+export function trackingImageDetected(args: ARTrackingImageDetectedEventData): void {
+  console.log("Tracked image detected (name): " + args.imageName);
+  if (args.imageName === "nativescripting") {
+    // note that you really want to use locally stored videos, like so:
+    if (isIOS) {
+      const videoUrl = NSBundle.mainBundle.URLForResourceWithExtensionSubdirectory("homer video", "mov", "art.scnassets");
+      if (!videoUrl) {
+        console.log("Could not find video file");
+        return;
+      }
+      args.imageTrackingActions.playVideo(videoUrl);
+      // args.imageTrackingActions.playVideo(NSURL.URLWithString("http://techslides.com/demos/samples/sample.mov"));
+    }
+
+  } else if (args.imageName === "ship") {
+    args.imageTrackingActions.addModel({
+      name: "art.scnassets/ship.scn",
+      childNodeName: "shipMesh",
+      position: {
+        x: 0,
+        y: 0,
+        z: 0.03
+      },
+      onTap: (node: ARCommonNode) => {
+        // let's move the plane out of the image a bit
+        node.moveBy({
+          x: 0,
+          y: 0,
+          z: 0.01
+        })
+      },
+      onLongPress: (node: ARCommonNode) => {
+        // let's move the plane into the image a bit
+        node.moveBy({
+          x: 0,
+          y: 0,
+          z: -0.01
+        })
+      }
+    });
+
+  } else if (args.imageName === "nativescript nl" || args.imageName === "nativescripting alt") {
+    args.imageTrackingActions.addBox({
+      position: {
+        x: args.position.x,
+        y: args.position.y,
+        z: args.position.z + 0.8
+      },
+      dimensions: 1.6,
+      chamferRadius: 0.1,
+      materials: [{
+        diffuse: {
+          contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+          wrapMode: "ClampToBorder"
+        }
+      }],
+      onTap: (node: ARCommonNode) => {
+        console.log("box tapped: " + node.id);
+        // let's rotate the box in steps of 5 degrees to the right
+        node.rotateBy({
+          x: 0,
+          y: 0,
+          z: -5
+        })
+      }
+    }).then(node => console.log("box added to nativescript nl: " + node.id));
+  }
+}
+
 export function planeDetected(args: ARPlaneDetectedEventData): void {
   console.log("Plane detected (id): " + args.plane.id);
 }
@@ -167,14 +240,16 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
   });
   */
 
+  const boxDimensions = 0.11;
+
   args.object.addBox({
     position: {
       x: args.position.x,
-      y: args.position.y + 1, // drop the box from a meter high
+      y: args.position.y + (boxDimensions / 2), // want to drop the box from a meter high (when mass > 0)? add +1
       z: args.position.z
     },
-    // scale: 0.5, // TODO this messes up positioning
-    dimensions: 0.15,
+    // scale: 0.5, // this messes up positioning
+    dimensions: boxDimensions,
     chamferRadius: 0.01,
     materials: [{
       diffuse: {
@@ -182,8 +257,20 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
         wrapMode: "ClampToBorder"
       }
     }],
-    mass: 0.3,
-    onTap: model => console.log(`Box tapped: ${model.id}`),
+    // mass: 0.3,
+    onTap: model => {
+      console.log(`Box tapped: ${model.id}, gonna move it`);
+      // model.rotateBy({
+      //   x: 0,
+      //   y: 0,
+      //   z: -5
+      // })
+      model.moveTo({
+        x: model.position.x,
+        y: model.position.y + 0.01, // moves the box up a little
+        z: model.position.z
+      })
+    },
     onLongPress: model => model.remove()
   }).then(arNode => {
     console.log("Box successfully added");

@@ -3,6 +3,9 @@
     <Label text="{{ message }}" class="t-20 p-10 text-center c-black" textWrap="true"/>
     <AR:AR
         row="1"
+        trackingMode="IMAGE"
+        trackingImagesBundle="AR Resources"
+        trackingImageDetected="trackingImageDetected"
         debugLevel="FEATURE_POINTS"
         planeMaterial="{{ planeMaterial }}"
         planeOpacity="0.25"

@@ -1,6 +1,6 @@
-import { ARAddOptions, ARNode, ARPosition, ARScale } from "../../ar-common";
+import { ARAddOptions, ARCommonNode as IARCommonNode, ARNode, ARPosition, ARRotation, ARScale } from "../../ar-common";
 
-export abstract class ARCommonNode implements ARNode {
+export abstract class ARCommonNode implements IARCommonNode {
   id: string;
   ios: SCNNode;
   position: ARPosition;
@@ -18,6 +18,7 @@ export abstract class ARCommonNode implements ARNode {
     this.rotatingEnabled = options.rotatingEnabled;
 
     node.position = this.position = options.position;
+
     if (options.rotation) {
       node.eulerAngles = {
         x: ARCommonNode.degToRadians(options.rotation.x),
@@ -42,6 +43,22 @@ export abstract class ARCommonNode implements ARNode {
     }
 
     this.ios = node;
+  }
+
+  moveBy(by: ARRotation): void {
+    this.ios.position = {
+      x: this.ios.position.x + by.x,
+      y: this.ios.position.y + by.y,
+      z: this.ios.position.z + by.z
+    };
+  }
+
+  rotateBy(by: ARRotation): void {
+    this.ios.eulerAngles = {
+      x: this.ios.eulerAngles.x + ARCommonNode.degToRadians(by.x),
+      y: this.ios.eulerAngles.y + ARCommonNode.degToRadians(by.y),
+      z: this.ios.eulerAngles.z + ARCommonNode.degToRadians(by.z)
+    };
   }
 
   onTap(): void {

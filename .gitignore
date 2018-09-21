@@ -12,7 +12,7 @@ build/
 !src/scripts/*.js
 !demo/karma.conf.js
 !demo/app/tests/*.js
-demo/*.d.ts
+demo/**/*.d.ts
 !demo/references.d.ts
 demo/lib
 demo/platforms

@@ -6,12 +6,15 @@ import {
   ARAddTextOptions,
   ARAddTubeOptions,
   ARDebugLevel,
+  ARImageTrackingActions,
   ARLoadedEventData,
   ARNode,
   ARPlaneDetectedEventData,
   ARPlaneTappedEventData,
+  ARPosition,
   ARSceneTappedEventData,
-  ARPosition
+  ARTrackingImageDetectedEventData,
+  ARTrackingMode
 } from "./ar-common";
 import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
 import { ARBox } from "./nodes/ios/arbox";
@@ -22,16 +25,36 @@ import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
 
-export { ARDebugLevel };
+export { ARDebugLevel, ARTrackingMode };
+
+declare const ARImageAnchor: any;
 
 const ARState = {
   planes: new Map<string, ARPlane>(),
   shapes: new Map<string, ARCommonNode>(),
 };
 
+const addBox = (options: ARAddBoxOptions, parentNode: SCNNode): Promise<ARBox> => {
+  return new Promise((resolve, reject) => {
+    const box = ARBox.create(options);
+    ARState.shapes.set(box.id, box);
+    parentNode.addChildNode(box.ios);
+    resolve(box);
+  });
+};
+
+const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    const model: ARModel = ARModel.create(options);
+    ARState.shapes.set(model.id, model);
+    parentNode.addChildNode(model.ios);
+    resolve(model);
+  });
+};
+
 class AR extends ARBase {
   sceneView: ARSCNView;
-  private configuration: ARWorldTrackingConfiguration;
+  private configuration: any; // TODO ARConfiguration;
   private delegate: ARSCNViewDelegateImpl;
   private physicsWorldContactDelegate: SCNPhysicsContactDelegateImpl;
   private sceneTapHandler: SceneTapHandlerImpl;
@@ -93,7 +116,27 @@ class AR extends ARBase {
       return;
     }
 
-    this.configuration = ARWorldTrackingConfiguration.new();
+    if (this.trackingMode === ARTrackingMode.IMAGE) {
+      // TODO check for runtime availability of ARImageTrackingConfiguration
+      const imageTrackingConfig = ARImageTrackingConfiguration.new();
+      if (this.trackingImagesBundle) {
+        const trackingImages = ARReferenceImage.referenceImagesInGroupNamedBundle(this.trackingImagesBundle, null);
+        if (!trackingImages) {
+          console.log("Could not load images from bundle!");
+          return;
+        }
+        imageTrackingConfig.trackingImages = trackingImages;
+        // tracking unlimited images probably has severe performance implications
+        imageTrackingConfig.maximumNumberOfTrackedImages = Math.min(trackingImages.count, 10);
+      }
+      this.configuration = imageTrackingConfig;
+
+    } else {
+      const worldTrackingConfig = ARWorldTrackingConfiguration.new();
+      worldTrackingConfig.detectionImages = ARReferenceImage.referenceImagesInGroupNamedBundle("AR Resources", null);
+      this.configuration = worldTrackingConfig;
+    }
+
     this.configuration.lightEstimationEnabled = true;
 
     this.sceneView = ARSCNView.new();
@@ -383,21 +426,11 @@ class AR extends ARBase {
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      const model: ARModel = ARModel.create(options);
-      ARState.shapes.set(model.id, model);
-      this.sceneView.scene.rootNode.addChildNode(model.ios);
-      resolve(model);
-    });
+    return addModel(options, this.sceneView.scene.rootNode);
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      const box: ARBox = ARBox.create(options);
-      ARState.shapes.set(box.id, box);
-      this.sceneView.scene.rootNode.addChildNode(box.ios);
-      resolve(box);
-    });
+    return addBox(options, this.sceneView.scene.rootNode);
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
@@ -429,7 +462,7 @@ class AR extends ARBase {
 
   public reset(): void {
     this.configuration.planeDetection = ARPlaneDetection.Horizontal;
-    this.sceneView.session.runWithConfigurationOptions(this.configuration, ARSessionRunOptions.RemoveExistingAnchors);
+    this.sceneView.session.runWithConfigurationOptions(this.configuration, ARSessionRunOptions.ResetTracking | ARSessionRunOptions.RemoveExistingAnchors);
     ARState.planes.forEach(plane => plane.remove());
     ARState.planes.clear();
     ARState.shapes.forEach(node => node.remove());
@@ -630,6 +663,60 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
   rendererDidRemoveNodeForAnchor(renderer: SCNSceneRenderer, node: SCNNode, anchor: ARAnchor): void {
     ARState.planes.delete(anchor.identifier.UUIDString);
   }
+
+  rendererNodeForAnchor(renderer: SCNSceneRenderer, anchor: ARAnchor): SCNNode {
+    const node = SCNNode.new();
+    if (!(anchor instanceof ARImageAnchor)) {
+      return node;
+    }
+
+    const imageAnchor: ARImageAnchor = <ARImageAnchor>anchor;
+    const plane = SCNPlane.planeWithWidthHeight(imageAnchor.referenceImage.physicalSize.width, imageAnchor.referenceImage.physicalSize.height);
+    const planeNode = SCNNode.nodeWithGeometry(plane);
+
+    // Rotate the plane to match the anchor
+    planeNode.eulerAngles = {
+      x: -3.14159265359 / 2,
+      y: 0,
+      z: 0
+    };
+
+    // make the detected plane transparent
+    plane.firstMaterial.diffuse.contents = UIColor.colorWithWhiteAlpha(1, 0);
+
+    const owner = this.owner.get();
+    const eventData: ARTrackingImageDetectedEventData = {
+      eventName: ARBase.trackingImageDetectedEvent,
+      object: owner,
+      position: planeNode.position,
+      imageName: imageAnchor.referenceImage.name,
+      imageTrackingActions: new ARImageTrackingActionsImpl(plane, planeNode)
+    };
+    owner.notify(eventData);
+
+    // Add plane node to parent
+    node.addChildNode(planeNode);
+    return node;
+  }
+}
+
+class ARImageTrackingActionsImpl implements ARImageTrackingActions {
+  constructor(public plane: SCNPlane, public planeNode: SCNNode) {
+  }
+
+  playVideo(nativeUrl: NSURL): void {
+    const videoPlayer = AVPlayer.playerWithURL(nativeUrl);
+    this.plane.firstMaterial.diffuse.contents = videoPlayer;
+    videoPlayer.play();
+  }
+
+  addBox(options: ARAddBoxOptions): Promise<ARBox> {
+    return addBox(options, this.planeNode);
+  };
+
+  addModel(options: ARAddModelOptions): Promise<ARModel> {
+    return addModel(options, this.planeNode);
+  };
 }
 
 class ARSessionDelegateImpl extends NSObject implements ARSessionDelegate {

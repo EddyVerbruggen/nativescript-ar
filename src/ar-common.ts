@@ -3,6 +3,8 @@ import { ContentView } from "tns-core-modules/ui/content-view";
 import { EventData } from "tns-core-modules/data/observable";
 import { Color } from "tns-core-modules/color";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
+import { ARBox } from "./nodes/ios/arbox";
+import { ARModel } from "./nodes/ios/armodel";
 
 export enum ARDebugLevel {
   NONE = <any>"NONE",
@@ -11,13 +13,27 @@ export enum ARDebugLevel {
   PHYSICS_SHAPES = <any>"PHYSICS_SHAPES"
 }
 
+export enum ARTrackingMode {
+  WORLD = <any>"WORLD",
+  IMAGE = <any>"IMAGE"
+}
+
 const debugLevelProperty = new Property<AR, ARDebugLevel>({
   name: "debugLevel",
   defaultValue: ARDebugLevel.NONE
 });
 
+const trackingModeProperty = new Property<AR, ARTrackingMode>({
+  name: "trackingMode",
+  defaultValue: ARTrackingMode.WORLD
+});
+
 const planeMaterialProperty = new Property<AR, string>({
   name: "planeMaterial"
+});
+
+const trackingImagesBundleProperty = new Property<AR, string>({
+  name: "trackingImagesBundle"
 });
 
 const planeOpacityProperty = new Property<AR, number>({
@@ -48,13 +64,18 @@ export interface ARNode {
   // TODO add animate({});
 }
 
+export interface ARCommonNode extends ARNode {
+  moveBy?(to: ARPosition): void;
+  rotateBy?(by: ARRotation): void;
+}
+
 export interface ARAddOptions {
   position: ARPosition;
   scale?: number | ARScale;
   rotation?: ARRotation;
   mass?: number;
-  onTap?: (model: ARNode) => void;
-  onLongPress?: (model: ARNode) => void;
+  onTap?: (model: ARCommonNode) => void;
+  onLongPress?: (model: ARCommonNode) => void;
   // onPan?: (model: ARNode) => void;
   draggingEnabled?: boolean;
   rotatingEnabled?: boolean;
@@ -146,6 +167,19 @@ export interface ARPlaneDetectedEventData extends AREventData {
   plane: ARPlane;
 }
 
+export interface ARTrackingImageDetectedEventData extends AREventData {
+  // plane: ARPlane;
+  position: ARPosition;
+  imageName: string;
+  imageTrackingActions: ARImageTrackingActions;
+}
+
+export interface ARImageTrackingActions {
+  playVideo(nativeUrl: any /* iOS: NSURL */): void;
+  addBox(options: ARAddBoxOptions): Promise<ARBox>;
+  addModel(options: ARAddModelOptions): Promise<ARModel>;
+}
+
 export class ARDimensions {
   x: number;
   y: number;
@@ -175,11 +209,14 @@ export abstract class AR extends ContentView {
   static sceneTappedEvent: string = "sceneTapped";
   static planeDetectedEvent: string = "planeDetected";
   static planeTappedEvent: string = "planeTapped";
+  static trackingImageDetectedEvent: string = "trackingImageDetected";
 
   planeMaterial: string;
   planeOpacity: number;
   detectPlanes: boolean;
   showStatistics: boolean;
+  trackingMode: ARTrackingMode;
+  trackingImagesBundle: string;
 
   static isSupported(): boolean {
     return false;
@@ -220,8 +257,16 @@ export abstract class AR extends ContentView {
     }
   }
 
+  [trackingModeProperty.setNative](value?: string | ARTrackingMode) {
+    this.trackingMode = typeof value === "string" ? ARTrackingMode[value] : <ARTrackingMode>value;
+  }
+
   [planeMaterialProperty.setNative](value: string) {
     this.planeMaterial = value;
+  }
+
+  [trackingImagesBundleProperty.setNative](value: string) {
+    this.trackingImagesBundle = value;
   }
 
   [detectPlanesProperty.setNative](value: boolean) {
@@ -242,5 +287,7 @@ export abstract class AR extends ContentView {
 showStatisticsProperty.register(AR);
 detectPlanesProperty.register(AR);
 debugLevelProperty.register(AR);
+trackingModeProperty.register(AR);
+trackingImagesBundleProperty.register(AR);
 planeMaterialProperty.register(AR);
 planeOpacityProperty.register(AR);
