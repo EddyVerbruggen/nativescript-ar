@@ -1,12 +1,20 @@
-import { ARAddOptions, ARCommonNode as IARCommonNode, ARNode, ARPosition, ARRotation, ARScale } from "../../ar-common";
+import {
+  ARAddOptions,
+  ARCommonNode as IARCommonNode,
+  ARDimensions2D,
+  ARNodeInteraction,
+  ARPosition,
+  ARRotation,
+  ARScale
+} from "../../ar-common";
 
 export abstract class ARCommonNode implements IARCommonNode {
   id: string;
   ios: SCNNode;
   position: ARPosition;
-  onTapHandler?: (model: ARNode) => void;
-  onLongPressHandler?: (model: ARNode) => void;
-  onPanHandler?: (model: ARNode) => void;
+  onTapHandler?: (interaction: ARNodeInteraction) => void;
+  onLongPressHandler?: (interaction: ARNodeInteraction) => void;
+  onPanHandler?: (interaction: ARNodeInteraction) => void;
   draggingEnabled: boolean;
   rotatingEnabled: boolean;
 
@@ -61,16 +69,25 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
-  onTap(): void {
-    this.onTapHandler && this.onTapHandler(this);
+  onTap(touchPosition: ARDimensions2D): void {
+    this.onTapHandler && this.onTapHandler({
+      node: this,
+      touchPosition
+    });
   }
 
-  onLongPress(): void {
-    this.onLongPressHandler && this.onLongPressHandler(this);
+  onLongPress(touchPosition: ARDimensions2D): void {
+    this.onLongPressHandler && this.onLongPressHandler({
+      node: this,
+      touchPosition
+    });
   }
 
-  onPan(): void {
-    this.onPanHandler && this.onPanHandler(this);
+  onPan(touchPosition: ARDimensions2D): void {
+    this.onPanHandler && this.onPanHandler({
+      node: this,
+      touchPosition
+    });
   }
 
   allowDragging(): boolean {

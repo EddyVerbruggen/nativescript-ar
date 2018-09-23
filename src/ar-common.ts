@@ -64,6 +64,11 @@ export interface ARNode {
   // TODO add animate({});
 }
 
+export interface ARNodeInteraction {
+  touchPosition: ARDimensions2D;
+  node: ARCommonNode;
+}
+
 export interface ARCommonNode extends ARNode {
   moveBy?(to: ARPosition): void;
   rotateBy?(by: ARRotation): void;
@@ -74,9 +79,9 @@ export interface ARAddOptions {
   scale?: number | ARScale;
   rotation?: ARRotation;
   mass?: number;
-  onTap?: (model: ARCommonNode) => void;
-  onLongPress?: (model: ARCommonNode) => void;
-  // onPan?: (model: ARNode) => void;
+  onTap?: (interaction: ARNodeInteraction) => void;
+  onLongPress?: (interaction: ARNodeInteraction) => void;
+  // onPan?: (interaction: ARNodeInteraction) => void;
   draggingEnabled?: boolean;
   rotatingEnabled?: boolean;
 }
@@ -189,6 +194,16 @@ export class ARDimensions {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+}
+
+export class ARDimensions2D {
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
   }
 }
 

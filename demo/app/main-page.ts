@@ -4,7 +4,7 @@ import { isIOS } from 'tns-core-modules/ui/page';
 import {
   AR,
   ARLoadedEventData,
-  ARCommonNode,
+  ARNodeInteraction,
   ARPlaneDetectedEventData,
   ARPlaneTappedEventData,
   ARSceneTappedEventData,
@@ -148,6 +148,7 @@ export function arLoaded(args: ARLoadedEventData): void {
 
 export function trackingImageDetected(args: ARTrackingImageDetectedEventData): void {
   console.log("Tracked image detected (name): " + args.imageName);
+
   if (args.imageName === "nativescripting") {
     // note that you really want to use locally stored videos, like so:
     if (isIOS) {
@@ -169,17 +170,17 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
         y: 0,
         z: 0.03
       },
-      onTap: (node: ARCommonNode) => {
+      onTap: (interaction: ARNodeInteraction) => {
         // let's move the plane out of the image a bit
-        node.moveBy({
+        interaction.node.moveBy({
           x: 0,
           y: 0,
           z: 0.01
         })
       },
-      onLongPress: (node: ARCommonNode) => {
+      onLongPress: (interaction: ARNodeInteraction) => {
         // let's move the plane into the image a bit
-        node.moveBy({
+        interaction.node.moveBy({
           x: 0,
           y: 0,
           z: -0.01
@@ -202,13 +203,22 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           wrapMode: "ClampToBorder"
         }
       }],
-      onTap: (node: ARCommonNode) => {
-        console.log("box tapped: " + node.id);
+      onTap: (interaction: ARNodeInteraction) => {
+        console.log("box tapped: " + interaction.node.id + " at " + interaction.touchPosition);
         // let's rotate the box in steps of 5 degrees to the right
-        node.rotateBy({
+        interaction.node.rotateBy({
           x: 0,
           y: 0,
           z: -5
+        })
+      },
+      onLongPress: (interaction: ARNodeInteraction) => {
+        console.log("box longpressed: " + interaction.node.id + " at " + interaction.touchPosition);
+        // let's rotate the box back in steps of 5 degrees to the right
+        interaction.node.rotateBy({
+          x: 0,
+          y: 0,
+          z: 5
         })
       }
     }).then(node => console.log("box added to nativescript nl: " + node.id));
@@ -222,13 +232,12 @@ export function planeDetected(args: ARPlaneDetectedEventData): void {
 export function planeTapped(args: ARPlaneTappedEventData): void {
   console.log("Plane tapped @ x coordinate: " + args.position.x);
 
-  /*
   args.object.addModel({
     name: "Models.scnassets/Car.dae",
     position: {
       x: 0,
       y: 0,
-      z: -1
+      z: -0.5
     },
     rotation: {
       x: 0,
@@ -236,10 +245,15 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       z: 0
     },
     scale: 0.1,
-    onTap: node => console.log("model tapped: " + node.id)
+    onTap: (interaction: ARNodeInteraction) => {
+      console.log("tapped model id: " + interaction.node.id);
+      console.log("tapped model position: " + interaction.node.position);
+      console.log("tapped model: " + JSON.stringify(interaction.node));
+    },
+    onLongPress: (interaction: ARNodeInteraction) => console.log("model longpressed: " + interaction.node.id)
   });
-  */
 
+  /*
   const boxDimensions = 0.11;
 
   args.object.addBox({
@@ -278,6 +292,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       // do something iOS specific here if you like
     }
   });
+  */
 }
 
 export function sceneTapped(args: ARSceneTappedEventData): void {

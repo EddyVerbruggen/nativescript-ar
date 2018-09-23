@@ -259,10 +259,12 @@ class AR extends ARBase {
       return;
     }
 
+    const tapPoint = recognizer.locationInView(this.sceneView);
+
     // Perform a hit test using the screen coordinates to see if the user pressed any 3D geometry.
     const hitTestResults: NSArray<SCNHitTestResult> =
         this.sceneView.hitTestOptions(
-            recognizer.locationInView(this.sceneView),
+            tapPoint,
             <any>{
               SCNHitTestBoundingBoxOnlyKey: true,
               SCNHitTestFirstFoundOnlyKey: true
@@ -275,7 +277,10 @@ class AR extends ARBase {
     const hitResult: SCNHitTestResult = hitTestResults.firstObject;
     const savedModel = ARState.shapes.get(hitResult.node.name) || ARState.shapes.get(hitResult.node.parentNode.name);
     if (savedModel) {
-      savedModel.onLongPress();
+      savedModel.onLongPress({
+        x: tapPoint.x,
+        y: tapPoint.y
+      });
     }
   }
 
@@ -311,6 +316,10 @@ class AR extends ARBase {
       const savedModel: ARCommonNode = ARState.shapes.get(hitResult.node.name);
       if (savedModel && savedModel.draggingEnabled && savedModel.ios) {
         this.targetNodeForPanning = savedModel.ios;
+        savedModel.onPan({
+          x: position.x,
+          y: position.y
+        });
       } else {
         this.targetNodeForPanning = undefined;
       }
@@ -401,39 +410,39 @@ class AR extends ARBase {
 
     const hitResult: SCNHitTestResult = hitTestResults.firstObject;
     let node: SCNNode = hitResult.node;
-    let existingItemTapped = false;
 
     if (node !== undefined) {
       let savedModel = ARState.shapes.get(node.name) || ARState.shapes.get(node.parentNode.name);
       if (savedModel !== undefined) {
-        savedModel.onTap();
-        existingItemTapped = true;
+        savedModel.onTap({
+          x: tapPoint.x,
+          y: tapPoint.y
+        });
+        return;
       }
     }
 
-    if (!existingItemTapped) {
-      // let's see if a plane was tapped instead
-      const planeTapResults: NSArray<ARHitTestResult> = this.sceneView.hitTestTypes(tapPoint, ARHitTestResultType.ExistingPlaneUsingExtent);
-      if (planeTapResults.count > 0) {
-        const planeHitResult: ARHitTestResult = planeTapResults.firstObject;
+    // let's see if a plane was tapped instead
+    const planeTapResults: NSArray<ARHitTestResult> = this.sceneView.hitTestTypes(tapPoint, ARHitTestResultType.ExistingPlaneUsingExtent);
+    if (planeTapResults.count > 0) {
+      const planeHitResult: ARHitTestResult = planeTapResults.firstObject;
 
-        // Currently, in {N} hitResult.worldTransform is undefined so let's hack around it
-        const hitResultStr = "" + planeHitResult;
-        const transformStart = hitResultStr.indexOf("worldTransform=<translation=(") + "worldTransform=<translation=(".length;
-        const transformStr = hitResultStr.substring(transformStart, hitResultStr.indexOf(")", transformStart));
-        const transformParts = transformStr.split(" ");
+      // Currently, in {N} hitResult.worldTransform is undefined so let's hack around it
+      const hitResultStr = "" + planeHitResult;
+      const transformStart = hitResultStr.indexOf("worldTransform=<translation=(") + "worldTransform=<translation=(".length;
+      const transformStr = hitResultStr.substring(transformStart, hitResultStr.indexOf(")", transformStart));
+      const transformParts = transformStr.split(" ");
 
-        const eventData: ARPlaneTappedEventData = {
-          eventName: ARBase.planeTappedEvent,
-          object: this,
-          position: {
-            x: +transformParts[0],
-            y: +transformParts[1],
-            z: +transformParts[2]
-          }
-        };
-        this.notify(eventData);
-      }
+      const eventData: ARPlaneTappedEventData = {
+        eventName: ARBase.planeTappedEvent,
+        object: this,
+        position: {
+          x: +transformParts[0],
+          y: +transformParts[1],
+          z: +transformParts[2]
+        }
+      };
+      this.notify(eventData);
     }
   }
 
