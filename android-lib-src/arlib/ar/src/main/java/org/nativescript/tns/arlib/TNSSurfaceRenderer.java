@@ -103,11 +103,12 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
 
     // TODO also try this in JS
     private boolean modelAdded;
+
     public void addModel() {
         if (modelAdded) {
             return;
         }
-        Log.d(TAG, "TNSSurfaceRenderer.addModel");
+        Log.d(TAG, "TNSSurfaceRenderer.addModel!");
         try {
             virtualObject.createOnGlThread(/*context=*/ this.context, "models/andy.obj", "models/andy.png");
             virtualObject.setMaterialProperties(0.0f, 2.0f, 0.5f, 6.0f);
@@ -162,7 +163,7 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-//        Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame"); // too noisy
+        Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame"); // too noisy
         // Clear screen to notify driver it should not load any pixels from previous frame.
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
@@ -219,6 +220,7 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
 
             // If not tracking, don't draw 3d objects.
             if (camera.getTrackingState() == TrackingState.PAUSED) {
+                Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame. Paused.");
                 return;
             }
 
@@ -264,7 +266,9 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
             }
 
             // Visualize anchors created by touch.
+            Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame. modelAdded?");
             if (modelAdded) {
+                Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame. modelAdded!");
                 float scaleFactor = 1.0f;
                 for (Anchor anchor : anchors) {
                     if (anchor.getTrackingState() != TrackingState.TRACKING) {
@@ -279,6 +283,7 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
                     virtualObjectShadow.updateModelMatrix(anchorMatrix, scaleFactor);
                     virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba);
                     virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba);
+                    Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame. object drawn");
                 }
             }
 
