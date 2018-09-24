@@ -1,14 +1,15 @@
 NativeScript Augmented Reality
 ==============================
 
-[![Build Status][build-status]][build-url]
 [![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][npm-url]
 [![Twitter Follow][twitter-image]][twitter-url]
 
 [build-status]:https://travis-ci.org/EddyVerbruggen/nativescript-ar.svg?branch=master
 [build-url]:https://travis-ci.org/EddyVerbruggen/nativescript-ar
 [npm-image]:http://img.shields.io/npm/v/nativescript-ar.svg
 [npm-url]:https://npmjs.org/package/nativescript-ar
+[downloads-image]:http://img.shields.io/npm/dm/nativescript-plugin-firebase.svg
 [twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
 [twitter-url]:https://twitter.com/eddyverbruggen
 

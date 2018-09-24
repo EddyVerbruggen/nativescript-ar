@@ -78,7 +78,7 @@ Here are a few nice resources for `.dae` models:
 - [Turbosquid.com, all](https://www.turbosquid.com/Search/Index.cfm?keyword=&media_typeid=2&file_type=194&=true&sort_column=A8&sort_order=desc)
 
 ```typescript
-import { ARNode } from "nativescript-ar";
+import { ARNodeInteraction } from "nativescript-ar";
 
 // assuming you have an 'ar' instance from either an event's 'object' property, or simply 'new AR()'.
 ar.addModel({
@@ -96,10 +96,10 @@ ar.addModel({
     y: 180,
     z: 0
   },
-  onTap: (model: ARNode) => console.log("Model was tapped"),
-  onLongPress: ((model: ARNode) => {
+  onTap: (interaction: ARNodeInteraction) => console.log("Model was tapped at coordinates " + interaction.touchPosition.x + " x " + interaction.touchPosition.y),
+  onLongPress: ((interaction: ARNodeInteraction) => {
     console.log("Model was longpressed, removing it just for show.");
-    model.remove();
+    interaction.node.remove();
   })
 }).then(arNode => {
   // to remove the model after a few seconds, you can do this:
@@ -120,7 +120,7 @@ Its contents are either of type `string` (referring to an image), `Color`, or `A
 See the TS definitions and these examples for details.
 
 ```typescript
-import { ARNode } from "nativescript-ar";
+import { ARNodeInteraction } from "nativescript-ar";
 
 ar.addBox({
   position: {
@@ -136,8 +136,8 @@ ar.addBox({
   chamferRadius: 0.01, // 'rounded corners', this is relative to the 'dimensions'.
   mass: 0.2,
   materials: ["Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"], // must be in App_Resources
-  onTap: (model: ARNode) => console.log("Box was tapped"),
-  onLongPress: (model: ARNode) => console.log("Box was longpressed")
+  onTap: (interaction: ARNodeInteraction) => console.log("Box was tapped"),
+  onLongPress: (interaction: ARNodeInteraction) => console.log("Box was longpressed")
 }).then(arNode => console.log("Box was added"));
 ```
 
@@ -145,7 +145,7 @@ ar.addBox({
 <img src="images/scnsphere.png" width="316px"/>
 
 ```typescript
-import { ARNode } from "nativescript-ar";
+import { ARNodeInteraction } from "nativescript-ar";
 import { Color } from "tns-core-modules/color";
 
 ar.addSphere({
@@ -158,8 +158,8 @@ ar.addSphere({
   segmentCount: 100,
   mass: 0.001,
   materials: [new Color("red")],
-  onTap: (model: ARNode) => console.log("Sphere was tapped"),
-  onLongPress: (model: ARNode) => console.log("Sphere was longpressed")
+  onTap: (interaction: ARNodeInteraction) => console.log("Sphere was tapped"),
+  onLongPress: (interaction: ARNodeInteraction) => console.log("Sphere was longpressed")
 });
 ```
 
@@ -167,7 +167,7 @@ ar.addSphere({
 <img src="images/scntube.png" width="308px"/>
 
 ```typescript
-import { ARNode } from "nativescript-ar";
+import { ARNodeInteraction } from "nativescript-ar";
 
 ar.addTube({
   position: {
@@ -189,8 +189,8 @@ ar.addTube({
     roughness: "Assets.scnassets/Materials/tnsgranite/tnsgranite-roughness.png",
     transparency: 1 // 0 - 1, where 1 is solid (which is the default)
   }],
-  onTap: (model: ARNode) => console.log("Tube was tapped"),
-  onLongPress: (model: ARNode) => console.log("Tube was longpressed")
+  onTap: (interaction: ARNodeInteraction) => console.log("Tube was tapped"),
+  onLongPress: (interaction: ARNodeInteraction) => console.log("Tube was longpressed")
 });
 ```
 
