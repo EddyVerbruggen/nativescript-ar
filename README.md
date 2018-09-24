@@ -9,7 +9,7 @@ NativeScript Augmented Reality
 [build-url]:https://travis-ci.org/EddyVerbruggen/nativescript-ar
 [npm-image]:http://img.shields.io/npm/v/nativescript-ar.svg
 [npm-url]:https://npmjs.org/package/nativescript-ar
-[downloads-image]:http://img.shields.io/npm/dm/nativescript-plugin-firebase.svg
+[downloads-image]:http://img.shields.io/npm/dm/nativescript-ar.svg
 [twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
 [twitter-url]:https://twitter.com/eddyverbruggen
 
@@ -17,7 +17,7 @@ NativeScript Augmented Reality
 
 ### Supported platforms
 * iPhone SE, 6s, iPad Pro, iPad 2017, or newer. Running iOS 11 or newer.
-* Android support is work in progress - but there's currently hardly anyone on the planet with an Android device capable of running AR anyway.
+* Android support is work in progress and honestly not too useful as the number of devices capable of running complex AR scenes lags way behind iOS.
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
