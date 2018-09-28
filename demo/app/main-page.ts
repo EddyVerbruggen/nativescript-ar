@@ -213,7 +213,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
       }],
       onTap: (interaction: ARNodeInteraction) => {
         console.log("box tapped: " + interaction.node.id + " at " + interaction.touchPosition);
-        // let's rotate the box in steps of 5 degrees to the right
+        // let's rotate the box 5 degrees to the right
         interaction.node.rotateBy({
           x: 0,
           y: 0,
@@ -222,7 +222,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
       },
       onLongPress: (interaction: ARNodeInteraction) => {
         console.log("box longpressed: " + interaction.node.id + " at " + interaction.touchPosition);
-        // let's rotate the box back in steps of 5 degrees to the right
+        // let's rotate the box 5 degrees to the left
         interaction.node.rotateBy({
           x: 0,
           y: 0,

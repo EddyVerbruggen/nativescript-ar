@@ -96,7 +96,15 @@ ar.addModel({
     y: 180,
     z: 0
   },
-  onTap: (interaction: ARNodeInteraction) => console.log("Model was tapped at coordinates " + interaction.touchPosition.x + " x " + interaction.touchPosition.y),
+  onTap: (interaction: ARNodeInteraction) => {
+    console.log("Model was tapped at coordinates " + interaction.touchPosition.x + " x " + interaction.touchPosition.y);
+    // let's rotate the box 5 degrees to the right
+    interaction.node.rotateBy({
+      x: 0,
+      y: 0,
+      z: -5
+    });
+  },
   onLongPress: ((interaction: ARNodeInteraction) => {
     console.log("Model was longpressed, removing it just for show.");
     interaction.node.remove();
@@ -136,7 +144,15 @@ ar.addBox({
   chamferRadius: 0.01, // 'rounded corners', this is relative to the 'dimensions'.
   mass: 0.2,
   materials: ["Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"], // must be in App_Resources
-  onTap: (interaction: ARNodeInteraction) => console.log("Box was tapped"),
+  onTap: (interaction: ARNodeInteraction) => {
+    console.log("Box was tapped");
+    // move the box a little
+    interaction.node.moveBy({
+      x: 0,
+      y: 0.02,
+      z: 0.02
+    });
+  },
   onLongPress: (interaction: ARNodeInteraction) => console.log("Box was longpressed")
 }).then(arNode => console.log("Box was added"));
 ```
@@ -158,8 +174,30 @@ ar.addSphere({
   segmentCount: 100,
   mass: 0.001,
   materials: [new Color("red")],
-  onTap: (interaction: ARNodeInteraction) => console.log("Sphere was tapped"),
-  onLongPress: (interaction: ARNodeInteraction) => console.log("Sphere was longpressed")
+  onTap: (interaction: ARNodeInteraction) => {
+    console.log("sphere tapped: " + interaction.node.id + " at " + interaction.touchPosition);
+    // let's rotate the box 5 degrees to the right
+    interaction.node.rotateBy({
+      x: 0,
+      y: 0,
+      z: -5
+    });
+  },
+  onLongPress: (interaction: ARNodeInteraction) => {
+    console.log("sphere longpressed: " + interaction.node.id + " at " + interaction.touchPosition);
+    // let's rotate the box 5 degrees to the left
+    interaction.node.rotateBy({
+      x: 0,
+      y: 0,
+      z: 5
+    });
+    // and move it a little
+    interaction.node.moveBy({
+      x: 0,
+      y: 0,
+      z: 0.02
+    });
+  }
 });
 ```
 

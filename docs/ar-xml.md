@@ -28,7 +28,7 @@ Add the `AR` namespace to the view you want AR-ify, then add use it like any oth
 Now open `your-page.ts` and add:
 
 ```typescript
-import { AR, ARLoadedEventData, ARPlaneTappedEventData } from 'nativescript-ar';
+import { AR, ARLoadedEventData, ARNodeInteraction, ARPlaneTappedEventData } from 'nativescript-ar';
 
 export function arLoaded(args: ARLoadedEventData): void {
   const ar: AR = args.object;
@@ -46,7 +46,30 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     scale: 0.15,
     material: "tnsgranite", // this needs to be part of your app's assets, see the demo app
     mass: 0.0000001, // very light - makes it bounce a bit when dropped
-    onTap: node => console.log("box tapped: " + node.id)
+    onTap: (interaction: ARNodeInteraction) => {
+      console.log("box tapped: " + interaction.node.id + " at " + interaction.touchPosition);
+      // let's rotate the box 5 degrees to the right
+      interaction.node.rotateBy({
+        x: 0,
+        y: 0,
+        z: -5
+      });
+    },
+    onLongPress: (interaction: ARNodeInteraction) => {
+      console.log("box longpressed: " + interaction.node.id + " at " + interaction.touchPosition);
+      // let's rotate the box 5 degrees to the left
+      interaction.node.rotateBy({
+        x: 0,
+        y: 0,
+        z: 5
+      });
+      // and move it a little
+      interaction.node.moveBy({
+        x: 0,
+        y: 0,
+        z: 0.02
+      });
+    }
   }).then(node => console.log("box added: " + node.id));
 }
 ```
