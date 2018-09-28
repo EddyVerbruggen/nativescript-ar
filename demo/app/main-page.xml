@@ -1,6 +1,12 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page" xmlns:AR="nativescript-ar">
   <GridLayout rows="auto, *" columns="*">
     <Label text="{{ message }}" class="t-20 p-10 text-center c-black" textWrap="true"/>
+
+    <!-- TIPS (iOS):
+     - To enable 'face tracking', set 'trackingMode' to FACE and film your fase, then look at the console log.
+     - To enable 'image tracking', set 'trackingMode' to IMAGE and configure some images in app/App_Resources/iOS/Assets.xcassets/AR Resources.arresourcegroup
+     - To enable 'world tracking', set 'trackingMode' to WORLD and point the camera at a flat surface - then tap the drawn plane.
+    -->
     <AR:AR
         row="1"
         trackingMode="FACE"
