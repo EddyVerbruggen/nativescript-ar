@@ -15,7 +15,8 @@ export enum ARDebugLevel {
 
 export enum ARTrackingMode {
   WORLD = <any>"WORLD",
-  IMAGE = <any>"IMAGE"
+  IMAGE = <any>"IMAGE",
+  FACE = <any>"FACE"
 }
 
 const debugLevelProperty = new Property<AR, ARDebugLevel>({
@@ -179,6 +180,25 @@ export interface ARTrackingImageDetectedEventData extends AREventData {
   imageTrackingActions: ARImageTrackingActions;
 }
 
+export type ARTrackingFaceEventType = "FOUND" | "UPDATED" | "LOST";
+
+export interface ARTrackingFaceEventData extends AREventData {
+  eventType: ARTrackingFaceEventType;
+  /**
+   * Set when eventType is either "FOUND" or "UPDATED".
+   */
+  properties?: {
+    eyeBlinkLeft: number;
+    eyeBlinkRight: number;
+    jawOpen: number;
+    lookAtPoint: ARPosition;
+    mouthFunnel: number;
+    mouthSmileLeft: number;
+    mouthSmileRight: number;
+    tongueOut: number;
+  }
+}
+
 export interface ARImageTrackingActions {
   playVideo(nativeUrl: any /* iOS: NSURL */): void;
   addBox(options: ARAddBoxOptions): Promise<ARBox>;
@@ -225,6 +245,7 @@ export abstract class AR extends ContentView {
   static planeDetectedEvent: string = "planeDetected";
   static planeTappedEvent: string = "planeTapped";
   static trackingImageDetectedEvent: string = "trackingImageDetected";
+  static trackingFaceDetectedEvent: string = "trackingFaceDetected";
 
   planeMaterial: string;
   planeOpacity: number;

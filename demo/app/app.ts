@@ -1,3 +1,3 @@
 ﻿import "./bundle-config";
 import * as application from 'tns-core-modules/application';
-application.start({ moduleName: "main-page" });
+application.run({ moduleName: "main-page" });

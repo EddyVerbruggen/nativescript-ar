@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "tsc": "tsc -skipLibCheck",
+    "tsc": "tsc -skipLibCheck && tsc ../demo/*.ts -skipLibCheck",
     "build": "npm i && npm run tsc",
     "postclone": "npm i && cd ../demo && npm i && cd ../src && npm run plugin.link",
     "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",

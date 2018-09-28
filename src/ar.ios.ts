@@ -13,6 +13,8 @@ import {
   ARPlaneTappedEventData,
   ARPosition,
   ARSceneTappedEventData,
+  ARTrackingFaceEventData,
+  ARTrackingFaceEventType,
   ARTrackingImageDetectedEventData,
   ARTrackingMode
 } from "./ar-common";
@@ -72,7 +74,15 @@ class AR extends ARBase {
 
   static isImageTrackingSupported(): boolean {
     try {
-      return !!ARImageTrackingConfiguration;
+      return !!ARImageTrackingConfiguration && ARImageTrackingConfiguration.isSupported;
+    } catch (ignore) {
+      return false;
+    }
+  }
+
+  static isFaceTrackingSupported(): boolean {
+    try {
+      return !!ARFaceTrackingConfiguration && ARFaceTrackingConfiguration.isSupported;
     } catch (ignore) {
       return false;
     }
@@ -144,6 +154,14 @@ class AR extends ARBase {
       }
       this.configuration = imageTrackingConfig;
 
+    } else if (this.trackingMode === ARTrackingMode.FACE) {
+      if (!AR.isFaceTrackingSupported()) {
+        console.log("############### Face tracking is not supported on this device. It's probably not running iOS 12+.");
+        return;
+      }
+
+      this.configuration = ARFaceTrackingConfiguration.new();
+
     } else {
       const worldTrackingConfig = ARWorldTrackingConfiguration.new();
       worldTrackingConfig.detectionImages = ARReferenceImage.referenceImagesInGroupNamedBundle("AR Resources", null);
@@ -180,6 +198,7 @@ class AR extends ARBase {
     // const env = UIImage.imageNamed("./Assets.scnassets/Environment/spherical.jpg");
     // scene.lightingEnvironment.contents = env;
 
+    // TODO some of this is probably only relevant for WORLD tracking
     this.addBottomPlane(scene);
 
     // register a tap handler
@@ -571,6 +590,10 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
   private options?: any;
   private currentTrackingState = ARTrackingState.Normal;
 
+  // ARKit detects and provides information about only 1 user’s face.
+  // If multiple faces are present in the camera image, ARKit chooses the largest or most clearly recognizable face.
+  private hasFace = false;
+
   public static new(): ARSCNViewDelegateImpl {
     try {
       ARSCNViewDelegateImpl.ObjCProtocols.push(ARSCNViewDelegate);
@@ -675,10 +698,61 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
   }
 
   rendererDidUpdateNodeForAnchor(renderer: SCNSceneRenderer, node: SCNNode, anchor: ARAnchor): void {
-    const plane: ARPlane = ARState.planes.get(anchor.identifier.UUIDString);
-    if (plane) {
-      plane.update(anchor);
+    if (anchor instanceof ARPlaneAnchor) {
+      const plane: ARPlane = ARState.planes.get(anchor.identifier.UUIDString);
+      if (plane) {
+        plane.update(anchor);
+      }
+      return;
     }
+
+    const owner: AR = this.owner.get();
+
+    if (!(anchor instanceof ARFaceAnchor)) {
+      // if we had a face, now we lost it
+      if (this.hasFace) {
+        this.hasFace = false;
+
+        owner.notify(<ARTrackingFaceEventData>{
+          eventName: ARBase.trackingFaceDetectedEvent,
+          object: owner,
+          eventType: "LOST"
+        });
+      }
+      return;
+    }
+
+    const faceAnchor: ARFaceAnchor = anchor;
+    let eventType: ARTrackingFaceEventType = "UPDATED";
+
+    // if we didn't have a face but now we do
+    if (!this.hasFace){
+      this.hasFace = true;
+      owner.reset();
+      eventType = "FOUND";
+    }
+
+    const blendShapes: NSDictionary<string, number> = faceAnchor.blendShapes;
+
+    owner.notify(<ARTrackingFaceEventData>{
+      eventName: ARBase.trackingFaceDetectedEvent,
+      object: owner,
+      eventType: eventType,
+      properties: {
+        eyeBlinkLeft: blendShapes.valueForKey(ARBlendShapeLocationEyeBlinkLeft),
+        eyeBlinkRight: blendShapes.valueForKey(ARBlendShapeLocationEyeBlinkRight),
+        jawOpen: blendShapes.valueForKey(ARBlendShapeLocationJawOpen),
+        lookAtPoint: {
+          x: faceAnchor.lookAtPoint[0],
+          y: faceAnchor.lookAtPoint[1],
+          z: faceAnchor.lookAtPoint[2]
+        },
+        mouthFunnel: blendShapes.valueForKey(ARBlendShapeLocationMouthFunnel),
+        mouthSmileLeft: blendShapes.valueForKey(ARBlendShapeLocationMouthSmileLeft),
+        mouthSmileRight: blendShapes.valueForKey(ARBlendShapeLocationMouthSmileRight),
+        tongueOut: blendShapes.valueForKey(ARBlendShapeLocationTongueOut)
+      }
+    });
   }
 
   rendererDidRemoveNodeForAnchor(renderer: SCNSceneRenderer, node: SCNNode, anchor: ARAnchor): void {

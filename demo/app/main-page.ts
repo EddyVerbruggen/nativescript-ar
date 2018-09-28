@@ -8,6 +8,7 @@ import {
   ARPlaneDetectedEventData,
   ARPlaneTappedEventData,
   ARSceneTappedEventData,
+  ARTrackingFaceEventData,
   ARTrackingImageDetectedEventData
 } from 'nativescript-ar';
 import { HelloWorldModel } from './main-view-model';
@@ -144,6 +145,13 @@ export function arLoaded(args: ARLoadedEventData): void {
     onTap: node => console.log("tube tapped: " + node.id),
   }).then(node => console.log("tube added: " + node.id));
   */
+}
+
+export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
+  console.log("Tracking face (event): " + args.eventType);
+  if (args.properties) {
+    console.log(JSON.stringify(args.properties));
+  }
 }
 
 export function trackingImageDetected(args: ARTrackingImageDetectedEventData): void {
