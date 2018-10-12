@@ -9,7 +9,7 @@
     -->
     <AR:AR
         row="1"
-        trackingMode="FACE"
+        trackingMode="IMAGE"
         trackingImagesBundle="AR Resources"
         trackingImageDetected="trackingImageDetected"
         trackingFaceDetected="trackingFaceDetected"

@@ -155,7 +155,7 @@ export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
 }
 
 export function trackingImageDetected(args: ARTrackingImageDetectedEventData): void {
-  console.log("Tracked image detected (name): " + args.imageName);
+  console.log("Tracked image detected (name).. " + args.imageName);
 
   if (args.imageName === "nativescripting") {
     // note that you really want to use locally stored videos, like so:
@@ -170,6 +170,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
     }
 
   } else if (args.imageName === "ship") {
+    console.log("Adding model");
     args.imageTrackingActions.addModel({
       name: "art.scnassets/ship.scn",
       childNodeName: "shipMesh",
@@ -196,7 +197,8 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
       }
     });
 
-  } else if (args.imageName === "nativescript nl" || args.imageName === "nativescripting alt") {
+  } else if (args.imageName === "nativescript nl" || args.imageName === "nativescripting alt" || args.imageName === "hertogjan" || args.imageName === "latrappe") {
+    console.log("Adding box");
     args.imageTrackingActions.addBox({
       position: {
         x: args.position.x,
@@ -229,7 +231,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           z: 5
         })
       }
-    }).then(node => console.log("box added to nativescript nl: " + node.id));
+    }).then(node => console.log("box added to image, id: " + node.id));
   }
 }
 
