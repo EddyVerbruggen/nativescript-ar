@@ -2,19 +2,18 @@
   "nativescript": {
     "id": "org.nativescript.plugindemo.ar",
     "tns-android": {
-      "version": "4.2.0"
+      "version": "5.1.1"
     },
     "tns-ios": {
-      "version": "4.2.0"
+      "version": "5.1.0"
     }
   },
   "dependencies": {
     "nativescript-ar": "../src",
     "nativescript-flashlight": "^1.2.1",
-    "nativescript-speech-recognition": "^1.4.0",
     "nativescript-theme-core": "^1.0.4",
     "nativescript-unit-test-runner": "^0.3.4",
-    "tns-core-modules": "~4.2.0"
+    "tns-core-modules": "~5.1.2"
   },
   "devDependencies": {
     "@types/jasmine": "~2.8.0",
@@ -32,14 +31,14 @@
     "karma-nativescript-launcher": "^0.4.0",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
-    "nativescript-dev-typescript": "~0.7.3",
+    "nativescript-dev-typescript": "~0.7.9",
     "nativescript-dev-webpack": "~0.9.0",
     "nativescript-worker-loader": "~0.8.1",
     "raw-loader": "~0.5.1",
     "resolve-url-loader": "~2.1.0",
-    "tns-platform-declarations": "~4.2.0",
+    "tns-platform-declarations": "~5.1.2",
     "tslint": "~5.4.3",
-    "typescript": "~2.7.0",
+    "typescript": "~3.1.1",
     "webpack": "~3.8.1",
     "webpack-bundle-analyzer": "^2.8.2",
     "webpack-sources": "~1.0.1",

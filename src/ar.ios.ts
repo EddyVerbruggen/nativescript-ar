@@ -227,14 +227,16 @@ class AR extends ARBase {
     // make things look pretty
     this.sceneView.antialiasingMode = SCNAntialiasingMode.Multisampling4X;
 
-    this.nativeView.addSubview(this.sceneView);
+    setTimeout(() => {
+      this.nativeView.addSubview(this.sceneView);
 
-    const eventData: ARLoadedEventData = {
-      eventName: ARBase.arLoadedEvent,
-      object: this,
-      ios: this.sceneView
-    };
-    this.notify(eventData);
+      const eventData: ARLoadedEventData = {
+        eventName: ARBase.arLoadedEvent,
+        object: this,
+        ios: this.sceneView
+      };
+      this.notify(eventData);
+    });
   }
 
   private addBottomPlane(scene): void {
