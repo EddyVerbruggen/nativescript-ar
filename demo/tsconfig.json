@@ -1,18 +1,12 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "module": "commonjs",
         "declaration": false,
         "removeComments": true,
         "noLib": false,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "skipLibCheck": true,
-        "lib": [
-            "es6",
-            "dom",
-            "es2015.iterable"
-        ],
         "pretty": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
@@ -27,14 +21,18 @@
             "./node_modules"
         ],
         "types": [],
+        "lib": [
+            "es6",
+            "dom"
+        ],
         "baseUrl": ".",
         "paths": {
+            "~/*": [
+                "app/*"
+            ],
             "*": [
                 "./node_modules/tns-core-modules/*",
                 "./node_modules/*"
-            ],
-            "~/*": [
-                "app/*"
             ]
         }
     },
