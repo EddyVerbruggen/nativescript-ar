@@ -14,7 +14,7 @@ import {
   ARPlaneTappedEventData
 } from "./ar-common";
 
-declare const org, com, android: any;
+declare const com, android: any;
 
 const CAMERA_PERMISSION_REQUEST_CODE = 853;
 

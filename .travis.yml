@@ -15,13 +15,6 @@ matrix:
       jdk: oraclejdk8
       script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - language: android
-      os: linux
-      env:
-        - WebPack="Android"
-      jdk: oraclejdk8
-      before_install: nvm install 8
-      script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
-    - language: android
       env:
         - BuildAndroid="28"
       os: linux
