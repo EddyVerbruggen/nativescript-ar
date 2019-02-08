@@ -1,14 +1,10 @@
-android {
-    
-}
-
 repositories {
     google()
 }
 
 dependencies {
-    compile 'com.google.ar:core:1.1.0'
+    implementation 'com.google.ar:core:1.1.0'
 
     // a simple Wavefront OBJ file loader: https://github.com/javagl/Obj
-    compile 'de.javagl:obj:0.3.0'
+    implementation 'de.javagl:obj:0.3.0'
 }

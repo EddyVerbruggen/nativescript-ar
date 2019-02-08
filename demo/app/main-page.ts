@@ -185,7 +185,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           x: 0,
           y: 0,
           z: 0.01
-        })
+        });
       },
       onLongPress: (interaction: ARNodeInteraction) => {
         // let's move the plane into the image a bit
@@ -193,7 +193,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           x: 0,
           y: 0,
           z: -0.01
-        })
+        });
       }
     });
 
@@ -220,7 +220,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           x: 0,
           y: 0,
           z: -5
-        })
+        });
       },
       onLongPress: (interaction: ARNodeInteraction) => {
         console.log("box longpressed: " + interaction.node.id + " at " + interaction.touchPosition);
@@ -229,7 +229,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           x: 0,
           y: 0,
           z: 5
-        })
+        });
       }
     }).then(node => console.log("box added to image, id: " + node.id));
   }

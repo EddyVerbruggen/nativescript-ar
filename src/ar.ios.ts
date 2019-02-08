@@ -728,7 +728,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     let eventType: ARTrackingFaceEventType = "UPDATED";
 
     // if we didn't have a face but now we do
-    if (!this.hasFace){
+    if (!this.hasFace) {
       this.hasFace = true;
       owner.reset();
       eventType = "FOUND";
@@ -809,11 +809,11 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 
   addBox(options: ARAddBoxOptions): Promise<ARBox> {
     return addBox(options, this.planeNode);
-  };
+  }
 
   addModel(options: ARAddModelOptions): Promise<ARModel> {
     return addModel(options, this.planeNode);
-  };
+  }
 }
 
 class ARSessionDelegateImpl extends NSObject implements ARSessionDelegate {

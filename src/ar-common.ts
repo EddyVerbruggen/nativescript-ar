@@ -62,6 +62,7 @@ export interface ARNode {
   ios?: any; /* SCNNode */
   android?: any; /* TODO Anchor? */
   remove(): void;
+
   // TODO add animate({});
 }
 
@@ -72,6 +73,7 @@ export interface ARNodeInteraction {
 
 export interface ARCommonNode extends ARNode {
   moveBy?(to: ARPosition): void;
+
   rotateBy?(by: ARRotation): void;
 }
 
@@ -196,12 +198,14 @@ export interface ARTrackingFaceEventData extends AREventData {
     mouthSmileLeft: number;
     mouthSmileRight: number;
     tongueOut: number;
-  }
+  };
 }
 
 export interface ARImageTrackingActions {
   playVideo(nativeUrl: any /* iOS: NSURL */): void;
+
   addBox(options: ARAddBoxOptions): Promise<ARBox>;
+
   addModel(options: ARAddModelOptions): Promise<ARModel>;
 }
 
