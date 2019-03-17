@@ -18,13 +18,13 @@ const flashlight = require("nativescript-flashlight");
 declare const NSBundle: any;
 
 let ar: AR;
+let model: HelloWorldModel;
 
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
   // Get the event sender
   const page = <pages.Page>args.object;
-  const model = new HelloWorldModel();
-  model.ar = ar;
+  model = new HelloWorldModel();
   model.screenshot = page.getViewById("screenshot");
   page.bindingContext = model;
 
@@ -38,8 +38,9 @@ export function pageLoaded(args: observable.EventData) {
 
 export function arLoaded(args: ARLoadedEventData): void {
   ar = args.object;
+  model.ar = ar;
+
   // add some stuff to the scene
-  console.log(">> arLoaded, object: " + args.object);
   /*
   setTimeout(() => {
     args.object.addModel({

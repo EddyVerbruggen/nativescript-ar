@@ -1,6 +1,6 @@
-import { Observable } from 'tns-core-modules/data/observable';
-import { AR, ARMaterial, ARTrackingMode } from 'nativescript-ar';
+import { AR, ARMaterial } from "nativescript-ar";
 import { Color } from "tns-core-modules/color";
+import { Observable } from "tns-core-modules/data/observable";
 import { Image } from "tns-core-modules/ui/image";
 
 export class HelloWorldModel extends Observable {
