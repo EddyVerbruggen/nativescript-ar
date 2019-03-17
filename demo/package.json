@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.plugindemo.ar",
     "tns-android": {
-      "version": "5.1.0"
+      "version": "5.2.0"
     },
     "tns-ios": {
-      "version": "5.1.0"
+      "version": "5.2.0"
     }
   },
   "dependencies": {
@@ -13,7 +13,7 @@
     "nativescript-flashlight": "^1.2.1",
     "nativescript-theme-core": "^1.0.4",
     "nativescript-unit-test-runner": "^0.3.4",
-    "tns-core-modules": "~5.1.2"
+    "tns-core-modules": "~5.2.2"
   },
   "devDependencies": {
     "@types/jasmine": "~2.8.0",
@@ -31,7 +31,7 @@
     "karma-nativescript-launcher": "^0.4.0",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
-    "nativescript-dev-typescript": "~0.7.9",
+    "nativescript-dev-typescript": "~0.8.0",
     "nativescript-dev-webpack": "~0.9.0",
     "nativescript-worker-loader": "~0.8.1",
     "raw-loader": "~0.5.1",
