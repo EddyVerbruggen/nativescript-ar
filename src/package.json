@@ -11,7 +11,8 @@
     }
   },
   "scripts": {
-    "tsc": "tsc -skipLibCheck && tsc ../demo/*.ts -skipLibCheck",
+    "tsc": "tsc -skipLibCheck",
+    "tsc.demo": "tsc ../demo/*.ts -skipLibCheck",
     "build": "npm i && npm run tsc",
     "postclone": "npm i && cd ../demo && npm i && cd ../src && npm run plugin.link",
     "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
@@ -19,9 +20,9 @@
     "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude '**/node_modules/**' --exclude '**/tns_modules/**' --exclude '**/typings/**' --exclude '**/platforms/**'",
     "plugin.link": "npm link && cd ../demo && npm link nativescript-ar && cd ../src",
     "plugin.tscwatch": "npm run tsc -- -w",
-    "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
-    "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
-    "demo.android.clean": "npm i && npm run tsc && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src && tns run android --syncAllFiles",
+    "demo.ios": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run ios --syncAllFiles",
+    "demo.android": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run android --syncAllFiles",
+    "demo.android.clean": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src && tns run android --syncAllFiles",
     "demo.reset": "cd ../demo && rimraf platforms",
     "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src",
     "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",

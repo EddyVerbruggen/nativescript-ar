@@ -43,7 +43,7 @@ export abstract class ARCommonNode implements IARCommonNode {
     node.physicsBody.categoryBitMask = 1; // CollisionCategoryCube
 
     if (options.scale) {
-      node.scale = <ARPosition>(options.scale instanceof ARScale ? options.scale : {
+      node.scale = <ARPosition>(options.scale instanceof ARScale || (<any>options.scale).x ? options.scale : {
         x: options.scale,
         y: options.scale,
         z: options.scale

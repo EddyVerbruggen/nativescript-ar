@@ -1,6 +1,3 @@
-import * as observable from 'tns-core-modules/data/observable';
-import * as pages from 'tns-core-modules/ui/page';
-import { isIOS } from 'tns-core-modules/ui/page';
 import {
   AR,
   ARLoadedEventData,
@@ -11,6 +8,10 @@ import {
   ARTrackingFaceEventData,
   ARTrackingImageDetectedEventData
 } from 'nativescript-ar';
+import { Color } from 'tns-core-modules/color';
+import * as observable from 'tns-core-modules/data/observable';
+import * as pages from 'tns-core-modules/ui/page';
+import { isIOS } from 'tns-core-modules/ui/page';
 import { HelloWorldModel } from './main-view-model';
 
 const flashlight = require("nativescript-flashlight");
@@ -149,9 +150,84 @@ export function arLoaded(args: ARLoadedEventData): void {
 }
 
 export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
-  console.log("Tracking face (event): " + args.eventType);
   if (args.properties) {
     console.log(JSON.stringify(args.properties));
+  }
+
+  if (args.faceTrackingActions) {
+
+    let textModel;
+
+    setTimeout(() => {
+      args.faceTrackingActions.addText({
+        text: "Ray-Ban model S",
+        depth: 0.3,
+        materials: [new Color("red")],
+        scale: {
+          x: 0.002,
+          y: 0.002,
+          z: 0.002
+        },
+        position: {
+          x: -0.1, // a bit to the left
+          y: 0.15, // and a bit up
+          z: 0
+        },
+      }).then(result => textModel = result);
+    }, 500);
+
+    args.faceTrackingActions.addModel({
+      name: "Models.scnassets/glasses2.obj",
+      position: {
+        x: 0,
+        y: -0.007, // a little lower
+        z: 0.06 // a little closer to the camera
+      },
+      scale: {
+        x: 0.0045,
+        y: 0.0045,
+        z: 0.0045
+      },
+      onTap: (interaction: ARNodeInteraction) => {
+        // let's remove the current glasses, and replace it by a different model
+        interaction.node.remove();
+
+        args.faceTrackingActions.addModel({
+          name: "Models.scnassets/Glasses9.dae",
+          position: {
+            x: 0,
+            y: 0, // a little lower
+            z: 0.04 // a little closer to the camera
+          },
+          scale: {
+            x: 0.17,
+            y: 0.17,
+            z: 0.17
+          },
+          onTap: (interaction: ARNodeInteraction) => {
+            interaction.node.remove();
+            textModel.remove();
+          }
+        });
+
+        textModel.remove();
+        args.faceTrackingActions.addText({
+          text: "Ray-Ban Opaque",
+          materials: [new Color("orange")],
+          depth: 1,
+          scale: {
+            x: 0.002,
+            y: 0.002,
+            z: 0.002
+          },
+          position: {
+            x: -0.1, // a bit to the left
+            y: 0.15, // and a bit up
+            z: 0
+          },
+        }).then(result => textModel = result);
+      }
+    })
   }
 }
 

@@ -9,11 +9,13 @@
     -->
     <AR:AR
         row="1"
-        trackingMode="WORLD"
+        trackingMode="FACE"
         trackingImagesBundle="AR Resources"
         trackingImageDetected="trackingImageDetected"
         trackingFaceDetected="trackingFaceDetected"
         debugLevel="FEATURE_POINTS"
+        faceMaterial="Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"
+        faceMaterial__DISABLED="Assets.xcassets/wireframeTexture.imageset"
         planeMaterial="{{ planeMaterial }}"
         planeOpacity="0.25"
         detectPlanes="true"

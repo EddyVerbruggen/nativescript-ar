@@ -1,7 +1,7 @@
-import { Property } from "tns-core-modules/ui/core/view";
-import { ContentView } from "tns-core-modules/ui/content-view";
-import { EventData } from "tns-core-modules/data/observable";
 import { Color } from "tns-core-modules/color";
+import { EventData } from "tns-core-modules/data/observable";
+import { ContentView } from "tns-core-modules/ui/content-view";
+import { Property } from "tns-core-modules/ui/core/view";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARModel } from "./nodes/ios/armodel";
@@ -31,6 +31,10 @@ const trackingModeProperty = new Property<AR, ARTrackingMode>({
 
 const planeMaterialProperty = new Property<AR, string>({
   name: "planeMaterial"
+});
+
+const faceMaterialProperty = new Property<AR, string>({
+  name: "faceMaterial"
 });
 
 const trackingImagesBundleProperty = new Property<AR, string>({
@@ -176,7 +180,6 @@ export interface ARPlaneDetectedEventData extends AREventData {
 }
 
 export interface ARTrackingImageDetectedEventData extends AREventData {
-  // plane: ARPlane;
   position: ARPosition;
   imageName: string;
   imageTrackingActions: ARImageTrackingActions;
@@ -199,6 +202,16 @@ export interface ARTrackingFaceEventData extends AREventData {
     mouthSmileRight: number;
     tongueOut: number;
   };
+  /**
+   * Set when eventType is "FOUND".
+   */
+  faceTrackingActions?: ARFaceTrackingActions;
+}
+
+export interface ARFaceTrackingActions {
+  addModel(options: ARAddModelOptions): Promise<ARModel>;
+
+  addText(options: ARAddTextOptions): Promise<ARModel>;
 }
 
 export interface ARImageTrackingActions {
@@ -251,6 +264,7 @@ export abstract class AR extends ContentView {
   static trackingImageDetectedEvent: string = "trackingImageDetected";
   static trackingFaceDetectedEvent: string = "trackingFaceDetected";
 
+  faceMaterial: string;
   planeMaterial: string;
   planeOpacity: number;
   detectPlanes: boolean;
@@ -309,6 +323,10 @@ export abstract class AR extends ContentView {
     this.planeMaterial = value;
   }
 
+  [faceMaterialProperty.setNative](value: string) {
+    this.faceMaterial = value;
+  }
+
   [trackingImagesBundleProperty.setNative](value: string) {
     this.trackingImagesBundle = value;
   }
@@ -333,5 +351,6 @@ detectPlanesProperty.register(AR);
 debugLevelProperty.register(AR);
 trackingModeProperty.register(AR);
 trackingImagesBundleProperty.register(AR);
+faceMaterialProperty.register(AR);
 planeMaterialProperty.register(AR);
 planeOpacityProperty.register(AR);
