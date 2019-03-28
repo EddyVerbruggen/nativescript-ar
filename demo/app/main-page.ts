@@ -227,7 +227,7 @@ export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
           },
         }).then(result => textModel = result);
       }
-    })
+    });
   }
 }
 

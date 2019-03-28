@@ -185,10 +185,10 @@ class AR extends ARBase {
 
     this.sceneView = ARSCNView.new();
     this.sceneView.delegate = this.delegate = ARSCNViewDelegateImpl.createWithOwnerResultCallbackAndOptions(
-      new WeakRef(this),
-      data => {
-      },
-      {});
+        new WeakRef(this),
+        data => {
+        },
+        {});
 
     // this.sceneView.session.delegate = ARSessionDelegateImpl.createWithOwnerResultCallbackAndOptions(
     //     new WeakRef(this),
@@ -297,12 +297,12 @@ class AR extends ARBase {
 
     // Perform a hit test using the screen coordinates to see if the user pressed any 3D geometry.
     const hitTestResults: NSArray<SCNHitTestResult> =
-      this.sceneView.hitTestOptions(
-        tapPoint,
-        <any>{
-          SCNHitTestBoundingBoxOnlyKey: true,
-          SCNHitTestFirstFoundOnlyKey: true
-        });
+        this.sceneView.hitTestOptions(
+            tapPoint,
+            <any>{
+              SCNHitTestBoundingBoxOnlyKey: true,
+              SCNHitTestFirstFoundOnlyKey: true
+            });
 
     if (hitTestResults.count === 0) {
       return;
@@ -334,12 +334,12 @@ class AR extends ARBase {
       this.lastPositionForPanning = position;
 
       const hitTestResults: NSArray<SCNHitTestResult> =
-        this.sceneView.hitTestOptions(
-          position,
-          <any>{
-            SCNHitTestBoundingBoxOnlyKey: true,
-            SCNHitTestFirstFoundOnlyKey: true
-          });
+          this.sceneView.hitTestOptions(
+              position,
+              <any>{
+                SCNHitTestBoundingBoxOnlyKey: true,
+                SCNHitTestFirstFoundOnlyKey: true
+              });
 
       if (hitTestResults.count === 0) {
         this.targetNodeForPanning = undefined;
@@ -366,7 +366,7 @@ class AR extends ARBase {
         let deltaX = (position.x - this.lastPositionForPanning.x) / 700;
         let deltaY = (position.y - this.lastPositionForPanning.y) / 700;
         // TODO when the object is to the RIGHT of the camera, x should 0, when it's to the left, z should be 0..
-        this.targetNodeForPanning.localTranslateBy({ x: deltaX, y: -deltaY, z: 0 });
+        this.targetNodeForPanning.localTranslateBy({x: deltaX, y: -deltaY, z: 0});
         this.lastPositionForPanning = position;
 
       } else if (state === UIGestureRecognizerState.Ended) {
@@ -385,12 +385,12 @@ class AR extends ARBase {
 
     if (state === UIGestureRecognizerState.Began) {
       const hitTestResults: NSArray<SCNHitTestResult> =
-        this.sceneView.hitTestOptions(
-          position,
-          <any>{
-            SCNHitTestBoundingBoxOnlyKey: true,
-            SCNHitTestFirstFoundOnlyKey: true
-          });
+          this.sceneView.hitTestOptions(
+              position,
+              <any>{
+                SCNHitTestBoundingBoxOnlyKey: true,
+                SCNHitTestFirstFoundOnlyKey: true
+              });
 
       if (hitTestResults.count === 0) {
         this.targetNodeForRotating = undefined;
@@ -539,7 +539,7 @@ class SceneTapHandlerImpl extends NSObject {
   }
 
   public static ObjCExposedMethods = {
-    "tap": { returns: interop.types.void, params: [interop.types.id] }
+    "tap": {returns: interop.types.void, params: [interop.types.id]}
   };
 }
 
@@ -557,7 +557,7 @@ class SceneLongPressHandlerImpl extends NSObject {
   }
 
   public static ObjCExposedMethods = {
-    "longpress": { returns: interop.types.void, params: [interop.types.id] }
+    "longpress": {returns: interop.types.void, params: [interop.types.id]}
   };
 }
 
@@ -575,7 +575,7 @@ class ScenePanHandlerImpl extends NSObject {
   }
 
   public static ObjCExposedMethods = {
-    "pan": { returns: interop.types.void, params: [interop.types.id] }
+    "pan": {returns: interop.types.void, params: [interop.types.id]}
   };
 }
 
@@ -593,7 +593,7 @@ class SceneRotationHandlerImpl extends NSObject {
   }
 
   public static ObjCExposedMethods = {
-    "rotate": { returns: interop.types.void, params: [interop.types.id] }
+    "rotate": {returns: interop.types.void, params: [interop.types.id]}
   };
 }
 
@@ -666,7 +666,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     this.currentTrackingState = camera.trackingState;
 
     let trackingState = null,
-      limitedTrackingStateReason = null;
+        limitedTrackingStateReason = null;
 
     if (camera.trackingState === ARTrackingState.NotAvailable) {
       trackingState = "Not available";
@@ -810,7 +810,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
       faceGeometry = ARSCNFaceGeometry.faceGeometryWithDeviceFillMesh(sceneViewRenderer.device, true);
       faceGeometry.firstMaterial.colorBufferWriteMask = SCNColorMask.None;
     }
-    
+
     this.occlusionNode = SCNNode.nodeWithGeometry(faceGeometry);
     this.occlusionNode.renderingOrder = -1;
     node.addChildNode(this.occlusionNode);
