@@ -808,7 +808,9 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     } else {
       // if faceMaterial is NOT set, make the faceGeometry mesh include eyes and mouth
       faceGeometry = ARSCNFaceGeometry.faceGeometryWithDeviceFillMesh(sceneViewRenderer.device, true);
-      faceGeometry.firstMaterial.colorBufferWriteMask = SCNColorMask.None;
+      if (faceGeometry) {
+        faceGeometry.firstMaterial.colorBufferWriteMask = SCNColorMask.None;
+      }
     }
 
     this.occlusionNode = SCNNode.nodeWithGeometry(faceGeometry);
