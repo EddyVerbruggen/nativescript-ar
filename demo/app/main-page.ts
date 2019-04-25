@@ -151,7 +151,7 @@ export function arLoaded(args: ARLoadedEventData): void {
 
 export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
   if (args.properties) {
-    console.log(JSON.stringify(args.properties));
+    // console.log(JSON.stringify(args.properties));
   }
 
   if (args.faceTrackingActions) {
@@ -177,16 +177,16 @@ export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
     }, 500);
 
     args.faceTrackingActions.addModel({
-      name: "Models.scnassets/glasses2.obj",
+      name: "Models.scnassets/glasses-vv-1.dae",
       position: {
-        x: 0,
-        y: -0.007, // a little lower
-        z: 0.06 // a little closer to the camera
+        x: 0.001,
+        y: 0.01,
+        z: 0
       },
       scale: {
-        x: 0.0045,
-        y: 0.0045,
-        z: 0.0045
+        x: 1.03,
+        y: 1.03,
+        z: 1.03
       },
       onTap: (interaction: ARNodeInteraction) => {
         // let's remove the current glasses, and replace it by a different model
@@ -210,7 +210,7 @@ export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
           }
         });
 
-        textModel.remove();
+        // textModel.remove();
         args.faceTrackingActions.addText({
           text: "Ray-Ban Opaque",
           materials: [new Color("orange")],
