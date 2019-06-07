@@ -277,7 +277,6 @@ Added in 0.5.0, currently iOS-only.
 Grab whatever the camera is showing, and get back a native image (`UIImage` on iOS).
 You can show it on-screen afterwards as [shown here, in the demo app](https://github.com/EddyVerbruggen/nativescript-ar/blob/49fe472b1d53461c51423182c46168e17dbe5b64/demo/app/main-view-model.ts#L32).
 
-
 #### JavaScript
 ```js
 var img = ar.grabScreenshot();
@@ -286,4 +285,24 @@ var img = ar.grabScreenshot();
 #### TypeScript
 ```typescript
 const img = ar.grabScreenshot();
+```
+
+## `startRecordingVideo` / `stopRecordingVideo` (iOS)
+Added in 0.8.1, currently iOS-only.
+
+Record the AR scene to a locally stored `.mp4` file.
+
+#### TypeScript
+```typescript
+ar.startRecordingVideo()
+  .then(() => {
+    console.log("Started recording video");
+
+    // stop recording after 2 seconds
+    setTimeout(() => {
+      this.ar.stopRecordingVideo().then(videoUrl => {
+        console.log("Recording result: " + videoUrl); // a local url to an .mp4 file
+      });
+    }, 2000);
+  });
 ```
