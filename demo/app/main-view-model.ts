@@ -97,50 +97,5 @@ export class HelloWorldModel extends Observable {
             });
           }, 2000);
         });
-
-
-    // let's animate the grabbed image on and off screen in an iOS-screenshot style fashion
-    this.screenshot.animate({
-      opacity: 0.8,
-      scale: {
-        x: 0.5,
-        y: 0.5
-      },
-      translate: {
-        x: -20,
-        y: 40
-      },
-      duration: 500
-    });
-    setTimeout(() => {
-      this.screenshot.animate({
-        opacity: 0,
-        scale: {
-          x: 0.5,
-          y: 0.5
-        },
-        translate: {
-          x: -300,
-          y: 40
-        },
-        duration: 500
-      });
-
-      setTimeout(() => {
-        this.screenshot.animate({
-          opacity: 0,
-          scale: {
-            x: 1,
-            y: 1
-          },
-          translate: {
-            x: 0,
-            y: 0
-          },
-          duration: 0
-        });
-      }, 600);
-
-    }, 2000);
   }
 }
