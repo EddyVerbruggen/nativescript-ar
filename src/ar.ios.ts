@@ -1,25 +1,5 @@
-import {
-  AR as ARBase,
-  ARAddBoxOptions,
-  ARAddModelOptions,
-  ARAddSphereOptions,
-  ARAddTextOptions,
-  ARAddTubeOptions,
-  ARDebugLevel,
-  ARFaceTrackingActions,
-  ARImageTrackingActions,
-  ARLoadedEventData,
-  ARNode,
-  ARPlaneDetectedEventData,
-  ARPlaneTappedEventData,
-  ARPosition,
-  ARSceneTappedEventData,
-  ARTrackingFaceEventData,
-  ARTrackingFaceEventType,
-  ARTrackingImageDetectedEventData,
-  ARVideoRecordedEventData,
-  ARTrackingMode
-} from "./ar-common";
+import * as application from 'tns-core-modules/application';
+import { AR as ARBase, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARCommonNode } from "./nodes/ios/arcommon";
 import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
@@ -28,8 +8,6 @@ import { ARPlane } from "./nodes/ios/arplane";
 import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
-
-import * as application from 'tns-core-modules/application';
 
 export { ARDebugLevel, ARTrackingMode };
 
@@ -138,18 +116,8 @@ class AR extends ARBase {
 
   public stopRecordingVideo(): Promise<string> {
     return new Promise((resolve, reject) => {
-      // this.recorder.stop(this.onVideoRecorded.bind(this));
       this.recorder.stop(nsUrl => resolve(nsUrl.absoluteString));
-    })
-  }
-
-  private onVideoRecorded(videoPath: string) {
-    const eventData: ARVideoRecordedEventData = {
-      eventName: ARBase.videoRecordedEvent,
-      object: this,
-      path: videoPath
-    };
-    this.notify(eventData);
+    });
   }
 
   public toggleStatistics(on: boolean): void {

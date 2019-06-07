@@ -185,10 +185,6 @@ export interface ARTrackingImageDetectedEventData extends AREventData {
   imageTrackingActions: ARImageTrackingActions;
 }
 
-export interface ARVideoRecordedEventData extends AREventData {
-  path: string;
-}
-
 export type ARTrackingFaceEventType = "FOUND" | "UPDATED" | "LOST";
 
 export interface ARTrackingFaceEventData extends AREventData {
@@ -269,7 +265,6 @@ export abstract class AR extends ContentView {
   static planeTappedEvent: string = "planeTapped";
   static trackingImageDetectedEvent: string = "trackingImageDetected";
   static trackingFaceDetectedEvent: string = "trackingFaceDetected";
-  static videoRecordedEvent: string = "videoRecorded";
 
   faceMaterial: string;
   planeMaterial: string;
