@@ -1,0 +1,11 @@
+pod 'ARVideoKit', :git => 'https://github.com/EddyVerbruggen/ARVideoKit.git', :branch => 'swift_4_2'
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == 'ARVideoKit'
+      target.build_configurations.each do |config|
+        config.build_settings['SWIFT_VERSION'] = '4.2'
+      end
+    end
+  end
+end

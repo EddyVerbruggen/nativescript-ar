@@ -237,13 +237,17 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
   if (args.imageName === "nativescripting") {
     // note that you really want to use locally stored videos, like so:
     if (isIOS) {
-      const videoUrl = NSBundle.mainBundle.URLForResourceWithExtensionSubdirectory("homer video", "mov", "art.scnassets");
+      const videoUrl = NSBundle.mainBundle.URLForResourceWithExtensionSubdirectory("celebration", "mp4", "art.scnassets");
       if (!videoUrl) {
         console.log("Could not find video file");
         return;
       }
-      args.imageTrackingActions.playVideo(videoUrl);
+
       // args.imageTrackingActions.playVideo(NSURL.URLWithString("http://techslides.com/demos/samples/sample.mov"));
+      args.imageTrackingActions.playVideo(videoUrl, true);
+
+      // stop looping the video after 5 seconds
+      setTimeout(() => args.imageTrackingActions.stopVideoLoop(), 5000);
     }
 
   } else if (args.imageName === "ship") {

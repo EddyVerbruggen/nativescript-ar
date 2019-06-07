@@ -206,6 +206,16 @@ class AR extends ARBase {
     return null;
   }
 
+  public startRecordingVideo(): Promise<boolean> {
+    console.log("Method not implemented: startRecordingVideo");
+    return null;
+  }
+
+  public stopRecordingVideo(): Promise<string> {
+    console.log("Method not implemented: stopRecordingVideo");
+    return null;
+  }
+
   reset(): void {
     console.log("Method not implemented: reset");
     return null;

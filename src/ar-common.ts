@@ -185,6 +185,10 @@ export interface ARTrackingImageDetectedEventData extends AREventData {
   imageTrackingActions: ARImageTrackingActions;
 }
 
+export interface ARVideoRecordedEventData extends AREventData {
+  path: string;
+}
+
 export type ARTrackingFaceEventType = "FOUND" | "UPDATED" | "LOST";
 
 export interface ARTrackingFaceEventData extends AREventData {
@@ -215,7 +219,9 @@ export interface ARFaceTrackingActions {
 }
 
 export interface ARImageTrackingActions {
-  playVideo(nativeUrl: any /* iOS: NSURL */): void;
+  playVideo(nativeUrl: any /* iOS: NSURL */, loop?: boolean): void;
+
+  stopVideoLoop(): void;
 
   addBox(options: ARAddBoxOptions): Promise<ARBox>;
 
@@ -263,6 +269,7 @@ export abstract class AR extends ContentView {
   static planeTappedEvent: string = "planeTapped";
   static trackingImageDetectedEvent: string = "trackingImageDetected";
   static trackingFaceDetectedEvent: string = "trackingFaceDetected";
+  static videoRecordedEvent: string = "videoRecorded";
 
   faceMaterial: string;
   planeMaterial: string;
@@ -304,6 +311,10 @@ export abstract class AR extends ContentView {
   abstract setDebugLevel(to: ARDebugLevel): void;
 
   abstract grabScreenshot(): any /* UIImage on iOS */;
+
+  abstract startRecordingVideo(): Promise<boolean>;
+
+  abstract stopRecordingVideo(): Promise<string>;
 
   [debugLevelProperty.setNative](value?: string | ARDebugLevel) {
     if (value) {

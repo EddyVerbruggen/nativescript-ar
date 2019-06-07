@@ -9,7 +9,7 @@
     -->
     <AR:AR
         row="1"
-        trackingMode="FACE"
+        trackingMode="IMAGE"
         trackingImagesBundle="AR Resources"
         trackingImageDetected="trackingImageDetected"
         trackingFaceDetected="trackingFaceDetected"
@@ -28,6 +28,7 @@
     <iOS>
       <StackLayout row="1" horizontalAlignment="right" verticalAlignment="bottom">
         <Button text="Grab screenshot" class="bg-primary grab-screenshot" horizontalAlignment="right" tap="{{ grabScreenshot }}"/>
+        <Button text="Record video" class="bg-primary record-video" horizontalAlignment="right" tap="{{ recordVideo }}"/>
 
         <GridLayout rows="auto" columns="*, 80" horizontalAlignment="right" verticalAlignment="bottom" class="bg-primary toggle-flashlight">
           <Label text="Flashlight" class="m-r-10" horizontalAlignment="right"/>

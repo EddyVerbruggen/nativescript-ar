@@ -17,6 +17,7 @@ import {
   ARTrackingFaceEventData,
   ARTrackingFaceEventType,
   ARTrackingImageDetectedEventData,
+  ARVideoRecordedEventData,
   ARTrackingMode
 } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
@@ -28,9 +29,12 @@ import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
 
+import * as application from 'tns-core-modules/application';
+
 export { ARDebugLevel, ARTrackingMode };
 
 declare const ARImageAnchor: any;
+
 
 const ARState = {
   planes: new Map<string, ARPlane>(),
@@ -76,6 +80,7 @@ class AR extends ARBase {
   private sceneLongPressHandler: SceneLongPressHandlerImpl;
   private scenePanHandler: ScenePanHandlerImpl;
   private sceneRotationHandler: SceneRotationHandlerImpl;
+  private recorder: RecordAR;
 
   static isSupported(): boolean {
     try {
@@ -118,6 +123,33 @@ class AR extends ARBase {
 
   public grabScreenshot(): any {
     return this.sceneView ? this.sceneView.snapshot() : null;
+  }
+
+  public startRecordingVideo(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (this.recorder.status === RecordARStatus.ReadyToRecord) {
+        this.recorder.record();
+        resolve();
+      } else {
+        reject();
+      }
+    });
+  }
+
+  public stopRecordingVideo(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      // this.recorder.stop(this.onVideoRecorded.bind(this));
+      this.recorder.stop(nsUrl => resolve(nsUrl.absoluteString));
+    })
+  }
+
+  private onVideoRecorded(videoPath: string) {
+    const eventData: ARVideoRecordedEventData = {
+      eventName: ARBase.videoRecordedEvent,
+      object: this,
+      path: videoPath
+    };
+    this.notify(eventData);
   }
 
   public toggleStatistics(on: boolean): void {
@@ -241,6 +273,11 @@ class AR extends ARBase {
     this.sceneView.antialiasingMode = SCNAntialiasingMode.Multisampling4X;
 
     setTimeout(() => {
+      this.recorder = RecordAR.alloc().initWithARSceneKit(this.sceneView);
+
+      // commented, because it allegedly screws things up, but let's try: his.recorder.prepare(this.configuration)
+      // this.recorder.prepare(new ARWorldTrackingConfiguration());
+
       this.nativeView.addSubview(this.sceneView);
 
       const eventData: ARLoadedEventData = {
@@ -851,13 +888,38 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
 }
 
 class ARImageTrackingActionsImpl implements ARImageTrackingActions {
+  AVPlayerItemDidPlayToEndTimeNotificationObserver: any;
+
   constructor(public plane: SCNPlane, public planeNode: SCNNode) {
   }
 
-  playVideo(nativeUrl: NSURL): void {
+  playVideo(nativeUrl: NSURL, loop?: boolean): void {
     const videoPlayer = AVPlayer.playerWithURL(nativeUrl);
     this.plane.firstMaterial.diffuse.contents = videoPlayer;
+
+    if (loop === true) {
+      this.AVPlayerItemDidPlayToEndTimeNotificationObserver = application.ios.addNotificationObserver(
+          AVPlayerItemDidPlayToEndTimeNotification,
+          (notification: NSNotification) => {
+            // const player = this.plane.firstMaterial.diffuse.contents;
+            if (videoPlayer.currentItem && videoPlayer.currentItem === notification.object) {
+              videoPlayer.seekToTime(CMTimeMake(5, 100));
+              videoPlayer.play();
+            }
+          }
+      );
+    }
     videoPlayer.play();
+  }
+
+  stopVideoLoop(): void {
+    if (this.AVPlayerItemDidPlayToEndTimeNotificationObserver) {
+      application.ios.removeNotificationObserver(
+          this.AVPlayerItemDidPlayToEndTimeNotificationObserver,
+          AVPlayerItemDidPlayToEndTimeNotification
+      );
+      this.AVPlayerItemDidPlayToEndTimeNotificationObserver = undefined;
+    }
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARBox> {
