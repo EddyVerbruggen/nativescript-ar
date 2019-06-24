@@ -22,6 +22,13 @@ const CAMERA_PERMISSION_REQUEST_CODE = 853;
 let ar: AR;
 let sv;
 
+function useAndroidX () {
+  return global.androidx && global.androidx.appcompat;
+}
+
+const AppPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
+const ContentPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
+
 org.nativescript.tns.arlib.TNSSurfaceRenderer.setSurfaceEventCallbackListener(
     new org.nativescript.tns.arlib.TNSSurfaceRendererListener({
       callback: obj => {
@@ -74,7 +81,7 @@ class AR extends ARBase {
     let hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
     if (!hasPermission) {
       hasPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ===
-          android.support.v4.content.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), android.Manifest.permission.CAMERA);
+          ContentPackageName.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), android.Manifest.permission.CAMERA);
     }
     return hasPermission;
   }
@@ -94,7 +101,7 @@ class AR extends ARBase {
       });
 
       // invoke the permission dialog
-      android.support.v4.app.ActivityCompat.requestPermissions(
+      AppPackageName.ActivityCompat.requestPermissions(
           application.android.foregroundActivity,
           [android.Manifest.permission.CAMERA],
           CAMERA_PERMISSION_REQUEST_CODE);
