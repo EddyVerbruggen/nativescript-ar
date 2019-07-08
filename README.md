@@ -14,7 +14,7 @@ NativeScript Augmented Reality
 [twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
 [twitter-url]:https://twitter.com/eddyverbruggen
 
-> Work in progress, but please give it a try!
+> Tip: give this [article by TJ](https://www.nativescript.org/blog/getting-started-with-augmented-reality-in-nativescript) a read if you want a nice introduction to AR in NativeScript.
 
 ### Supported platforms
 * iPhone SE, 6s, iPad Pro, iPad 2017, or newer. Running iOS 11 or newer.
