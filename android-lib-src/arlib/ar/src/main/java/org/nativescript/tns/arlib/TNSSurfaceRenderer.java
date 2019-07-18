@@ -103,22 +103,17 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
 
     // TODO also try this in JS
     private boolean modelAdded;
+    // TODO also try this in JS
+    private boolean modelNeeded;
 
     public void addModel() {
         if (modelAdded) {
             return;
         }
-        Log.d(TAG, "TNSSurfaceRenderer.addModel!");
-        try {
-            virtualObject.createOnGlThread(/*context=*/ this.context, "models/andy.obj", "models/andy.png");
-            virtualObject.setMaterialProperties(0.0f, 2.0f, 0.5f, 6.0f);
-            virtualObjectShadow.createOnGlThread(this.context, "models/andy_shadow.obj", "models/andy_shadow.png");
-            virtualObjectShadow.setBlendMode(ObjectRenderer.BlendMode.Shadow);
-            virtualObjectShadow.setMaterialProperties(1.0f, 0.0f, 0.0f, 1.0f);
-            modelAdded = true;
-        } catch (IOException e) {
-            Log.e(TAG, ">>>>>>>>> Failed to read shader!", e);
-        }
+
+        modelNeeded=true;
+
+       
     }
 
     @Override
@@ -266,9 +261,26 @@ public class TNSSurfaceRenderer implements GLSurfaceView.Renderer {
             }
 
             // Visualize anchors created by touch.
-            Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame. modelAdded?");
+            //Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame. modelAdded?");
+
+
+            if(modelNeeded){
+                 Log.d(TAG, "TNSSurfaceRenderer.addModel! model Needed");
+               
+                try {
+                    virtualObject.createOnGlThread(/*context=*/ this.context, "models/andy.obj", "models/andy.png");
+                    virtualObject.setMaterialProperties(0.0f, 2.0f, 0.5f, 6.0f);
+                    virtualObjectShadow.createOnGlThread(this.context, "models/andy_shadow.obj", "models/andy_shadow.png");
+                    virtualObjectShadow.setBlendMode(ObjectRenderer.BlendMode.Shadow);
+                    virtualObjectShadow.setMaterialProperties(1.0f, 0.0f, 0.0f, 1.0f);
+                    modelAdded = true;
+                } catch (IOException e) {
+                    Log.e(TAG, ">>>>>>>>> Failed to read shader!", e);
+                }
+                modelNeeded=false;
+            }
             if (modelAdded) {
-                Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame. modelAdded!");
+                //Log.d(TAG, "TNSSurfaceRenderer.onDrawFrame. modelAdded!");
                 float scaleFactor = 1.0f;
                 for (Anchor anchor : anchors) {
                     if (anchor.getTrackingState() != TrackingState.TRACKING) {
