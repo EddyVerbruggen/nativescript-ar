@@ -14,7 +14,7 @@ import {
   ARPlaneTappedEventData
 } from "./ar-common";
 
-declare const com, android: any;
+declare const com, android, global: any;
 
 const CAMERA_PERMISSION_REQUEST_CODE = 853;
 
@@ -260,5 +260,3 @@ class AR extends ARBase {
     });
   }
 }
-
-exports.AR = AR;
