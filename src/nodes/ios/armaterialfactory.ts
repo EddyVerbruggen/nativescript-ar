@@ -53,7 +53,6 @@ export class ARMaterialFactory {
     }
 
     if (typeof materialProperty === "string") {
-      console.log(">>> UIImage.imageNamed(materialProperty): " + UIImage.imageNamed(materialProperty));
       scnMaterialProperty.contents = UIImage.imageNamed(materialProperty);
       scnMaterialProperty.wrapS = SCNWrapMode.Repeat;
       scnMaterialProperty.wrapT = SCNWrapMode.Repeat;

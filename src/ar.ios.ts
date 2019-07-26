@@ -13,7 +13,6 @@ export { ARDebugLevel, ARTrackingMode };
 
 declare const ARImageAnchor: any;
 
-
 const ARState = {
   planes: new Map<string, ARPlane>(),
   shapes: new Map<string, ARCommonNode>(),
