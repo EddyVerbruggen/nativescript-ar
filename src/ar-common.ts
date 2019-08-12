@@ -1,7 +1,7 @@
-import { Property } from "tns-core-modules/ui/core/view";
-import { ContentView } from "tns-core-modules/ui/content-view";
-import { EventData } from "tns-core-modules/data/observable";
 import { Color } from "tns-core-modules/color";
+import { EventData } from "tns-core-modules/data/observable";
+import { ContentView } from "tns-core-modules/ui/content-view";
+import { Property } from "tns-core-modules/ui/core/view";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARModel } from "./nodes/ios/armodel";
@@ -33,6 +33,10 @@ const planeMaterialProperty = new Property<AR, string>({
   name: "planeMaterial"
 });
 
+const faceMaterialProperty = new Property<AR, string>({
+  name: "faceMaterial"
+});
+
 const trackingImagesBundleProperty = new Property<AR, string>({
   name: "trackingImagesBundle"
 });
@@ -62,6 +66,7 @@ export interface ARNode {
   ios?: any; /* SCNNode */
   android?: any; /* TODO Anchor? */
   remove(): void;
+
   // TODO add animate({});
 }
 
@@ -72,6 +77,7 @@ export interface ARNodeInteraction {
 
 export interface ARCommonNode extends ARNode {
   moveBy?(to: ARPosition): void;
+
   rotateBy?(by: ARRotation): void;
 }
 
@@ -174,7 +180,6 @@ export interface ARPlaneDetectedEventData extends AREventData {
 }
 
 export interface ARTrackingImageDetectedEventData extends AREventData {
-  // plane: ARPlane;
   position: ARPosition;
   imageName: string;
   imageTrackingActions: ARImageTrackingActions;
@@ -196,12 +201,26 @@ export interface ARTrackingFaceEventData extends AREventData {
     mouthSmileLeft: number;
     mouthSmileRight: number;
     tongueOut: number;
-  }
+  };
+  /**
+   * Set when eventType is "FOUND".
+   */
+  faceTrackingActions?: ARFaceTrackingActions;
+}
+
+export interface ARFaceTrackingActions {
+  addModel(options: ARAddModelOptions): Promise<ARModel>;
+
+  addText(options: ARAddTextOptions): Promise<ARModel>;
 }
 
 export interface ARImageTrackingActions {
-  playVideo(nativeUrl: any /* iOS: NSURL */): void;
+  playVideo(nativeUrl: any /* iOS: NSURL */, loop?: boolean): void;
+
+  stopVideoLoop(): void;
+
   addBox(options: ARAddBoxOptions): Promise<ARBox>;
+
   addModel(options: ARAddModelOptions): Promise<ARModel>;
 }
 
@@ -247,6 +266,7 @@ export abstract class AR extends ContentView {
   static trackingImageDetectedEvent: string = "trackingImageDetected";
   static trackingFaceDetectedEvent: string = "trackingFaceDetected";
 
+  faceMaterial: string;
   planeMaterial: string;
   planeOpacity: number;
   detectPlanes: boolean;
@@ -287,6 +307,10 @@ export abstract class AR extends ContentView {
 
   abstract grabScreenshot(): any /* UIImage on iOS */;
 
+  abstract startRecordingVideo(): Promise<boolean>;
+
+  abstract stopRecordingVideo(): Promise<string>;
+
   [debugLevelProperty.setNative](value?: string | ARDebugLevel) {
     if (value) {
       if (typeof value === "string") {
@@ -303,6 +327,10 @@ export abstract class AR extends ContentView {
 
   [planeMaterialProperty.setNative](value: string) {
     this.planeMaterial = value;
+  }
+
+  [faceMaterialProperty.setNative](value: string) {
+    this.faceMaterial = value;
   }
 
   [trackingImagesBundleProperty.setNative](value: string) {
@@ -329,5 +357,6 @@ detectPlanesProperty.register(AR);
 debugLevelProperty.register(AR);
 trackingModeProperty.register(AR);
 trackingImagesBundleProperty.register(AR);
+faceMaterialProperty.register(AR);
 planeMaterialProperty.register(AR);
 planeOpacityProperty.register(AR);

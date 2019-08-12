@@ -1,28 +1,10 @@
-import {
-  AR as ARBase,
-  ARAddBoxOptions,
-  ARAddModelOptions,
-  ARAddSphereOptions,
-  ARAddTextOptions,
-  ARAddTubeOptions,
-  ARDebugLevel,
-  ARImageTrackingActions,
-  ARLoadedEventData,
-  ARNode,
-  ARPlaneDetectedEventData,
-  ARPlaneTappedEventData,
-  ARPosition,
-  ARSceneTappedEventData,
-  ARTrackingFaceEventData,
-  ARTrackingFaceEventType,
-  ARTrackingImageDetectedEventData,
-  ARTrackingMode
-} from "./ar-common";
-import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
+import * as application from 'tns-core-modules/application';
+import { AR as ARBase, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARCommonNode } from "./nodes/ios/arcommon";
-import { ARPlane } from "./nodes/ios/arplane";
+import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
 import { ARModel } from "./nodes/ios/armodel";
+import { ARPlane } from "./nodes/ios/arplane";
 import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
@@ -31,9 +13,19 @@ export { ARDebugLevel, ARTrackingMode };
 
 declare const ARImageAnchor: any;
 
+
 const ARState = {
   planes: new Map<string, ARPlane>(),
   shapes: new Map<string, ARCommonNode>(),
+};
+
+const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARBox> => {
+  return new Promise((resolve, reject) => {
+    const text = ARText.create(options);
+    ARState.shapes.set(text.id, text);
+    parentNode.addChildNode(text.ios);
+    resolve(text);
+  });
 };
 
 const addBox = (options: ARAddBoxOptions, parentNode: SCNNode): Promise<ARBox> => {
@@ -48,7 +40,10 @@ const addBox = (options: ARAddBoxOptions, parentNode: SCNNode): Promise<ARBox> =
 const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     const model: ARModel = ARModel.create(options);
-    ARState.shapes.set(model.id, model);
+    // need to delay this a little, otherwise facedetection models don't get added (for whatever reason)
+    setTimeout(() => {
+      ARState.shapes.set(model.id, model);
+    });
     parentNode.addChildNode(model.ios);
     resolve(model);
   });
@@ -63,10 +58,11 @@ class AR extends ARBase {
   private sceneLongPressHandler: SceneLongPressHandlerImpl;
   private scenePanHandler: ScenePanHandlerImpl;
   private sceneRotationHandler: SceneRotationHandlerImpl;
+  private recorder: RecordAR;
 
   static isSupported(): boolean {
     try {
-      return !!ARSCNView && NSProcessInfo.processInfo.environment.objectForKey("SIMULATOR_DEVICE_NAME") === null;
+      return (!!ARSCNView && NSProcessInfo.processInfo.environment.objectForKey("SIMULATOR_DEVICE_NAME") === null);//&&ARConfiguration.isSupported;
     } catch (ignore) {
       return false;
     }
@@ -105,6 +101,23 @@ class AR extends ARBase {
 
   public grabScreenshot(): any {
     return this.sceneView ? this.sceneView.snapshot() : null;
+  }
+
+  public startRecordingVideo(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (this.recorder.status === RecordARStatus.ReadyToRecord) {
+        this.recorder.record();
+        resolve();
+      } else {
+        reject();
+      }
+    });
+  }
+
+  public stopRecordingVideo(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.recorder.stop(nsUrl => resolve(nsUrl.absoluteString));
+    });
   }
 
   public toggleStatistics(on: boolean): void {
@@ -156,7 +169,7 @@ class AR extends ARBase {
 
     } else if (this.trackingMode === ARTrackingMode.FACE) {
       if (!AR.isFaceTrackingSupported()) {
-        console.log("############### Face tracking is not supported on this device. It's probably not running iOS 12+.");
+        console.log("############### Face tracking is not supported on this device. A device running 12+ is required, with a front-facing TrueDepth camera.");
         return;
       }
 
@@ -227,14 +240,21 @@ class AR extends ARBase {
     // make things look pretty
     this.sceneView.antialiasingMode = SCNAntialiasingMode.Multisampling4X;
 
-    this.nativeView.addSubview(this.sceneView);
+    setTimeout(() => {
+      this.recorder = RecordAR.alloc().initWithARSceneKit(this.sceneView);
 
-    const eventData: ARLoadedEventData = {
-      eventName: ARBase.arLoadedEvent,
-      object: this,
-      ios: this.sceneView
-    };
-    this.notify(eventData);
+      // commented, because it allegedly screws things up, but let's try: his.recorder.prepare(this.configuration)
+      // this.recorder.prepare(new ARWorldTrackingConfiguration());
+
+      this.nativeView.addSubview(this.sceneView);
+
+      const eventData: ARLoadedEventData = {
+        eventName: ARBase.arLoadedEvent,
+        object: this,
+        ios: this.sceneView
+      };
+      this.notify(eventData);
+    });
   }
 
   private addBottomPlane(scene): void {
@@ -726,10 +746,21 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     let eventType: ARTrackingFaceEventType = "UPDATED";
 
     // if we didn't have a face but now we do
-    if (!this.hasFace){
+    if (!this.hasFace) {
       this.hasFace = true;
       owner.reset();
       eventType = "FOUND";
+    }
+
+    let faceGeometry;
+    if (this.occlusionNode) {
+      faceGeometry = this.occlusionNode.geometry as ARSCNFaceGeometry;
+    } else {
+      faceGeometry = node.geometry as ARSCNFaceGeometry;
+    }
+    if (faceGeometry) {
+      const faceAnchor = anchor as ARFaceAnchor;
+      faceGeometry.updateFromFaceGeometry(faceAnchor.geometry);
     }
 
     const blendShapes: NSDictionary<string, number> = faceAnchor.blendShapes;
@@ -751,7 +782,8 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
         mouthSmileLeft: blendShapes.valueForKey(ARBlendShapeLocationMouthSmileLeft),
         mouthSmileRight: blendShapes.valueForKey(ARBlendShapeLocationMouthSmileRight),
         tongueOut: blendShapes.valueForKey(ARBlendShapeLocationTongueOut)
-      }
+      },
+      faceTrackingActions: eventType === "FOUND" ? new ARFaceTrackingActionsImpl(renderer, anchor, node, this) : undefined
     });
   }
 
@@ -759,8 +791,37 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     ARState.planes.delete(anchor.identifier.UUIDString);
   }
 
+  public occlusionNode: SCNNode;
+
   rendererNodeForAnchor(renderer: SCNSceneRenderer, anchor: ARAnchor): SCNNode {
     const node = SCNNode.new();
+    const owner = this.owner.get();
+
+    const sceneViewRenderer: any = renderer; // ARSCNView
+
+    let faceGeometry: ARSCNFaceGeometry;
+    // if faceMaterial is set, make the faceGeometry mesh exclude eyes and mouth
+    if (owner.faceMaterial) {
+      faceGeometry = ARSCNFaceGeometry.faceGeometryWithDevice(sceneViewRenderer.device);
+      const material = faceGeometry.firstMaterial;
+
+      material.colorBufferWriteMask = SCNColorMask.All;
+      material.diffuse.contents = owner.faceMaterial;
+      material.lightingModelName = SCNLightingModelPhysicallyBased;
+
+      node.addChildNode(SCNNode.nodeWithGeometry(faceGeometry));
+    } else {
+      // if faceMaterial is NOT set, make the faceGeometry mesh include eyes and mouth
+      faceGeometry = ARSCNFaceGeometry.faceGeometryWithDeviceFillMesh(sceneViewRenderer.device, true);
+      if (faceGeometry) {
+        faceGeometry.firstMaterial.colorBufferWriteMask = SCNColorMask.None;
+      }
+    }
+
+    this.occlusionNode = SCNNode.nodeWithGeometry(faceGeometry);
+    this.occlusionNode.renderingOrder = -1;
+    node.addChildNode(this.occlusionNode);
+
     if (!(anchor instanceof ARImageAnchor)) {
       return node;
     }
@@ -779,7 +840,6 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     // make the detected plane transparent
     plane.firstMaterial.diffuse.contents = UIColor.colorWithWhiteAlpha(1, 0);
 
-    const owner = this.owner.get();
     const eventData: ARTrackingImageDetectedEventData = {
       eventName: ARBase.trackingImageDetectedEvent,
       object: owner,
@@ -796,22 +856,60 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
 }
 
 class ARImageTrackingActionsImpl implements ARImageTrackingActions {
+  AVPlayerItemDidPlayToEndTimeNotificationObserver: any;
+
   constructor(public plane: SCNPlane, public planeNode: SCNNode) {
   }
 
-  playVideo(nativeUrl: NSURL): void {
+  playVideo(nativeUrl: NSURL, loop?: boolean): void {
     const videoPlayer = AVPlayer.playerWithURL(nativeUrl);
     this.plane.firstMaterial.diffuse.contents = videoPlayer;
+
+    if (loop === true) {
+      this.AVPlayerItemDidPlayToEndTimeNotificationObserver = application.ios.addNotificationObserver(
+          AVPlayerItemDidPlayToEndTimeNotification,
+          (notification: NSNotification) => {
+            // const player = this.plane.firstMaterial.diffuse.contents;
+            if (videoPlayer.currentItem && videoPlayer.currentItem === notification.object) {
+              videoPlayer.seekToTime(CMTimeMake(5, 100));
+              videoPlayer.play();
+            }
+          }
+      );
+    }
     videoPlayer.play();
+  }
+
+  stopVideoLoop(): void {
+    if (this.AVPlayerItemDidPlayToEndTimeNotificationObserver) {
+      application.ios.removeNotificationObserver(
+          this.AVPlayerItemDidPlayToEndTimeNotificationObserver,
+          AVPlayerItemDidPlayToEndTimeNotification
+      );
+      this.AVPlayerItemDidPlayToEndTimeNotificationObserver = undefined;
+    }
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARBox> {
     return addBox(options, this.planeNode);
-  };
+  }
 
   addModel(options: ARAddModelOptions): Promise<ARModel> {
     return addModel(options, this.planeNode);
-  };
+  }
+}
+
+class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
+  constructor(public renderer: SCNSceneRenderer, public anchor: ARAnchor, public node: SCNNode, public owner: ARSCNViewDelegateImpl) {
+  }
+
+  addModel(options: ARAddModelOptions): Promise<ARModel> {
+    return addModel(options, this.node);
+  }
+
+  addText(options: ARAddTextOptions): Promise<ARModel> {
+    return addText(options, this.node);
+  }
 }
 
 class ARSessionDelegateImpl extends NSObject implements ARSessionDelegate {

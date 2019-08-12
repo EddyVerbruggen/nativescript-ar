@@ -1,6 +1,7 @@
 ﻿@import '~nativescript-theme-core/css/core.light.css';
 
-.grab-screenshot {
+.grab-screenshot,
+.record-video {
   margin-bottom: 12;
   margin-right: 10;
   opacity: 0.6;

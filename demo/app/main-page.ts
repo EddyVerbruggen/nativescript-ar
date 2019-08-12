@@ -1,6 +1,3 @@
-import * as observable from 'tns-core-modules/data/observable';
-import * as pages from 'tns-core-modules/ui/page';
-import { isIOS } from 'tns-core-modules/ui/page';
 import {
   AR,
   ARLoadedEventData,
@@ -11,6 +8,10 @@ import {
   ARTrackingFaceEventData,
   ARTrackingImageDetectedEventData
 } from 'nativescript-ar';
+import { Color } from 'tns-core-modules/color';
+import * as observable from 'tns-core-modules/data/observable';
+import * as pages from 'tns-core-modules/ui/page';
+import { isIOS } from 'tns-core-modules/ui/page';
 import { HelloWorldModel } from './main-view-model';
 
 const flashlight = require("nativescript-flashlight");
@@ -18,13 +19,13 @@ const flashlight = require("nativescript-flashlight");
 declare const NSBundle: any;
 
 let ar: AR;
+let model: HelloWorldModel;
 
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
   // Get the event sender
   const page = <pages.Page>args.object;
-  const model = new HelloWorldModel();
-  model.ar = ar;
+  model = new HelloWorldModel();
   model.screenshot = page.getViewById("screenshot");
   page.bindingContext = model;
 
@@ -38,8 +39,9 @@ export function pageLoaded(args: observable.EventData) {
 
 export function arLoaded(args: ARLoadedEventData): void {
   ar = args.object;
+  model.ar = ar;
+
   // add some stuff to the scene
-  console.log(">> arLoaded, object: " + args.object);
   /*
   setTimeout(() => {
     args.object.addModel({
@@ -148,28 +150,108 @@ export function arLoaded(args: ARLoadedEventData): void {
 }
 
 export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
-  console.log("Tracking face (event): " + args.eventType);
   if (args.properties) {
-    console.log(JSON.stringify(args.properties));
+    // console.log(JSON.stringify(args.properties));
+  }
+
+  if (args.faceTrackingActions) {
+
+    let textModel;
+
+    setTimeout(() => {
+      args.faceTrackingActions.addText({
+        text: "Ray-Ban model S",
+        depth: 0.3,
+        materials: [new Color("red")],
+        scale: {
+          x: 0.002,
+          y: 0.002,
+          z: 0.002
+        },
+        position: {
+          x: -0.1, // a bit to the left
+          y: 0.15, // and a bit up
+          z: 0
+        },
+      }).then(result => textModel = result);
+    }, 500);
+
+    args.faceTrackingActions.addModel({
+      name: "Models.scnassets/glasses-vv-1.dae",
+      position: {
+        x: 0.001,
+        y: 0.01,
+        z: 0
+      },
+      scale: {
+        x: 1.03,
+        y: 1.03,
+        z: 1.03
+      },
+      onTap: (interaction: ARNodeInteraction) => {
+        // let's remove the current glasses, and replace it by a different model
+        interaction.node.remove();
+
+        args.faceTrackingActions.addModel({
+          name: "Models.scnassets/Glasses9.dae",
+          position: {
+            x: 0,
+            y: 0, // a little lower
+            z: 0.04 // a little closer to the camera
+          },
+          scale: {
+            x: 0.17,
+            y: 0.17,
+            z: 0.17
+          },
+          onTap: (interaction: ARNodeInteraction) => {
+            interaction.node.remove();
+            textModel.remove();
+          }
+        });
+
+        // textModel.remove();
+        args.faceTrackingActions.addText({
+          text: "Ray-Ban Opaque",
+          materials: [new Color("orange")],
+          depth: 1,
+          scale: {
+            x: 0.002,
+            y: 0.002,
+            z: 0.002
+          },
+          position: {
+            x: -0.1, // a bit to the left
+            y: 0.15, // and a bit up
+            z: 0
+          },
+        }).then(result => textModel = result);
+      }
+    });
   }
 }
 
 export function trackingImageDetected(args: ARTrackingImageDetectedEventData): void {
-  console.log("Tracked image detected (name): " + args.imageName);
+  console.log("Tracked image detected (name).. " + args.imageName);
 
   if (args.imageName === "nativescripting") {
     // note that you really want to use locally stored videos, like so:
     if (isIOS) {
-      const videoUrl = NSBundle.mainBundle.URLForResourceWithExtensionSubdirectory("homer video", "mov", "art.scnassets");
+      const videoUrl = NSBundle.mainBundle.URLForResourceWithExtensionSubdirectory("celebration", "mp4", "art.scnassets");
       if (!videoUrl) {
         console.log("Could not find video file");
         return;
       }
-      args.imageTrackingActions.playVideo(videoUrl);
+
       // args.imageTrackingActions.playVideo(NSURL.URLWithString("http://techslides.com/demos/samples/sample.mov"));
+      args.imageTrackingActions.playVideo(videoUrl, true);
+
+      // stop looping the video after 5 seconds
+      setTimeout(() => args.imageTrackingActions.stopVideoLoop(), 5000);
     }
 
   } else if (args.imageName === "ship") {
+    console.log("Adding model");
     args.imageTrackingActions.addModel({
       name: "art.scnassets/ship.scn",
       childNodeName: "shipMesh",
@@ -184,7 +266,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           x: 0,
           y: 0,
           z: 0.01
-        })
+        });
       },
       onLongPress: (interaction: ARNodeInteraction) => {
         // let's move the plane into the image a bit
@@ -192,11 +274,12 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           x: 0,
           y: 0,
           z: -0.01
-        })
+        });
       }
     });
 
-  } else if (args.imageName === "nativescript nl" || args.imageName === "nativescripting alt") {
+  } else if (args.imageName === "nativescript nl" || args.imageName === "nativescripting alt" || args.imageName === "hertogjan" || args.imageName === "latrappe") {
+    console.log("Adding box");
     args.imageTrackingActions.addBox({
       position: {
         x: args.position.x,
@@ -218,7 +301,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           x: 0,
           y: 0,
           z: -5
-        })
+        });
       },
       onLongPress: (interaction: ARNodeInteraction) => {
         console.log("box longpressed: " + interaction.node.id + " at " + interaction.touchPosition);
@@ -227,9 +310,9 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
           x: 0,
           y: 0,
           z: 5
-        })
+        });
       }
-    }).then(node => console.log("box added to nativescript nl: " + node.id));
+    }).then(node => console.log("box added to image, id: " + node.id));
   }
 }
 

@@ -22,39 +22,60 @@ const CAMERA_PERMISSION_REQUEST_CODE = 853;
 let ar: AR;
 let sv;
 
-org.nativescript.tns.arlib.TNSSurfaceRenderer.setSurfaceEventCallbackListener(
-    new org.nativescript.tns.arlib.TNSSurfaceRendererListener({
-      callback: obj => {
+function useAndroidX() {
+  return global.androidx && global.androidx.appcompat;
+}
+
+const AppPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
+const ContentPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
+
+
+
+// see https://developers.google.com/ar/reference/java
+class AR extends ARBase {
+  private session: any; // com.google.ar.core.Session;
+  private sceneView: any; // android.opengl.GLsceneView;
+  private static installRequested = false;
+  //private renderer: any; // TODO generate new typings, then use: org.nativescript.tns.arlib.TNSSurfaceRenderer;
+  private scene: org.nativescript.tns.arlib.TNSSceneRenderer;
+
+  constructor() {
+    super();
+    ar = this;
+    //this.renderer = new org.nativescript.tns.arlib.TNSSurfaceRenderer();
+    this.scene = new org.nativescript.tns.arlib.TNSSceneRenderer();
+
+
+    this.scene.setSurfaceEventCallbackListener(new org.nativescript.tns.arlib.TNSEventListener({
+      callback: function(obj) {
         console.log(">>>>>>> from native: " + obj);
       }
-    })
-);
+    }));
 
-org.nativescript.tns.arlib.TNSSurfaceRenderer.setOnPlaneTappedListener(
-    new org.nativescript.tns.arlib.TNSSurfaceRendererListener({
-      callback: (obj: any) => {
-        const eventData: ARPlaneTappedEventData = {
+
+    this.scene.setOnSceneTappedListener(new org.nativescript.tns.arlib.TNSEventListener({
+      callback: function(obj) {
+        var eventData = {
+          eventName: ARBase.sceneTappedEvent,
+          object: ar,
+          position: JSON.parse(obj)
+        };
+        ar.notify(eventData);
+      }
+    }));
+
+    this.scene.setOnPlaneTappedListener(new org.nativescript.tns.arlib.TNSEventListener({
+      callback: function(obj) {
+        var eventData = {
           eventName: ARBase.planeTappedEvent,
           object: ar,
           position: JSON.parse(obj)
         };
         ar.notify(eventData);
       }
-    })
-);
+    }));
 
 
-// see https://developers.google.com/ar/reference/java
-class AR extends ARBase {
-  private session: any; // com.google.ar.core.Session;
-  private surfaceView: any; // android.opengl.GLSurfaceView;
-  private static installRequested = false;
-  private renderer: any; // TODO generate new typings, then use: org.nativescript.tns.arlib.TNSSurfaceRenderer;
-
-  constructor() {
-    super();
-    ar = this;
-    this.renderer = new org.nativescript.tns.arlib.TNSSurfaceRenderer();
   }
 
   static isSupported(): boolean {
@@ -74,7 +95,7 @@ class AR extends ARBase {
     let hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
     if (!hasPermission) {
       hasPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ===
-          android.support.v4.content.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), android.Manifest.permission.CAMERA);
+        ContentPackageName.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), android.Manifest.permission.CAMERA);
     }
     return hasPermission;
   }
@@ -94,25 +115,26 @@ class AR extends ARBase {
       });
 
       // invoke the permission dialog
-      android.support.v4.app.ActivityCompat.requestPermissions(
-          application.android.foregroundActivity,
-          [android.Manifest.permission.CAMERA],
-          CAMERA_PERMISSION_REQUEST_CODE);
+      AppPackageName.ActivityCompat.requestPermissions(
+        application.android.foregroundActivity,
+        [android.Manifest.permission.CAMERA],
+        CAMERA_PERMISSION_REQUEST_CODE);
     });
   }
 
   private initAR() {
     application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
-      if (this.session && this.surfaceView) {
+      if (this.session && this.sceneView) {
         console.log(">> resuming");
         this.session.resume();
-        this.surfaceView.onResume();
+        this.sceneView.resume();
+        this.scene.setupScene();
       }
     });
 
     application.android.on(application.AndroidApplication.activityPausedEvent, (args: any) => {
-      if (this.session && this.surfaceView) {
-        this.surfaceView.onPause();
+      if (this.session && this.sceneView) {
+        this.sceneView.pause();
         this.session.pause();
       }
     });
@@ -127,22 +149,18 @@ class AR extends ARBase {
       console.log(">>> e: " + e);
     }
 
-    this.surfaceView = sv = new android.opengl.GLSurfaceView(this._context);
-    this.nativeView.addView(this.surfaceView);
+    this.sceneView = sv = new com.google.ar.sceneform.ArSceneView(this._context);
+    this.nativeView.addView(this.sceneView);
+
+    this.scene.setArSceneView(sv);
+    this.scene.setActivity(application.android.foregroundActivity);
+    this.scene.setContext(this._context);
+
 
     this.session = new com.google.ar.core.Session(application.android.foregroundActivity || application.android.startActivity);
-    this.renderer.setContext(this._context);
-    this.renderer.setSession(this.session);
-    this.renderer.setSurfaceView(this.surfaceView); // this also sets a touch listener
-
-    this.surfaceView.setPreserveEGLContextOnPause(true);
-    this.surfaceView.setEGLContextClientVersion(2);
-    this.surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
-
-    this.surfaceView.setRenderer(this.renderer);
-    this.surfaceView.setRenderMode(android.opengl.GLSurfaceView.RENDERMODE_CONTINUOUSLY); // this is the default btw
 
     this.session.resume();
+    this.scene.setupScene();
 
     const eventData: ARLoadedEventData = {
       eventName: ARBase.arLoadedEvent,
@@ -181,7 +199,7 @@ class AR extends ARBase {
 
   togglePlaneVisibility(on: boolean): void {
     console.log(">> togglePlaneVisibility: " + on);
-    this.renderer.setDrawPlanes(on);
+    //this.renderer.setDrawPlanes(on);
   }
 
   togglePlaneDetection(on: boolean): void {
@@ -197,8 +215,8 @@ class AR extends ARBase {
   setDebugLevel(to: ARDebugLevel): void {
     const drawPlanesAndPointClound = to === ARDebugLevel.FEATURE_POINTS || to === ARDebugLevel.PHYSICS_SHAPES;
     console.log(">> drawPlanesAndPointClound: " + drawPlanesAndPointClound);
-    this.renderer.setDrawPointCloud(drawPlanesAndPointClound);
-    this.renderer.setDrawPlanes(drawPlanesAndPointClound);
+    //this.renderer.setDrawPointCloud(drawPlanesAndPointClound);
+    //this.renderer.setDrawPlanes(drawPlanesAndPointClound);
   }
 
   public grabScreenshot(): any {
@@ -206,42 +224,133 @@ class AR extends ARBase {
     return null;
   }
 
+  public startRecordingVideo(): Promise<boolean> {
+    console.log("Method not implemented: startRecordingVideo");
+    return null;
+  }
+
+  public stopRecordingVideo(): Promise<string> {
+    console.log("Method not implemented: stopRecordingVideo");
+    return null;
+  }
+
   reset(): void {
     console.log("Method not implemented: reset");
     return null;
+  }
+  _initObject(object: any  options: any) {
+    var _this = this;
+
+    var renderable = {
+      node: {
+        setName: object.setName.bind(object),
+        getName: object.getName.bind(object),
+
+        getLabelContainer: object.getLabelContainer.bind(object),
+        setLabel: object.setLabel.bind(object),
+        getLabelNode: object.getLabelNode.bind(object),
+
+        showPopover: object.showPopover.bind(object),
+        hidePopover: object.hidePopover.bind(object),
+
+        setLocalPosition: object.setLocalPosition.bind(object),
+        setCrowdCamera: object.setCrowdCamera.bind(object),
+        lookAtCamera: object.lookAtCamera.bind(object),
+        setVisible: object.setVisible.bind(object),
+        setLocalScale: object.setLocalScale.bind(object),
+
+        distance: object.distance.bind(object),
+        remove: function() {
+          _this.scene.remove(object);
+        },
+
+        setMaterials: function(m) {
+          _this.scene.setMaterial(object, m[0]._argb)
+        }
+      },
+      android: object
+    }
+
+
+    if (options.onTap) {
+      object.addOnTapListener(new org.nativescript.tns.arlib.TNSEventListener({
+        callback: function() {
+          options.onTap.call(null, renderable)
+        }
+      }))
+    }
+
+    if (options.onLongPress) {
+      object.addOnLongPressListener(new org.nativescript.tns.arlib.TNSEventListener({
+        callback: function() {
+          options.onLongPress.call(null, renderable)
+        }
+      }))
+    }
+
+    if (options.materials && options.materials.length >= 1) {
+      _this.scene.setMaterial(object, options.materials[0]._argb)
+    }
+
+    if (options.position) {
+      var p = options.position;
+      object.setLocalPosition([p.x, p.y, p.z]);
+    }
+
+    return renderable;
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
       // TODO less PoC-like code ;)
-      this.renderer.addModel();
+      //this.renderer.addModel(options);
       resolve(null);
     });
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      reject("Method not implemented: addBox");
+    var _this = this;
+    return new Promise(function(resolve, reject) {
+      if (options.dimensions) {
+        var d = options.dimensions
+        var object = _this.scene.addCube(new com.google.ar.sceneform.math.Vector3(d.x, d.y, d.z));
+      } else {
+        var object = _this.scene.addCube();
+      }
+
+
+      resolve(_this._initObject(object, options));
     });
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      reject("Method not implemented: addSphere");
+    var _this = this;
+    return new Promise(function(resolve, reject) {
+
+      if (options.radius) {
+        var object = _this.scene.addSphere(options.radius);
+      } else {
+        var object = _this.scene.addSphere();
+      }
+
+
+      resolve(_this._initObject(object, options));
     });
   }
 
-  addText(options: ARAddTextOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      reject("Method not implemented: addText");
-    });
-  }
+  addText(options: ARAddTextOptions): Promise < ARNode > {
+        return new Promise((resolve, reject) => {
+          // TODO less PoC-like code ;)
+          this.renderer.addText(options);
+          resolve(null);
+        });
+      }
 
-  addTube(options: ARAddTubeOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      reject("Method not implemented: addTube");
-    });
-  }
+  addTube(options: ARAddTubeOptions): Promise < ARNode > {
+        return new Promise((resolve, reject) => {
+          reject("Method not implemented: addTube");
+        });
+      }
 }
 
-exports.AR = AR;
+  exports.AR = AR;

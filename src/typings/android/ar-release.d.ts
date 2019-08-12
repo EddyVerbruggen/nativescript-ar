@@ -53,9 +53,9 @@ declare module org {
 	export module nativescript {
 		export module tns {
 			export module arlib {
-				export class TNSSurfaceRendererListener {
+				export class TNSEventListener {
 					/**
-					 * Constructs a new instance of the org.nativescript.tns.arlib.TNSSurfaceRendererListener interface with the provided implementation.
+					 * Constructs a new instance of the org.nativescript.tns.arlib.TNSEventListener interface with the provided implementation.
 					 */
 					public constructor(implementation: {
 						callback(param0: javalangObject): void;

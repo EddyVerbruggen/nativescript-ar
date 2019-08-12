@@ -5,12 +5,11 @@
         "declaration": true,
         "removeComments": true,
         "noLib": false,
+        "skipLibCheck": true,
+        "lib": ["es6", "dom"],
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "lib": [
-            "es6",
-            "dom"
-        ],
+        "sourceMap": false,
         "pretty": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
@@ -20,20 +19,16 @@
         "noImplicitReturns": true,
         "noImplicitUseStrict": false,
         "noFallthroughCasesInSwitch": true,
-        "baseUrl": ".",
-        "paths": {
-            "~/*": [
-                "app/*"
-            ],
-            "*": [
-                "./node_modules/tns-core-modules/*",
-                "./node_modules/*"
-            ]
-        }
+        "typeRoots": [
+            "./node_modules/@types",
+            "./node_modules"
+        ],
+        "types": [
+        ]
     },
     "exclude": [
-        "node_modules",
-        "typings"
+        "demo",
+        "node_modules"
     ],
     "compileOnSave": false
 }

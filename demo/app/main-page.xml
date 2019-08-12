@@ -3,17 +3,19 @@
     <Label text="{{ message }}" class="t-20 p-10 text-center c-black" textWrap="true"/>
 
     <!-- TIPS (iOS):
-     - To enable 'face tracking', set 'trackingMode' to FACE and film your fase, then look at the console log.
+     - To enable 'face tracking', set 'trackingMode' to FACE and film your face, then look at the console log.
      - To enable 'image tracking', set 'trackingMode' to IMAGE and configure some images in app/App_Resources/iOS/Assets.xcassets/AR Resources.arresourcegroup
      - To enable 'world tracking', set 'trackingMode' to WORLD and point the camera at a flat surface - then tap the drawn plane.
     -->
     <AR:AR
         row="1"
-        trackingMode="FACE"
+        trackingMode="IMAGE"
         trackingImagesBundle="AR Resources"
         trackingImageDetected="trackingImageDetected"
         trackingFaceDetected="trackingFaceDetected"
         debugLevel="FEATURE_POINTS"
+        faceMaterial__DISABLED="Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"
+        faceMaterial__DISABLED2="Assets.xcassets/wireframeTexture.imageset"
         planeMaterial="{{ planeMaterial }}"
         planeOpacity="0.25"
         detectPlanes="true"
@@ -26,6 +28,7 @@
     <iOS>
       <StackLayout row="1" horizontalAlignment="right" verticalAlignment="bottom">
         <Button text="Grab screenshot" class="bg-primary grab-screenshot" horizontalAlignment="right" tap="{{ grabScreenshot }}"/>
+        <Button text="Record video" class="bg-primary record-video" horizontalAlignment="right" tap="{{ recordVideo }}"/>
 
         <GridLayout rows="auto" columns="*, 80" horizontalAlignment="right" verticalAlignment="bottom" class="bg-primary toggle-flashlight">
           <Label text="Flashlight" class="m-r-10" horizontalAlignment="right"/>
