@@ -13,49 +13,48 @@ let _origin;
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARModel.create(options, _fragment)
-        .then((model: ARModel) => {
-          model.android.setParent(parentNode);
-          resolve(model);
-        });
+      .then((model: ARModel) => {
+        model.android.setParent(parentNode);
+        resolve(model);
+      });
   });
 };
 
 const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARBox.create(options, _fragment)
-        .then((box: ARBox) => {
-          box.android.setParent(parentNode);
-          resolve(box);
-        });
+      .then((box: ARBox) => {
+        box.android.setParent(parentNode);
+        resolve(box);
+      });
   });
 };
 
 const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARSphere.create(options, _fragment)
-        .then((sphere: ARSphere) => {
-          sphere.android.setParent(parentNode);
-          resolve(sphere);
-        });
+      .then((sphere: ARSphere) => {
+        sphere.android.setParent(parentNode);
+        resolve(sphere);
+      });
   });
 };
 
 
-const getOriginAnchor=function(){
+const getOriginAnchor = function() {
 
-    if(!_origin){
-      
+  if (!_origin) {
 
-      const session = _fragment.getArSceneView().getSession();
-      const pose = com.google.ar.core.Pose.IDENTITY;
-      const anchor = session.createAnchor(pose);
-      const anchorNode = new com.google.ar.sceneform.AnchorNode(anchor);
-      anchorNode.setParent(_fragment.getArSceneView().getScene());
-      _origin=anchorNode;
+    const session = _fragment.getArSceneView().getSession();
+    const pose = com.google.ar.core.Pose.IDENTITY;
+    const anchor = session.createAnchor(pose);
+    const anchorNode = new com.google.ar.sceneform.AnchorNode(anchor);
+    anchorNode.setParent(_fragment.getArSceneView().getScene());
+    _origin = anchorNode;
 
-    }
-      return _origin;
-  };
+  }
+  return _origin;
+};
 
 
 class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragment {
@@ -102,8 +101,8 @@ export class AR extends ARBase {
     const layout = new android.widget.LinearLayout((application.android.foregroundActivity || application.android.startActivity));
 
     layout.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
-        -1, // android.widget.FrameLayout.LayoutParams.MATCH_PARENT
-        -1  // android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+      -1, // android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+      -1  // android.widget.FrameLayout.LayoutParams.MATCH_PARENT
     ));
 
     layout.setId(android.view.View.generateViewId());
@@ -280,10 +279,10 @@ export class AR extends ARBase {
 
     setTimeout(() => {
       if (_fragment.getArSceneView() &&
-          _fragment.getArSceneView().getSession() &&
-          _fragment.getArSceneView().getArFrame() &&
-          _fragment.getArSceneView().getArFrame().getCamera() &&
-          _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
+        _fragment.getArSceneView().getSession() &&
+        _fragment.getArSceneView().getArFrame() &&
+        _fragment.getArSceneView().getArFrame().getCamera() &&
+        _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
 
         const eventData: ARLoadedEventData = {
           eventName: ARBase.arLoadedEvent,
@@ -314,7 +313,7 @@ export class AR extends ARBase {
   }
 
 
-  getFragment(){
+  getFragment() {
     return _fragment;
   }
 
@@ -365,29 +364,29 @@ export class AR extends ARBase {
   }
 
 
-  
+
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-   
-      addModel(options, options.parentNode||getOriginAnchor())
-          .then(model => resolve(model));
+
+      addModel(options, options.parentNode || getOriginAnchor())
+        .then(model => resolve(model));
     });
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      
-      addBox(options, options.parentNode||getOriginAnchor())
-          .then(box => resolve(box));
+
+      addBox(options, options.parentNode || getOriginAnchor())
+        .then(box => resolve(box));
     });
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      
-      addSphere(options, options.parentNode||getOriginAnchor())
-          .then(sphere => resolve(sphere));
+
+      addSphere(options, options.parentNode || getOriginAnchor())
+        .then(sphere => resolve(sphere));
     });
   }
 
