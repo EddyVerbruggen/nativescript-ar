@@ -13,7 +13,6 @@ export { ARDebugLevel, ARTrackingMode };
 
 declare const ARImageAnchor: any;
 
-
 const ARState = {
   planes: new Map<string, ARPlane>(),
   shapes: new Map<string, ARCommonNode>(),
@@ -49,10 +48,10 @@ const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARMo
   });
 };
 
-class AR extends ARBase {
+export class AR extends ARBase {
   sceneView: ARSCNView;
   private configuration: any; // TODO ARConfiguration;
-  private delegate: ARSCNViewDelegateImpl;
+  private delegate: any; // ARSCNViewDelegateImpl;
   private physicsWorldContactDelegate: SCNPhysicsContactDelegateImpl;
   private sceneTapHandler: SceneTapHandlerImpl;
   private sceneLongPressHandler: SceneLongPressHandlerImpl;
@@ -62,7 +61,7 @@ class AR extends ARBase {
 
   static isSupported(): boolean {
     try {
-      return (!!ARSCNView && NSProcessInfo.processInfo.environment.objectForKey("SIMULATOR_DEVICE_NAME") === null);//&&ARConfiguration.isSupported;
+      return !!ARSCNView && NSProcessInfo.processInfo.environment.objectForKey("SIMULATOR_DEVICE_NAME") === null;
     } catch (ignore) {
       return false;
     }
@@ -609,9 +608,6 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
   private resultCallback: (message: any) => void;
   private options?: any;
   private currentTrackingState = ARTrackingState.Normal;
-
-  // ARKit detects and provides information about only 1 user’s face.
-  // If multiple faces are present in the camera image, ARKit chooses the largest or most clearly recognizable face.
   private hasFace = false;
 
   public static new(): ARSCNViewDelegateImpl {
@@ -978,5 +974,3 @@ class SCNPhysicsContactDelegateImpl extends NSObject implements SCNPhysicsContac
     // console.log(">>> SCNPhysicsContactDelegateImpl.physicsWorldDidUpdateContact");
   }
 }
-
-exports.AR = AR;

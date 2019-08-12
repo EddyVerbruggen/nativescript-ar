@@ -1,83 +1,268 @@
-import * as utils from "tns-core-modules/utils/utils";
 import * as application from "tns-core-modules/application";
 
-import {
-  AR as ARBase,
-  ARAddBoxOptions,
-  ARAddModelOptions,
-  ARAddSphereOptions,
-  ARAddTextOptions,
-  ARAddTubeOptions,
-  ARDebugLevel,
-  ARLoadedEventData,
-  ARNode,
-  ARPlaneTappedEventData
-} from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
+import { ARBox } from "./nodes/android/arbox";
+import { ARModel } from "./nodes/android/armodel";
 
-declare const com, android: any;
+declare const com, android, global, java: any;
 
-const CAMERA_PERMISSION_REQUEST_CODE = 853;
+let _fragment;
 
-// temp
-let ar: AR;
-let sv;
+const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    ARModel.create(options, _fragment)
+        .then((model: ARModel) => {
+          model.android.setParent(parentNode);
+          resolve(model);
+        });
+  });
+};
 
-function useAndroidX() {
-  return global.androidx && global.androidx.appcompat;
-}
+const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    ARBox.create(options, _fragment)
+        .then((box: ARBox) => {
+          box.android.setParent(parentNode);
+          resolve(box);
+        });
+  });
+};
 
-const AppPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
-const ContentPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
-
-
-
-// see https://developers.google.com/ar/reference/java
-class AR extends ARBase {
-  private session: any; // com.google.ar.core.Session;
-  private sceneView: any; // android.opengl.GLsceneView;
-  private static installRequested = false;
-  //private renderer: any; // TODO generate new typings, then use: org.nativescript.tns.arlib.TNSSurfaceRenderer;
-  private scene: org.nativescript.tns.arlib.TNSSceneRenderer;
+class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragment {
 
   constructor() {
     super();
-    ar = this;
-    //this.renderer = new org.nativescript.tns.arlib.TNSSurfaceRenderer();
-    this.scene = new org.nativescript.tns.arlib.TNSSceneRenderer();
+    // necessary when extending TypeScript constructors
+    return global.__native(this);
+  }
 
+  getSessionConfiguration(session) {
+    const config = new com.google.ar.core.Config(session);
+    config.setAugmentedFaceMode(com.google.ar.core.Config.AugmentedFaceMode.MESH3D);
+    return config;
+  }
 
-    this.scene.setSurfaceEventCallbackListener(new org.nativescript.tns.arlib.TNSEventListener({
-      callback: function(obj) {
-        console.log(">>>>>>> from native: " + obj);
-      }
-    }));
+  getSessionFeatures() {
+    return java.util.EnumSet.of(com.google.ar.core.Session.Feature.FRONT_CAMERA);
+  }
 
+  onCreateView(inflater, container, savedInstanceState) {
+    const frameLayout = super.onCreateView(inflater, container, savedInstanceState);
+    super.getPlaneDiscoveryController().hide();
+    super.getPlaneDiscoveryController().setInstructionView(null);
+    return frameLayout;
+  }
+}
 
-    this.scene.setOnSceneTappedListener(new org.nativescript.tns.arlib.TNSEventListener({
-      callback: function(obj) {
-        var eventData = {
-          eventName: ARBase.sceneTappedEvent,
-          object: ar,
-          position: JSON.parse(obj)
-        };
-        ar.notify(eventData);
-      }
-    }));
+export class AR extends ARBase {
 
-    this.scene.setOnPlaneTappedListener(new org.nativescript.tns.arlib.TNSEventListener({
-      callback: function(obj) {
-        var eventData = {
+  initNativeView(): void {
+    super.initNativeView();
+    this.initAR();
+  }
+
+  private initAR() {
+    this.nativeView.setId(android.view.View.generateViewId());
+
+    _fragment = this.trackingMode === ARTrackingMode.FACE ? new TNSArFragmentForFaceDetection() : new com.google.ar.sceneform.ux.ArFragment();
+
+    const layout = new android.widget.LinearLayout((application.android.foregroundActivity || application.android.startActivity));
+
+    layout.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
+        -1, // android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+        -1  // android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+    ));
+
+    layout.setId(android.view.View.generateViewId());
+
+    const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
+    supportFragmentManager.beginTransaction().add(this.nativeView.getId(), _fragment).commit();
+
+    _fragment.setOnTapArPlaneListener(new com.google.ar.sceneform.ux.BaseArFragment.OnTapArPlaneListener({
+      onTapPlane: (hitResult, plane, motionEvent) => {
+        const eventData: ARPlaneTappedEventData = {
           eventName: ARBase.planeTappedEvent,
-          object: ar,
-          position: JSON.parse(obj)
+          object: this,
+          position: {
+            x: hitResult.getHitPose().tx(),
+            y: hitResult.getHitPose().ty(),
+            z: hitResult.getHitPose().tz()
+          }
         };
-        ar.notify(eventData);
+        this.notify(eventData);
       }
     }));
 
+    // don't fire the event now, because that's too early.. but there doesn't seem to be an event we can listen to, so using our own impl here
+    this.fireArLoadedEvent(100);
+
+
+    // TODO below is a bunch of experiments that need to be transformed in decent code (but they mostly work)
+
+    // const context = application.android.context;
+    // const resourcestmp = context.getResources();
+    // const ident = resourcestmp.getIdentifier("andy", "raw", context.getPackageName());
+
+    /* this model-loading approach also works
+    let earthRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
+    const earthStage =
+        com.google.ar.sceneform.rendering.ModelRenderable.builder()
+            .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("Earth.sfb"))
+            .build();
+
+    java.util.concurrent.CompletableFuture
+        .allOf([earthStage])
+        .handle(new java.util.function.BiFunction({
+          apply: (notUsed, throwable) => {
+            console.log(">> handled! throwable: " + throwable);
+            try {
+              earthRenderable = earthStage.get();
+            } catch (e) {
+              console.log(e);
+            }
+          }
+        }));
+    */
+
+    /*
+    let andyRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
+    let foxFaceRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
+    let foxFaceMeshTexture: com.google.ar.sceneform.rendering.Texture;
+    // let customUIRenderable: com.google.ar.sceneform.rendering.ViewRenderable;
+
+    com.google.ar.sceneform.rendering.ModelRenderable.builder()
+        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("andy.sfb"))
+        .build()
+        .thenAccept(new java.util.function.Consumer({
+          accept: renderable => {
+            andyRenderable = renderable;
+          }
+        }));
+
+    com.google.ar.sceneform.rendering.ModelRenderable.builder()
+        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face.sfb"))
+        .build()
+        .thenAccept(new java.util.function.Consumer({
+          accept: renderable => {
+            foxFaceRenderable = renderable;
+            foxFaceRenderable.setShadowCaster(false);
+            foxFaceRenderable.setShadowReceiver(false);
+          }
+        }));
+    */
+
+    // Load the face mesh texture.
+    // com.google.ar.sceneform.rendering.Texture.builder()
+    // .setSource(this, R.drawable.fox_face_mesh_texture)
+    // .setSource(this, android.net.Uri.parse("fox_face_mesh_texture.png"))
+    // .build()
+    // .thenAccept(new java.util.function.Consumer({
+    //   accept: texture => {
+    //     foxFaceMeshTexture = texture;
+    //   }
+    // }));
+
+    // for the face mesh
+    /*
+    setTimeout(() => {
+      const sceneView = fragment.getArSceneView();
+      // This is important to make sure that the camera stream renders first so that the face mesh occlusion works correctly.
+      sceneView.setCameraStreamRenderPriority(com.google.ar.sceneform.rendering.Renderable.RENDER_PRIORITY_FIRST);
+      const scene = sceneView.getScene();
+      console.log("scene: " + scene);
+
+      scene.addOnUpdateListener(new com.google.ar.sceneform.Scene.OnUpdateListener({
+        onUpdate: frameTime => {
+          // if (!foxFaceRenderable || foxFaceMeshTexture == null) {
+          if (!foxFaceRenderable) {
+            return;
+          }
+
+          const faceList = sceneView.getSession().getAllTrackables(com.google.ar.core.AugmentedFace.class);
+          console.log("faceList: " + faceList);
+          console.log("faceList size: " + faceList.size());
+          console.log("faceList get: " + faceList.get);
+
+          // Make new AugmentedFaceNodes for any new faces.
+          for (let i = 0; i < faceList.size(); i++) {
+            const face = faceList.get(i);
+            console.log("face: " + face);
+            if (!this.faceNodeMap.has(face)) {
+              const faceNode = new com.google.ar.sceneform.ux.AugmentedFaceNode(face);
+              faceNode.setParent(scene);
+              faceNode.setFaceRegionsRenderable(foxFaceRenderable);
+              // faceNode.setFaceMeshTexture(foxFaceMeshTexture);
+              this.faceNodeMap.set(face, faceNode);
+            }
+          }
+
+          // Remove any AugmentedFaceNodes associated with an AugmentedFace that stopped tracking.
+          // Iterator<Map.Entry<AugmentedFace, AugmentedFaceNode>> iter = faceNodeMap.entrySet().iterator();
+          // while (iter.hasNext()) {
+          //   Map.Entry<AugmentedFace, AugmentedFaceNode> entry = iter.next();
+          //   AugmentedFace face = entry.getKey();
+          //   if (face.getTrackingState() == TrackingState.STOPPED) {
+          //     AugmentedFaceNode faceNode = entry.getValue();
+          //     faceNode.setParent(null);
+          //     iter.remove();
+          //   }
+          // }
+        }
+      }));
+    }, 1000);
+    */
+
+    /* this works
+    setTimeout(() => {
+      const l1 = this.parent.getViewById("l1").android;
+      l1.getParent().removeView(l1);
+
+      const customUI =
+          com.google.ar.sceneform.rendering.ViewRenderable.builder()
+              .setView(utils.ad.getApplicationContext(), l1)
+              .build()
+              .thenAccept(new java.util.function.Consumer({
+                accept: renderable => {
+                  console.log(">> accepted2, renderable: " + renderable);
+                  customUIRenderable = renderable;
+                }
+              }));
+    }, 2000);
+    */
+
+    // custom view experiment
+    // console.log(this.parent.getViewById("l1"));
+    // const page = topmost().currentPage;
+    // const forView = <View>page.getViewById("l1");
+    // console.log(forView);
 
   }
 
+  private fireArLoadedEvent(attemptsLeft: number): void {
+    if (attemptsLeft-- <= 0) {
+      return;
+    }
+
+    setTimeout(() => {
+      if (_fragment.getArSceneView() &&
+          _fragment.getArSceneView().getSession() &&
+          _fragment.getArSceneView().getArFrame() &&
+          _fragment.getArSceneView().getArFrame().getCamera() &&
+          _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
+
+        const eventData: ARLoadedEventData = {
+          eventName: ARBase.arLoadedEvent,
+          object: this,
+          android: _fragment
+        };
+        this.notify(eventData);
+      } else {
+        this.fireArLoadedEvent(attemptsLeft);
+      }
+    }, 300);
+  }
+
+  // TODO see sceneform example
   static isSupported(): boolean {
     return true;
     // can't use this before the ARCore lib is downloaded 🤔
@@ -91,115 +276,13 @@ class AR extends ARBase {
     */
   }
 
-  private cameraPermissionGranted(): boolean {
-    let hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
-    if (!hasPermission) {
-      hasPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ===
-        ContentPackageName.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), android.Manifest.permission.CAMERA);
-    }
-    return hasPermission;
-  }
-
-  private requestCameraPermission(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      // grab the permission dialog result
-      // TODO check for requestcode CAMERA_PERMISSION_REQUEST_CODE
-      application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, (args: any) => {
-        for (let i = 0; i < args.permissions.length; i++) {
-          if (args.grantResults[i] === android.content.pm.PackageManager.PERMISSION_DENIED) {
-            reject("Permission denied");
-            return;
-          }
-        }
-        resolve();
-      });
-
-      // invoke the permission dialog
-      AppPackageName.ActivityCompat.requestPermissions(
-        application.android.foregroundActivity,
-        [android.Manifest.permission.CAMERA],
-        CAMERA_PERMISSION_REQUEST_CODE);
-    });
-  }
-
-  private initAR() {
-    application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
-      if (this.session && this.sceneView) {
-        console.log(">> resuming");
-        this.session.resume();
-        this.sceneView.resume();
-        this.scene.setupScene();
-      }
-    });
-
-    application.android.on(application.AndroidApplication.activityPausedEvent, (args: any) => {
-      if (this.session && this.sceneView) {
-        this.sceneView.pause();
-        this.session.pause();
-      }
-    });
-
-    try {
-      const installStatus = com.google.ar.core.ArCoreApk.getInstance().requestInstall(application.android.foregroundActivity || application.android.startActivity, !AR.installRequested);
-      if ("" + installStatus !== "INSTALLED") {
-        AR.installRequested = true;
-        return;
-      }
-    } catch (e) {
-      console.log(">>> e: " + e);
-    }
-
-    this.sceneView = sv = new com.google.ar.sceneform.ArSceneView(this._context);
-    this.nativeView.addView(this.sceneView);
-
-    this.scene.setArSceneView(sv);
-    this.scene.setActivity(application.android.foregroundActivity);
-    this.scene.setContext(this._context);
-
-
-    this.session = new com.google.ar.core.Session(application.android.foregroundActivity || application.android.startActivity);
-
-    this.session.resume();
-    this.scene.setupScene();
-
-    const eventData: ARLoadedEventData = {
-      eventName: ARBase.arLoadedEvent,
-      object: this,
-      android: this.renderer
-    };
-    this.notify(eventData);
-  }
-
   get android(): any {
     return this.nativeView;
   }
 
-  public createNativeView(): Object {
-    let nativeView = super.createNativeView(); // ContentView
-
-    if (AR.isSupported()) {
-      setTimeout(() => {
-        if (this.cameraPermissionGranted()) {
-          this.initAR();
-        } else {
-          this.requestCameraPermission().then(() => {
-            this.initAR();
-          });
-        }
-      }, 0); // TODO remove
-    }
-
-    return nativeView;
-  }
-
-  public initNativeView(): void {
-    console.log(">> initNativeView");
-    super.initNativeView();
-  }
-
   togglePlaneVisibility(on: boolean): void {
     console.log(">> togglePlaneVisibility: " + on);
-    //this.renderer.setDrawPlanes(on);
+    // this.renderer.setDrawPlanes(on); // TODO
   }
 
   togglePlaneDetection(on: boolean): void {
@@ -213,10 +296,10 @@ class AR extends ARBase {
   }
 
   setDebugLevel(to: ARDebugLevel): void {
-    const drawPlanesAndPointClound = to === ARDebugLevel.FEATURE_POINTS || to === ARDebugLevel.PHYSICS_SHAPES;
-    console.log(">> drawPlanesAndPointClound: " + drawPlanesAndPointClound);
-    //this.renderer.setDrawPointCloud(drawPlanesAndPointClound);
-    //this.renderer.setDrawPlanes(drawPlanesAndPointClound);
+    // const drawPlanesAndPointClound = to === ARDebugLevel.FEATURE_POINTS || to === ARDebugLevel.PHYSICS_SHAPES;
+    // console.log(">> drawPlanesAndPointClound: " + drawPlanesAndPointClound);
+    // this.renderer.setDrawPointCloud(drawPlanesAndPointClound);
+    // this.renderer.setDrawPlanes(drawPlanesAndPointClound);
   }
 
   public grabScreenshot(): any {
@@ -238,119 +321,50 @@ class AR extends ARBase {
     console.log("Method not implemented: reset");
     return null;
   }
-  _initObject(object: any  options: any) {
-    var _this = this;
-
-    var renderable = {
-      node: {
-        setName: object.setName.bind(object),
-        getName: object.getName.bind(object),
-
-        getLabelContainer: object.getLabelContainer.bind(object),
-        setLabel: object.setLabel.bind(object),
-        getLabelNode: object.getLabelNode.bind(object),
-
-        showPopover: object.showPopover.bind(object),
-        hidePopover: object.hidePopover.bind(object),
-
-        setLocalPosition: object.setLocalPosition.bind(object),
-        setCrowdCamera: object.setCrowdCamera.bind(object),
-        lookAtCamera: object.lookAtCamera.bind(object),
-        setVisible: object.setVisible.bind(object),
-        setLocalScale: object.setLocalScale.bind(object),
-
-        distance: object.distance.bind(object),
-        remove: function() {
-          _this.scene.remove(object);
-        },
-
-        setMaterials: function(m) {
-          _this.scene.setMaterial(object, m[0]._argb)
-        }
-      },
-      android: object
-    }
-
-
-    if (options.onTap) {
-      object.addOnTapListener(new org.nativescript.tns.arlib.TNSEventListener({
-        callback: function() {
-          options.onTap.call(null, renderable)
-        }
-      }))
-    }
-
-    if (options.onLongPress) {
-      object.addOnLongPressListener(new org.nativescript.tns.arlib.TNSEventListener({
-        callback: function() {
-          options.onLongPress.call(null, renderable)
-        }
-      }))
-    }
-
-    if (options.materials && options.materials.length >= 1) {
-      _this.scene.setMaterial(object, options.materials[0]._argb)
-    }
-
-    if (options.position) {
-      var p = options.position;
-      object.setLocalPosition([p.x, p.y, p.z]);
-    }
-
-    return renderable;
-  }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      // TODO less PoC-like code ;)
-      //this.renderer.addModel(options);
-      resolve(null);
+      // create the anchor
+      const session = _fragment.getArSceneView().getSession();
+      const pose = com.google.ar.core.Pose.makeTranslation(options.position.x, options.position.y, options.position.z);
+      const anchor = session.createAnchor(pose);
+      const anchorNode = new com.google.ar.sceneform.AnchorNode(anchor);
+      anchorNode.setParent(_fragment.getArSceneView().getScene());
+
+      addModel(options, anchorNode)
+          .then(model => resolve(model));
     });
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
-    var _this = this;
-    return new Promise(function(resolve, reject) {
-      if (options.dimensions) {
-        var d = options.dimensions
-        var object = _this.scene.addCube(new com.google.ar.sceneform.math.Vector3(d.x, d.y, d.z));
-      } else {
-        var object = _this.scene.addCube();
-      }
+    return new Promise((resolve, reject) => {
+      // create the anchor (TODO refactor for reuse)
+      const session = _fragment.getArSceneView().getSession();
+      const pose = com.google.ar.core.Pose.makeTranslation(options.position.x, options.position.y, options.position.z);
+      const anchor = session.createAnchor(pose);
+      const anchorNode = new com.google.ar.sceneform.AnchorNode(anchor);
+      anchorNode.setParent(_fragment.getArSceneView().getScene());
 
-
-      resolve(_this._initObject(object, options));
+      addBox(options, anchorNode)
+          .then(box => resolve(box));
     });
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
-    var _this = this;
-    return new Promise(function(resolve, reject) {
-
-      if (options.radius) {
-        var object = _this.scene.addSphere(options.radius);
-      } else {
-        var object = _this.scene.addSphere();
-      }
-
-
-      resolve(_this._initObject(object, options));
+    return new Promise((resolve, reject) => {
+      reject("Method not implemented: addSphere");
     });
   }
 
-  addText(options: ARAddTextOptions): Promise < ARNode > {
-        return new Promise((resolve, reject) => {
-          // TODO less PoC-like code ;)
-          this.renderer.addText(options);
-          resolve(null);
-        });
-      }
+  addText(options: ARAddTextOptions): Promise<ARNode> {
+    return new Promise((resolve, reject) => {
+      reject("Method not implemented: addText");
+    });
+  }
 
-  addTube(options: ARAddTubeOptions): Promise < ARNode > {
-        return new Promise((resolve, reject) => {
-          reject("Method not implemented: addTube");
-        });
-      }
+  addTube(options: ARAddTubeOptions): Promise<ARNode> {
+    return new Promise((resolve, reject) => {
+      reject("Method not implemented: addTube");
+    });
+  }
 }
-
-  exports.AR = AR;

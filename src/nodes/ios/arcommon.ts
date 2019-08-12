@@ -69,6 +69,14 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
+  scaleBy(by: number | ARScale): void {
+    this.ios.scale = {
+      x: this.ios.scale.x + (by instanceof ARScale ? by.x : by),
+      y: this.ios.scale.y + (by instanceof ARScale ? by.y : by),
+      z: this.ios.scale.z + (by instanceof ARScale ? by.z : by)
+    };
+  }
+
   onTap(touchPosition: ARDimensions2D): void {
     this.onTapHandler && this.onTapHandler({
       node: this,

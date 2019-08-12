@@ -3,45 +3,50 @@ matrix:
     - stage: "Lint"
       language: node_js
       os: linux
-      node_js: "6"
-      script: cd src && npm run ci.tslint && cd ../demo && npm run ci.tslint
-    - stage: "WebPack"
+      node_js: "8"
+      script: cd src && npm run ci.tslint
+    - stage: "WebPack, Build"
       os: osx
       env:
-        - Platform="iOS"
-      osx_image: xcode8.3
-      language: node_js 
-      node_js: "6"
+        - WebPack="iOS"
+      osx_image: xcode10.0
+      language: node_js
+      node_js: "8"
       jdk: oraclejdk8
-      script: cd demo && npm run build.plugin && npm i && tns build ios --bundle
-    - stage: "Build"
-      env: 
-        - BuildAndroid="25"
-      language: android
+      script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
+    - language: android
+      env:
+        - BuildAndroid="28"
       os: linux
       jdk: oraclejdk8
       before_install: nvm install stable
-      script: cd src && npm i && npm run tsc && cd ../demo && tns build android
+      script:
+        - cd src && npm i && npm run tsc && cd ../demo && tns build android
     - os: osx
-      env: 
-        - BuildiOS="10.3"
-        - Xcode="8.3"
-      osx_image: xcode8.3
-      language: node_js 
-      node_js: "6"
+      env:
+        - BuildiOS="12"
+        - Xcode="10.0"
+      osx_image: xcode10.0
+      language: node_js
+      node_js: "8"
       jdk: oraclejdk8
-      script: cd src && npm i && npm run tsc && cd ../demo && tns build ios
+      script:
+        - cd src && npm i && npm run tsc && cd ../demo && tns build ios
 
 android:
   components:
     - tools
     - platform-tools
-    - build-tools-25.0.2
-    - android-25
+    - build-tools-28.0.3
+    - android-28
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-21
 
+before_install:
+  - sudo pip install --upgrade pip
+  - sudo pip install six
+
 install:
-    - echo no | npm install -g nativescript
-    - tns usage-reporting disable
-    - tns error-reporting disable
+  - echo no | npm install -g nativescript
+  - tns usage-reporting disable
+  - tns error-reporting disable

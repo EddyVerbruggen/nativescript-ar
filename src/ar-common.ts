@@ -79,6 +79,8 @@ export interface ARCommonNode extends ARNode {
   moveBy?(to: ARPosition): void;
 
   rotateBy?(by: ARRotation): void;
+
+  scaleBy?(by: number | ARScale): void;
 }
 
 export interface ARAddOptions {
@@ -279,7 +281,7 @@ export abstract class AR extends ContentView {
   }
 
   static isImageTrackingSupported(): boolean {
-    return false;
+    return true;
   }
 
   /**

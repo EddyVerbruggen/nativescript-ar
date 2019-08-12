@@ -39,52 +39,56 @@ export function pageLoaded(args: observable.EventData) {
 
 export function arLoaded(args: ARLoadedEventData): void {
   ar = args.object;
+  console.log(">> arLoaded, ar: " + ar);
   model.ar = ar;
 
   // add some stuff to the scene
-  /*
-  setTimeout(() => {
+  // setTimeout(() => {
+    /*
     args.object.addModel({
-      name: "Models.scnassets/Car.dae",
+      name: isIOS ? "Models.scnassets/Campfire/campfire_v2.dae" : "andy.sfb",
       position: {
         x: 0,
         y: 0,
-        z: -1
+        z: -0.7
       },
       rotation: {
         x: 0,
-        y: 180, // face towards camera
+        y: 25,
         z: 0
       },
-      scale: 0.1,
-      onTap: node => console.log("model tapped: " + node.id)
+      scale: 0.5,
+      onTap: node => console.log("model tapped: " + node)
     });
-  }, 1000);
+    */
 
   args.object.addBox({
     position: {
-      x: -0.5,
-      y: -0.5,
+      x: -0.2,
+      y: 0.1,
       z: -1
     },
     dimensions: {
-      x: 0.25,
-      y: 0.25,
-      z: 0.52
+      x: 0.1,
+      y: 0.2,
+      z: 0.3
     },
-    materials: [{
-      diffuse: {
-        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
-        wrapMode: "ClampToBorder"
-      }
-    }],
-    onTap: node => console.log("box tapped: " + node.id),
+    materials: [new Color("orange")],
+    // materials: [{
+    //   diffuse: {
+    //     contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+    //     wrapMode: "ClampToBorder"
+    //   }
+    // }],
+    onTap: node => console.log("box tapped: " + node),
     // onLongPress: node => console.log("box longpressed: " + node.id),
     draggingEnabled: true,
     rotatingEnabled: true
     // onPan: node => console.log("box panned: " + node.id),
   }).then(node => console.log("box added: " + node.id));
+  // }, 1000);
 
+  /*
   args.object.addText({
     text: "NativeScript",
     position: {
@@ -316,6 +320,10 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
   }
 }
 
+export function tapp(): void {
+  console.log(">>> tapppppp");
+}
+
 export function planeDetected(args: ARPlaneDetectedEventData): void {
   console.log("Plane detected (id): " + args.plane.id);
 }
@@ -324,27 +332,33 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
   console.log("Plane tapped @ x coordinate: " + args.position.x);
 
   args.object.addModel({
-    name: "Models.scnassets/Car.dae",
-    position: {
-      x: 0,
-      y: 0,
-      z: -0.5
-    },
+    name: isIOS ? "Models.scnassets/Car.dae" : "andy.sfb",
+    position: args.position,
     rotation: {
       x: 0,
-      y: 180, // face towards camera
+      y: 45,
       z: 0
     },
     scale: 0.1,
     onTap: (interaction: ARNodeInteraction) => {
       console.log("tapped model id: " + interaction.node.id);
       console.log("tapped model position: " + interaction.node.position);
-      console.log("tapped model: " + JSON.stringify(interaction.node));
+      console.log("tapped model touchPosition: " + interaction.touchPosition);
+      interaction.node.moveBy({
+        x: 0.02,
+        y: 0.02,
+        z: 0.02
+      });
+      interaction.node.rotateBy({
+        x: 0,
+        y: 10,
+        z: 0
+      });
+      interaction.node.scaleBy(0.9);
     },
     onLongPress: (interaction: ARNodeInteraction) => console.log("model longpressed: " + interaction.node.id)
   });
 
-  /*
   const boxDimensions = 0.11;
 
   args.object.addBox({
@@ -364,26 +378,28 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     }],
     // mass: 0.3,
     onTap: model => {
-      console.log(`Box tapped: ${model.id}, gonna move it`);
+      console.log(`Box tapped: ${model}, gonna move it`);
       // model.rotateBy({
       //   x: 0,
       //   y: 0,
       //   z: -5
       // })
-      model.moveTo({
-        x: model.position.x,
-        y: model.position.y + 0.01, // moves the box up a little
-        z: model.position.z
-      })
+      // model.moveTo({
+      //   x: model.position.x,
+      //   y: model.position.y + 0.01, // moves the box up a little
+      //   z: model.position.z
+      // })
     },
-    onLongPress: model => model.remove()
+    onLongPress: model => {
+      console.log(">> long press")
+      // model.remove()
+    }
   }).then(arNode => {
     console.log("Box successfully added");
     if (arNode.ios) {
       // do something iOS specific here if you like
     }
   });
-  */
 }
 
 export function sceneTapped(args: ARSceneTappedEventData): void {
