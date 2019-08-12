@@ -1,4 +1,5 @@
 import * as application from "tns-core-modules/application";
+import * as utils from "tns-core-modules/utils/utils";
 
 import { AR as ARBase, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
@@ -55,6 +56,7 @@ class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragmen
 }
 
 export class AR extends ARBase {
+  private faceNodeMap = new Map();
 
   initNativeView(): void {
     super.initNativeView();
@@ -64,19 +66,84 @@ export class AR extends ARBase {
   private initAR() {
     this.nativeView.setId(android.view.View.generateViewId());
 
-    _fragment = this.trackingMode === ARTrackingMode.FACE ? new TNSArFragmentForFaceDetection() : new com.google.ar.sceneform.ux.ArFragment();
+    if (this.trackingMode === ARTrackingMode.FACE) {
+      _fragment = new TNSArFragmentForFaceDetection();
 
-    const layout = new android.widget.LinearLayout((application.android.foregroundActivity || application.android.startActivity));
+      // TODO for now this is a fixed face mesh, but of course we want to pass this stuff in
+      let foxFaceRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
+      let foxFaceMeshTexture: com.google.ar.sceneform.rendering.Texture;
 
-    layout.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
-        -1, // android.widget.FrameLayout.LayoutParams.MATCH_PARENT
-        -1  // android.widget.FrameLayout.LayoutParams.MATCH_PARENT
-    ));
+      com.google.ar.sceneform.rendering.ModelRenderable.builder()
+          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face.sfb"))
+          .build()
+          .thenAccept(new java.util.function.Consumer({
+            accept: renderable => {
+              foxFaceRenderable = renderable;
+              foxFaceRenderable.setShadowCaster(false);
+              foxFaceRenderable.setShadowReceiver(false);
+            }
+          }));
 
-    layout.setId(android.view.View.generateViewId());
+      // Load the face mesh texture.
+      com.google.ar.sceneform.rendering.Texture.builder()
+          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face_mesh_texture.png"))
+          .build()
+          .thenAccept(new java.util.function.Consumer({
+            accept: texture => foxFaceMeshTexture = texture
+          }));
+
+      setTimeout(() => {
+        const sceneView = _fragment.getArSceneView();
+        // This is important to make sure that the camera stream renders first so that the face mesh occlusion works correctly.
+        sceneView.setCameraStreamRenderPriority(com.google.ar.sceneform.rendering.Renderable.RENDER_PRIORITY_FIRST);
+        const scene = sceneView.getScene();
+
+        scene.addOnUpdateListener(new com.google.ar.sceneform.Scene.OnUpdateListener({
+          onUpdate: frameTime => {
+            if (!foxFaceRenderable || !foxFaceMeshTexture) {
+              return;
+            }
+
+            const faceList = sceneView.getSession().getAllTrackables(com.google.ar.core.AugmentedFace.class);
+
+            // create AugmentedFaceNodes for any new faces
+            for (let i = 0; i < faceList.size(); i++) {
+              const face = faceList.get(i);
+              if (!this.faceNodeMap.has(face)) {
+                const faceNode = new com.google.ar.sceneform.ux.AugmentedFaceNode(face);
+                faceNode.setParent(scene);
+                faceNode.setFaceRegionsRenderable(foxFaceRenderable);
+                // note that (at least in this case) the texture doesn't seem to make a difference
+                faceNode.setFaceMeshTexture(foxFaceMeshTexture);
+                this.faceNodeMap.set(face, faceNode);
+              }
+            }
+
+            // Remove any AugmentedFaceNodes associated with an AugmentedFace that stopped tracking.
+            this.faceNodeMap.forEach((node: any, face: any) => {
+              if (face.getTrackingState() === com.google.ar.core.TrackingState.STOPPED) {
+                node.setParent(null);
+                this.faceNodeMap.delete(node);
+              }
+            });
+          }
+        }));
+      }, 0);
+
+    } else {
+      _fragment = new com.google.ar.sceneform.ux.ArFragment();
+      if (this.trackingMode === ARTrackingMode.IMAGE) {
+      }
+    }
 
     const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
     supportFragmentManager.beginTransaction().add(this.nativeView.getId(), _fragment).commit();
+
+    // no need for these - the fragment will manage session suspending etc.. unless we get crashes which are not caused by livesync..
+    // application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
+    // });
+    // application.android.on(application.AndroidApplication.activityPausedEvent, (args: any) => {
+    // });
 
     _fragment.setOnTapArPlaneListener(new com.google.ar.sceneform.ux.BaseArFragment.OnTapArPlaneListener({
       onTapPlane: (hitResult, plane, motionEvent) => {
@@ -124,95 +191,7 @@ export class AR extends ARBase {
         }));
     */
 
-    /*
-    let andyRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
-    let foxFaceRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
-    let foxFaceMeshTexture: com.google.ar.sceneform.rendering.Texture;
-    // let customUIRenderable: com.google.ar.sceneform.rendering.ViewRenderable;
-
-    com.google.ar.sceneform.rendering.ModelRenderable.builder()
-        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("andy.sfb"))
-        .build()
-        .thenAccept(new java.util.function.Consumer({
-          accept: renderable => {
-            andyRenderable = renderable;
-          }
-        }));
-
-    com.google.ar.sceneform.rendering.ModelRenderable.builder()
-        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face.sfb"))
-        .build()
-        .thenAccept(new java.util.function.Consumer({
-          accept: renderable => {
-            foxFaceRenderable = renderable;
-            foxFaceRenderable.setShadowCaster(false);
-            foxFaceRenderable.setShadowReceiver(false);
-          }
-        }));
-    */
-
-    // Load the face mesh texture.
-    // com.google.ar.sceneform.rendering.Texture.builder()
-    // .setSource(this, R.drawable.fox_face_mesh_texture)
-    // .setSource(this, android.net.Uri.parse("fox_face_mesh_texture.png"))
-    // .build()
-    // .thenAccept(new java.util.function.Consumer({
-    //   accept: texture => {
-    //     foxFaceMeshTexture = texture;
-    //   }
-    // }));
-
-    // for the face mesh
-    /*
-    setTimeout(() => {
-      const sceneView = fragment.getArSceneView();
-      // This is important to make sure that the camera stream renders first so that the face mesh occlusion works correctly.
-      sceneView.setCameraStreamRenderPriority(com.google.ar.sceneform.rendering.Renderable.RENDER_PRIORITY_FIRST);
-      const scene = sceneView.getScene();
-      console.log("scene: " + scene);
-
-      scene.addOnUpdateListener(new com.google.ar.sceneform.Scene.OnUpdateListener({
-        onUpdate: frameTime => {
-          // if (!foxFaceRenderable || foxFaceMeshTexture == null) {
-          if (!foxFaceRenderable) {
-            return;
-          }
-
-          const faceList = sceneView.getSession().getAllTrackables(com.google.ar.core.AugmentedFace.class);
-          console.log("faceList: " + faceList);
-          console.log("faceList size: " + faceList.size());
-          console.log("faceList get: " + faceList.get);
-
-          // Make new AugmentedFaceNodes for any new faces.
-          for (let i = 0; i < faceList.size(); i++) {
-            const face = faceList.get(i);
-            console.log("face: " + face);
-            if (!this.faceNodeMap.has(face)) {
-              const faceNode = new com.google.ar.sceneform.ux.AugmentedFaceNode(face);
-              faceNode.setParent(scene);
-              faceNode.setFaceRegionsRenderable(foxFaceRenderable);
-              // faceNode.setFaceMeshTexture(foxFaceMeshTexture);
-              this.faceNodeMap.set(face, faceNode);
-            }
-          }
-
-          // Remove any AugmentedFaceNodes associated with an AugmentedFace that stopped tracking.
-          // Iterator<Map.Entry<AugmentedFace, AugmentedFaceNode>> iter = faceNodeMap.entrySet().iterator();
-          // while (iter.hasNext()) {
-          //   Map.Entry<AugmentedFace, AugmentedFaceNode> entry = iter.next();
-          //   AugmentedFace face = entry.getKey();
-          //   if (face.getTrackingState() == TrackingState.STOPPED) {
-          //     AugmentedFaceNode faceNode = entry.getValue();
-          //     faceNode.setParent(null);
-          //     iter.remove();
-          //   }
-          // }
-        }
-      }));
-    }, 1000);
-    */
-
-    /* this works
+    /* this works, for rendering a custom UI
     setTimeout(() => {
       const l1 = this.parent.getViewById("l1").android;
       l1.getParent().removeView(l1);
