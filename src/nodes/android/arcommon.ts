@@ -41,6 +41,18 @@ export abstract class ARCommonNode implements IARCommonNode {
       console.log("scale set to: " + this.android.getLocalScale());
     }
 
+
+    if(options.position){
+
+      this.android.setLocalPosition(
+        new (<any>com.google.ar.sceneform).math.Vector3(
+            options.position.x,
+            options.position.y,
+            options.position.z
+            )
+        );
+    }
+
     // TODO for these, see TNSNode's gestures in Blackwell's fork
     this.android.setOnTapListener(new com.google.ar.sceneform.Node.OnTapListener({
       onTap: (hitResult: any /* com.google.ar.sceneform.HitTestResult */, motionEvent: android.view.MotionEvent) => {

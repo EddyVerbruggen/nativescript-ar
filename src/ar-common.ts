@@ -93,6 +93,7 @@ export interface ARAddOptions {
   // onPan?: (interaction: ARNodeInteraction) => void;
   draggingEnabled?: boolean;
   rotatingEnabled?: boolean;
+  parentNode?:ARNode
 }
 
 export type ARMaterialWrapMode = "Clamp" | "Repeat" | "ClampToBorder" | "Mirror";
