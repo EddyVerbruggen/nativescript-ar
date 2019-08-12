@@ -1,9 +1,10 @@
 import * as application from "tns-core-modules/application";
 import * as utils from "tns-core-modules/utils/utils";
 
-import { AR as ARBase, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARSphere } from "./nodes/android/arsphere";
+import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 
 declare const com, android, global, java: any;
@@ -11,7 +12,7 @@ declare const com, android, global, java: any;
 let _fragment;
 let _origin;
 
-const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARModel.create(options, _fragment)
       .then((model: ARModel) => {
@@ -21,7 +22,7 @@ const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.scenefor
   });
 };
 
-const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARBox.create(options, _fragment)
       .then((box: ARBox) => {
@@ -31,7 +32,7 @@ const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.An
   });
 };
 
-const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARSphere.create(options, _fragment)
       .then((sphere: ARSphere) => {
@@ -40,16 +41,22 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
       });
   });
 };
-const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
-    ARSphere.create(options, _fragment)
-      .then((sphere: ARTube) => {
-        sphere.android.setParent(parentNode);
-        resolve(sphere);
+    ARTube.create(options, _fragment)
+      .then((tube: ARTube) => {
+        tube.android.setParent(parentNode);
+        resolve(tube);
       });
   });
 };
 
+const getNode = function(options: ARAddOptions) {
+  if (options.parentNode && options.parentNode.android) {
+    return options.parentNode.android;
+  }
+  return null;
+};
 
 const getOriginAnchor = function() {
 
@@ -115,23 +122,23 @@ export class AR extends ARBase {
       let foxFaceMeshTexture: com.google.ar.sceneform.rendering.Texture;
 
       com.google.ar.sceneform.rendering.ModelRenderable.builder()
-          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face.sfb"))
-          .build()
-          .thenAccept(new java.util.function.Consumer({
-            accept: renderable => {
-              foxFaceRenderable = renderable;
-              foxFaceRenderable.setShadowCaster(false);
-              foxFaceRenderable.setShadowReceiver(false);
-            }
-          }));
+        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face.sfb"))
+        .build()
+        .thenAccept(new java.util.function.Consumer({
+          accept: renderable => {
+            foxFaceRenderable = renderable;
+            foxFaceRenderable.setShadowCaster(false);
+            foxFaceRenderable.setShadowReceiver(false);
+          }
+        }));
 
       // Load the face mesh texture.
       com.google.ar.sceneform.rendering.Texture.builder()
-          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face_mesh_texture.png"))
-          .build()
-          .thenAccept(new java.util.function.Consumer({
-            accept: texture => foxFaceMeshTexture = texture
-          }));
+        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face_mesh_texture.png"))
+        .build()
+        .thenAccept(new java.util.function.Consumer({
+          accept: texture => foxFaceMeshTexture = texture
+        }));
 
       setTimeout(() => {
         const sceneView = _fragment.getArSceneView();
@@ -358,7 +365,7 @@ export class AR extends ARBase {
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
-      addModel(options, options.parentNode || getOriginAnchor())
+      return addModel(options, getNode(options) || getOriginAnchor())
         .then(model => resolve(model));
     });
   }
@@ -366,15 +373,14 @@ export class AR extends ARBase {
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
-      addBox(options, options.parentNode || getOriginAnchor())
+      return addBox(options, getNode(options) || getOriginAnchor())
         .then(box => resolve(box));
     });
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-
-      addSphere(options, options.parentNode || getOriginAnchor())
+      return addSphere(options, getNode(options) || getOriginAnchor())
         .then(sphere => resolve(sphere));
     });
   }
@@ -388,7 +394,7 @@ export class AR extends ARBase {
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
-      addTube(options, options.parentNode || getOriginAnchor())
+      return addTube(options, getNode(options) || getOriginAnchor())
         .then(tube => resolve(tube));
     });
   }
