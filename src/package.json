@@ -1,6 +1,6 @@
 {
   "name": "nativescript-ar",
-  "version": "0.8.1",
+  "version": "1.0.0",
   "description": "NativeScript Augmented Reality plugin. ARKit on iOS and (in the future) ARCore on Android.",
   "main": "ar",
   "typings": "index.d.ts",
@@ -27,7 +27,8 @@
     "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src",
     "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
     "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**' --exclude '**/typings/**'",
-    "generate.typings.ios": "cd ../demo && TNS_DEBUG_METADATA_PATH=\"$(pwd)/metadata\" tns build ios && TNS_TYPESCRIPT_DECLARATIONS_PATH=\"$(pwd)/typings\" tns build ios && echo 'Now look for your library typings in demo-ng/typings!'"
+    "generate.typings.ios": "cd ../demo && TNS_DEBUG_METADATA_PATH=\"$(pwd)/metadata\" tns build ios && TNS_TYPESCRIPT_DECLARATIONS_PATH=\"$(pwd)/typings\" tns build ios && echo 'Now look for your library typings in demo-ng/typings!'",
+    "generate.typings.android": "java -jar ../../android-dts-generator/dts-generator/build/libs/dts-generator.jar -input ./classes.jar -output typings/android/"
   },
   "repository": {
     "type": "git",
@@ -56,12 +57,12 @@
   "homepage": "https://github.com/EddyVerbruggen/nativescript-ar",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "nativescript-dev-typescript": "~0.7.9",
+    "nativescript-dev-typescript": "~0.10.0",
     "rimraf": "^2.5.0",
-    "tns-core-modules": "~5.2.2",
-    "tns-platform-declarations": "~5.2.2",
+    "tns-core-modules": "~6.0.0",
+    "tns-platform-declarations": "~6.0.0",
     "tslint": "~5.4.3",
-    "typescript": "~3.1.1"
+    "typescript": "~3.4.0"
   },
   "dependencies": {},
   "bootstrapper": "nativescript-plugin-seed"

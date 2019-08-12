@@ -23,10 +23,6 @@ export class HelloWorldModel extends Observable {
     this.message = `AR supported? ${supported}`;
 
     console.log(`Image tracking supported? ${AR.isImageTrackingSupported()}`);
-
-    if (!supported) {
-      return;
-    }
   }
 
   public grabScreenshot(): void {
