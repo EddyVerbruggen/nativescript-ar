@@ -51,11 +51,12 @@ const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.
   });
 };
 
-const getNode = function(options: ARAddOptions) {
+
+const resolveParentNode = function(options: ARAddOptions) {
   if (options.parentNode && options.parentNode.android) {
     return options.parentNode.android;
   }
-  return null;
+  return getOriginAnchor();
 };
 
 const getOriginAnchor = function() {
@@ -365,7 +366,7 @@ export class AR extends ARBase {
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
-      return addModel(options, getNode(options) || getOriginAnchor())
+      addModel(options, resolveParentNode(options))
         .then(model => resolve(model));
     });
   }
@@ -373,14 +374,15 @@ export class AR extends ARBase {
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
-      return addBox(options, getNode(options) || getOriginAnchor())
+      addBox(options, resolveParentNode(options))
         .then(box => resolve(box));
     });
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      return addSphere(options, getNode(options) || getOriginAnchor())
+
+      addSphere(options, resolveParentNode(options))
         .then(sphere => resolve(sphere));
     });
   }
@@ -394,7 +396,7 @@ export class AR extends ARBase {
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
-      return addTube(options, getNode(options) || getOriginAnchor())
+      return addTube(options, resolveParentNode(options))
         .then(tube => resolve(tube));
     });
   }
