@@ -40,6 +40,15 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
       });
   });
 };
+const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    ARSphere.create(options, _fragment)
+      .then((sphere: ARTube) => {
+        sphere.android.setParent(parentNode);
+        resolve(sphere);
+      });
+  });
+};
 
 
 const getOriginAnchor = function() {
@@ -378,7 +387,9 @@ export class AR extends ARBase {
 
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      reject("Method not implemented: addTube");
+
+      addTube(options, options.parentNode || getOriginAnchor())
+        .then(tube => resolve(tube));
     });
   }
 }
