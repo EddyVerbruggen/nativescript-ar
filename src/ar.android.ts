@@ -15,42 +15,42 @@ let _origin;
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARModel.create(options, _fragment)
-      .then((model: ARModel) => {
-        model.android.setParent(parentNode);
-        resolve(model);
-      });
+        .then((model: ARModel) => {
+          model.android.setParent(parentNode);
+          resolve(model);
+        });
   });
 };
 
 const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARBox.create(options, _fragment)
-      .then((box: ARBox) => {
-        box.android.setParent(parentNode);
-        resolve(box);
-      });
+        .then((box: ARBox) => {
+          box.android.setParent(parentNode);
+          resolve(box);
+        });
   });
 };
 
 const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARSphere.create(options, _fragment)
-      .then((sphere: ARSphere) => {
-        sphere.android.setParent(parentNode);
-        resolve(sphere);
-      });
-  });
-};
-const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
-  return new Promise((resolve, reject) => {
-    ARTube.create(options, _fragment)
-      .then((tube: ARTube) => {
-        tube.android.setParent(parentNode);
-        resolve(tube);
-      });
+        .then((sphere: ARSphere) => {
+          sphere.android.setParent(parentNode);
+          resolve(sphere);
+        });
   });
 };
 
+const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    ARTube.create(options, _fragment)
+        .then((tube: ARTube) => {
+          tube.android.setParent(parentNode);
+          resolve(tube);
+        });
+  });
+};
 
 const resolveParentNode = (options: ARAddOptions) => {
   if (options.parentNode && options.parentNode.android) {
