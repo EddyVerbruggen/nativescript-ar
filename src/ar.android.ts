@@ -5,6 +5,7 @@ import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSp
 import { ARBox } from "./nodes/android/arbox";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARModel } from "./nodes/android/armodel";
+import { ARUIView} from "./nodes/android/aruiview";
 
 declare const com, android, global, java: any;
 
@@ -37,6 +38,16 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
       .then((sphere: ARSphere) => {
         sphere.android.setParent(parentNode);
         resolve(sphere);
+      });
+  });
+};
+
+const addUIView = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    ARUIView.create(options, _fragment)
+      .then((view: ARUIView) => {
+        view.android.setParent(parentNode);
+        resolve(view);
       });
   });
 };
@@ -387,4 +398,13 @@ export class AR extends ARBase {
       reject("Method not implemented: addTube");
     });
   }
+
+  addUIView(options: ARAddOptions): Promise<ARNode> {
+    return new Promise((resolve, reject) => {
+
+      addUIView(options, resolveParentNode(options))
+        .then(view => resolve(view));
+    });
+  }
+
 }
