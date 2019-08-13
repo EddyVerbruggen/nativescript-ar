@@ -15,30 +15,30 @@ let _origin;
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARModel.create(options, _fragment)
-        .then((model: ARModel) => {
-          model.android.setParent(parentNode);
-          resolve(model);
-        });
+      .then((model: ARModel) => {
+        model.android.setParent(parentNode);
+        resolve(model);
+      });
   });
 };
 
 const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARBox.create(options, _fragment)
-        .then((box: ARBox) => {
-          box.android.setParent(parentNode);
-          resolve(box);
-        });
+      .then((box: ARBox) => {
+        box.android.setParent(parentNode);
+        resolve(box);
+      });
   });
 };
 
 const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARSphere.create(options, _fragment)
-        .then((sphere: ARSphere) => {
-          sphere.android.setParent(parentNode);
-          resolve(sphere);
-        });
+      .then((sphere: ARSphere) => {
+        sphere.android.setParent(parentNode);
+        resolve(sphere);
+      });
   });
 };
 const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
@@ -118,23 +118,23 @@ export class AR extends ARBase {
       let foxFaceMeshTexture: com.google.ar.sceneform.rendering.Texture;
 
       com.google.ar.sceneform.rendering.ModelRenderable.builder()
-        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face.sfb"))
-        .build()
-        .thenAccept(new java.util.function.Consumer({
-          accept: renderable => {
-            foxFaceRenderable = renderable;
-            foxFaceRenderable.setShadowCaster(false);
-            foxFaceRenderable.setShadowReceiver(false);
-          }
-        }));
+          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face.sfb"))
+          .build()
+          .thenAccept(new java.util.function.Consumer({
+            accept: renderable => {
+              foxFaceRenderable = renderable;
+              foxFaceRenderable.setShadowCaster(false);
+              foxFaceRenderable.setShadowReceiver(false);
+            }
+          }));
 
       // Load the face mesh texture.
       com.google.ar.sceneform.rendering.Texture.builder()
-        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face_mesh_texture.png"))
-        .build()
-        .thenAccept(new java.util.function.Consumer({
-          accept: texture => foxFaceMeshTexture = texture
-        }));
+          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face_mesh_texture.png"))
+          .build()
+          .thenAccept(new java.util.function.Consumer({
+            accept: texture => foxFaceMeshTexture = texture
+          }));
 
       setTimeout(() => {
         const sceneView = _fragment.getArSceneView();
@@ -270,10 +270,10 @@ export class AR extends ARBase {
 
     setTimeout(() => {
       if (_fragment.getArSceneView() &&
-          _fragment.getArSceneView().getSession() &&
-          _fragment.getArSceneView().getArFrame() &&
-          _fragment.getArSceneView().getArFrame().getCamera() &&
-          _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
+        _fragment.getArSceneView().getSession() &&
+        _fragment.getArSceneView().getArFrame() &&
+        _fragment.getArSceneView().getArFrame().getCamera() &&
+        _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
 
         const eventData: ARLoadedEventData = {
           eventName: ARBase.arLoadedEvent,
@@ -358,7 +358,7 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addModel(options, resolveParentNode(options))
-          .then(model => resolve(model));
+        .then(model => resolve(model));
     });
   }
 
@@ -366,7 +366,7 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addBox(options, resolveParentNode(options))
-          .then(box => resolve(box));
+        .then(box => resolve(box));
     });
   }
 
@@ -374,7 +374,7 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addSphere(options, resolveParentNode(options))
-          .then(sphere => resolve(sphere));
+        .then(sphere => resolve(sphere));
     });
   }
 
