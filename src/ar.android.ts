@@ -270,10 +270,10 @@ export class AR extends ARBase {
 
     setTimeout(() => {
       if (_fragment.getArSceneView() &&
-        _fragment.getArSceneView().getSession() &&
-        _fragment.getArSceneView().getArFrame() &&
-        _fragment.getArSceneView().getArFrame().getCamera() &&
-        _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
+          _fragment.getArSceneView().getSession() &&
+          _fragment.getArSceneView().getArFrame() &&
+          _fragment.getArSceneView().getArFrame().getCamera() &&
+          _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
 
         const eventData: ARLoadedEventData = {
           eventName: ARBase.arLoadedEvent,
@@ -358,7 +358,7 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addModel(options, resolveParentNode(options))
-        .then(model => resolve(model));
+          .then(model => resolve(model));
     });
   }
 
@@ -366,7 +366,7 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addBox(options, resolveParentNode(options))
-        .then(box => resolve(box));
+          .then(box => resolve(box));
     });
   }
 
@@ -374,7 +374,7 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addSphere(options, resolveParentNode(options))
-        .then(sphere => resolve(sphere));
+          .then(sphere => resolve(sphere));
     });
   }
 
@@ -387,8 +387,8 @@ export class AR extends ARBase {
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
-      return addTube(options, resolveParentNode(options))
-        .then(tube => resolve(tube));
+      addTube(options, resolveParentNode(options))
+          .then(tube => resolve(tube));
     });
   }
 }
