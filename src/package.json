@@ -1,7 +1,7 @@
 {
   "name": "nativescript-ar",
   "version": "1.0.0",
-  "description": "NativeScript Augmented Reality plugin. ARKit on iOS and (in the future) ARCore on Android.",
+  "description": "NativeScript Augmented Reality plugin. ARKit on iOS and (with the help of Sceneform) ARCore on Android.",
   "main": "ar",
   "typings": "index.d.ts",
   "nativescript": {
@@ -11,8 +11,9 @@
     }
   },
   "scripts": {
-    "tsc": "tsc -skipLibCheck",
-    "tsc.demo": "tsc ../demo/*.ts -skipLibCheck",
+    "tsc": "tsc --skipLibCheck",
+    "tsc.demo": "npm run tsc ../demo/*.ts",
+    "tsc.demo.solarsystem": "npm run tsc ../demo-solarsystem/app/*.ts",
     "build": "npm i && npm run tsc",
     "postclone": "npm i && cd ../demo && npm i && cd ../src && npm run plugin.link",
     "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
@@ -22,8 +23,8 @@
     "plugin.tscwatch": "npm run tsc -- -w",
     "demo.ios": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run ios",
     "demo.android": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run android",
-    "demo.android.clean": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src && tns run android",
-    "demo.reset": "cd ../demo && rimraf platforms",
+    "demo.solarsystem.ios": "npm i && npm run tsc && npm run tsc.demo.solarsystem && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns run ios --bundle",
+    "demo.solarsystem.android": "npm i && npm run tsc && npm run tsc.demo.solarsystem && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns run android --bundle",
     "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src",
     "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
     "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**' --exclude '**/typings/**'",
