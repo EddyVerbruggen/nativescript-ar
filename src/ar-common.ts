@@ -123,6 +123,11 @@ export interface ARAddGeometryOptions extends ARAddOptions {
   materials?: Array<string | Color | ARMaterial>;
 }
 
+
+export interface ARUIViewOptions extends ARAddOptions {
+  view: ViewBase;
+  
+}
 export interface ARAddModelOptions extends ARAddOptions {
   name: string;
   childNodeName?: string;

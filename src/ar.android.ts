@@ -1,7 +1,7 @@
 import * as application from "tns-core-modules/application";
 import * as utils from "tns-core-modules/utils/utils";
 
-import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARUIViewOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARModel } from "./nodes/android/armodel";
@@ -43,7 +43,7 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
 };
 
 
-const addUIView = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARUIView.create(options, _fragment)
       .then((view: ARUIView) => {
@@ -393,7 +393,7 @@ export class AR extends ARBase {
     });
   }
 
-  addUIView(options: ARAddOptions): Promise<ARNode> {
+  addUIView(options: ARUIViewOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
       addUIView(options, resolveParentNode(options))
