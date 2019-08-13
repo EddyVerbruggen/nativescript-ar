@@ -6,19 +6,19 @@ export class ARUIView extends ARCommonNode {
     static create(options: ARUIViewOptions, fragment): Promise<ARUIView> {
         return new Promise<ARUIView>(async (resolve, reject) => {
             const node = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
-            
-           
-            const context=utils.ad.getApplicationContext();
+
+
+            const context = utils.ad.getApplicationContext();
             const container = new android.widget.LinearLayout(context);
 
             container.setOrientation(android.widget.LinearLayout.VERTICAL);
-            
 
-            const view=options.view;
 
-            if(!view){
+            const view = options.view;
 
-                //this is only here for testing and does not print if view is defined in ARUIViewOptions
+            if (!view) {
+
+                // this is only here for testing and does not print if view is defined in ARUIViewOptions
 
                 const label = new android.widget.TextView(context);
                 label.setText("Hello World");
@@ -29,22 +29,21 @@ export class ARUIView extends ARCommonNode {
 
             }
 
-            if(view){
+            if (view) {
 
-                if(view.parent){
-                   view.parent.removeChild(view);
+                if (view.parent) {
+                    view.parent.removeChild(view);
                 }
 
 
-                
-                //container.addView(view.android);
-                if(!view.android){
-                   view._setupUI(context);
-                   view.loadView(view);
-                   view.requestLayout(); 
+
+                if (!view.android) {
+                    view._setupUI(context);
+                    view.loadView(view);
+                    view.requestLayout();
                 }
-                
-               
+
+
                 container.addView(view.android);
 
             }
@@ -60,12 +59,12 @@ export class ARUIView extends ARCommonNode {
 
                             /**
                              * pin bottom of view with node, this causes view to expand upward
-                             * com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.BOTTOM 
+                             * com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.BOTTOM
                              */
                             renderable.setVerticalAlignment(com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.BOTTOM);
 
 
-                            
+
 
                             node.setRenderable(renderable);
                             node.select(); // optional; this can be removed
