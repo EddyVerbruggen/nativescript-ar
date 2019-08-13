@@ -338,7 +338,6 @@ export class AR extends ARBase {
 
   public grabScreenshot(): any {
     return (new FragmentScreenGrab()).grabScreenshot(_fragment);
-    return null;
   }
 
   public startRecordingVideo(): Promise<boolean> {
