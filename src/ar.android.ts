@@ -4,6 +4,7 @@ import * as utils from "tns-core-modules/utils/utils";
 import { AR as ARBase, ARUIViewOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARSphere } from "./nodes/android/arsphere";
+import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 import { ARUIView} from "./nodes/android/aruiview";
 
@@ -43,6 +44,7 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
 };
 
 
+
 const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARUIView.create(options, _fragment)
@@ -50,6 +52,18 @@ const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform
         view.android.setParent(parentNode);
         resolve(view);
       });
+  });
+};
+
+
+
+const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    ARTube.create(options, _fragment)
+        .then((tube: ARTube) => {
+          tube.android.setParent(parentNode);
+          resolve(tube);
+        });
   });
 };
 
@@ -389,7 +403,9 @@ export class AR extends ARBase {
 
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      reject("Method not implemented: addTube");
+
+      addTube(options, resolveParentNode(options))
+          .then(tube => resolve(tube));
     });
   }
 
