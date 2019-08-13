@@ -427,9 +427,9 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     onTap: model => {
       console.log(`Sphere tapped: ${model.node} at ${model.touchPosition}, gonna move it`);
       model.node.moveBy({
-        x: model.node.position.x,
-        y: model.node.position.y - 0.01, // moves the sphere down a little
-        z: model.node.position.z
+        x: 0,
+        y: -0.02, // moves the sphere down a little
+        z: 0
       })
     },
     onLongPress: model => {
