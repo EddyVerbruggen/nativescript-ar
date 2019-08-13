@@ -14,7 +14,7 @@
     -->
     <AR:AR
         row="2"
-        trackingMode="FACE"
+        trackingMode="WORLD"
         trackingImagesBundle="AR Resources"
         trackingImageDetected="trackingImageDetected"
         trackingFaceDetected="trackingFaceDetected"
