@@ -15,30 +15,30 @@ let _origin;
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARModel.create(options, _fragment)
-      .then((model: ARModel) => {
-        model.android.setParent(parentNode);
-        resolve(model);
-      });
+        .then((model: ARModel) => {
+          model.android.setParent(parentNode);
+          resolve(model);
+        });
   });
 };
 
 const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARBox.create(options, _fragment)
-      .then((box: ARBox) => {
-        box.android.setParent(parentNode);
-        resolve(box);
-      });
+        .then((box: ARBox) => {
+          box.android.setParent(parentNode);
+          resolve(box);
+        });
   });
 };
 
 const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARSphere.create(options, _fragment)
-      .then((sphere: ARSphere) => {
-        sphere.android.setParent(parentNode);
-        resolve(sphere);
-      });
+        .then((sphere: ARSphere) => {
+          sphere.android.setParent(parentNode);
+          resolve(sphere);
+        });
   });
 };
 const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
@@ -52,24 +52,21 @@ const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.
 };
 
 
-const resolveParentNode = function(options: ARAddOptions) {
+const resolveParentNode = (options: ARAddOptions) => {
   if (options.parentNode && options.parentNode.android) {
     return options.parentNode.android;
   }
   return getOriginAnchor();
 };
 
-const getOriginAnchor = function() {
-
+const getOriginAnchor = () => {
   if (!_origin) {
-
     const session = _fragment.getArSceneView().getSession();
     const pose = com.google.ar.core.Pose.IDENTITY;
     const anchor = session.createAnchor(pose);
     const anchorNode = new com.google.ar.sceneform.AnchorNode(anchor);
     anchorNode.setParent(_fragment.getArSceneView().getScene());
     _origin = anchorNode;
-
   }
   return _origin;
 };
@@ -108,8 +105,6 @@ export class AR extends ARBase {
     super.initNativeView();
     this.initAR();
   }
-
-
 
 
   private initAR() {
@@ -268,7 +263,6 @@ export class AR extends ARBase {
   }
 
 
-
   private fireArLoadedEvent(attemptsLeft: number): void {
     if (attemptsLeft-- <= 0) {
       return;
@@ -276,10 +270,10 @@ export class AR extends ARBase {
 
     setTimeout(() => {
       if (_fragment.getArSceneView() &&
-        _fragment.getArSceneView().getSession() &&
-        _fragment.getArSceneView().getArFrame() &&
-        _fragment.getArSceneView().getArFrame().getCamera() &&
-        _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
+          _fragment.getArSceneView().getSession() &&
+          _fragment.getArSceneView().getArFrame() &&
+          _fragment.getArSceneView().getArFrame().getCamera() &&
+          _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
 
         const eventData: ARLoadedEventData = {
           eventName: ARBase.arLoadedEvent,
@@ -292,7 +286,6 @@ export class AR extends ARBase {
       }
     }, 300);
   }
-
 
 
   // TODO see sceneform example
@@ -361,13 +354,11 @@ export class AR extends ARBase {
   }
 
 
-
-
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
 
       addModel(options, resolveParentNode(options))
-        .then(model => resolve(model));
+          .then(model => resolve(model));
     });
   }
 
@@ -375,7 +366,7 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addBox(options, resolveParentNode(options))
-        .then(box => resolve(box));
+          .then(box => resolve(box));
     });
   }
 
@@ -383,7 +374,7 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addSphere(options, resolveParentNode(options))
-        .then(sphere => resolve(sphere));
+          .then(sphere => resolve(sphere));
     });
   }
 

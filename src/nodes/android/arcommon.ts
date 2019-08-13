@@ -24,9 +24,6 @@ export abstract class ARCommonNode implements IARCommonNode {
     this.draggingEnabled = options.draggingEnabled;
     this.rotatingEnabled = options.rotatingEnabled;
 
-    // generate a unique name, used for later reference
-    this.id = (JSON.stringify(options.position) + "_" + new Date().getTime());
-
     if (options.rotation) {
       this.rotateBy(options.rotation);
     }
@@ -41,9 +38,7 @@ export abstract class ARCommonNode implements IARCommonNode {
       console.log("scale set to: " + this.android.getLocalScale());
     }
 
-
     if (options.position) {
-
       this.android.setLocalPosition(
         new (<any>com.google.ar.sceneform).math.Vector3(
           options.position.x,
@@ -53,15 +48,21 @@ export abstract class ARCommonNode implements IARCommonNode {
       );
     }
 
-    // TODO for these, see TNSNode's gestures in Blackwell's fork
+    // generate a unique name, used for later reference
+    this.id = (JSON.stringify(options.position) + "_" + new Date().getTime());
+
+    // TODO for these, consider adopting TNSNode's gestures in Blackwell's fork
     this.android.setOnTapListener(new com.google.ar.sceneform.Node.OnTapListener({
       onTap: (hitResult: any /* com.google.ar.sceneform.HitTestResult */, motionEvent: android.view.MotionEvent) => {
-        console.log("motionEvent: " + motionEvent);
-        console.log("motionEvent.getAction: " + motionEvent.getAction());
         const duration = motionEvent.getEventTime() - motionEvent.getDownTime();
-        console.log("motionEvent duration: " + duration);
+        const nativePosition = this.android.getLocalPosition();
+        this.position = {
+          x: nativePosition.x,
+          y: nativePosition.y,
+          z: nativePosition.z
+        };
 
-        if (duration > 700) {
+        if (duration > 700) { // a bit arbitrary.. not sure what Android considers a longpress..
           // assume longpress
           this.onLongPressHandler && this.onLongPressHandler({
             node: this,

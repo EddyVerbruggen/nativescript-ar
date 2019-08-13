@@ -43,114 +43,127 @@ export function arLoaded(args: ARLoadedEventData): void {
   model.ar = ar;
 
   // add some stuff to the scene
-  // setTimeout(() => {
-    /*
-    args.object.addModel({
-      name: isIOS ? "Models.scnassets/Campfire/campfire_v2.dae" : "andy.sfb",
-      position: {
-        x: 0,
-        y: 0,
-        z: -0.7
-      },
-      rotation: {
-        x: 0,
-        y: 25,
-        z: 0
-      },
-      scale: 0.5,
-      onTap: node => console.log("model tapped: " + node)
-    });
-    */
-
-  args.object.addBox({
-    position: {
-      x: -0.2,
-      y: 0.1,
-      z: -1
-    },
-    dimensions: {
-      x: 0.1,
-      y: 0.2,
-      z: 0.3
-    },
-    materials: [new Color("orange")],
-    // materials: [{
-    //   diffuse: {
-    //     contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
-    //     wrapMode: "ClampToBorder"
-    //   }
-    // }],
-    onTap: node => console.log("box tapped: " + node),
-    // onLongPress: node => console.log("box longpressed: " + node.id),
-    draggingEnabled: true,
-    rotatingEnabled: true
-    // onPan: node => console.log("box panned: " + node.id),
-  }).then(node => console.log("box added: " + node.id));
-  // }, 1000);
-
   /*
-  args.object.addText({
-    text: "NativeScript",
+setTimeout(() => {
+  args.object.addModel({
+    name: isIOS ? "Models.scnassets/Campfire/campfire_v2.dae" : "andy.sfb",
     position: {
-      x: 2.7,
-      y: -0.2,
-      z: -4
-    },
-    scale: 0.1,
-    depth: 1,
-    materials: [new Color("blue")],
-    rotation: {
-      x: 5,
-      y: 5,
-      z: 5
-    },
-    onTap: node => console.log("text tapped: " + node.id),
-    // onPan: node => console.log("text panned: " + node.id),
-  }).then(node => console.log("text added: " + node.id));
-
-  args.object.addText({
-    text: "is COOL",
-    position: {
-      x: 2.7,
-      y: -1,
-      z: -5
-    },
-    scale: 0.1,
-    depth: 1,
-    materials: [new Color("blue")],
-    rotation: {
-      x: 5,
-      y: 5,
-      z: 5
-    },
-    onTap: node => console.log("text tapped: " + node.id),
-  }).then(node => console.log("text added: " + node.id));
-
-  args.object.addTube({
-    position: {
-      x: 0.3,
-      y: 0.3,
-      z: -1.2
-    },
-    innerRadius: 0.1,
-    outerRadius: 0.15,
-    height: 0.2,
-    materials: [{
-      diffuse: {
-        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
-        wrapMode: "Repeat" // which is the default
-      },
-      roughness: "Assets.scnassets/Materials/tnsgranite/tnsgranite-roughness.png",
-      transparency: 1 // solid (which is the default)
-    }],
-    rotation: {
-      x: 20,
+      x: 0,
       y: 0,
+      z: -0.7
+    },
+    rotation: {
+      x: 0,
+      y: 25,
       z: 0
     },
-    onTap: node => console.log("tube tapped: " + node.id),
-  }).then(node => console.log("tube added: " + node.id));
-  */
+    scale: 0.5,
+    onTap: node => console.log("model tapped: " + node)
+  });
+
+    args.object.addBox({
+      position: {
+        x: -0.2,
+        y: 0,
+        z: -1
+      },
+      dimensions: {
+        x: 0.2,
+        y: 0.1,
+        z: 0.3
+      },
+      materials: [new Color("green")],
+      // materials: [{
+      //   diffuse: {
+      //     contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+      //     wrapMode: "ClampToBorder"
+      //   }
+      // }],
+      onTap: node => console.log("box tapped: " + node),
+      // onLongPress: node => console.log("box longpressed: " + node.id),
+      draggingEnabled: true,
+      rotatingEnabled: true
+      // onPan: node => console.log("box panned: " + node.id),
+    }).then(node => console.log("box added: " + node.id));
+
+    args.object.addSphere({
+      position: {
+        x: 0.4,
+        y: 0.1,
+        z: -1.5
+      },
+      radius: 0.75,
+      materials: [new Color("green")],
+      onTap: node => console.log("sphere tapped: " + node),
+      // onLongPress: node => console.log("box longpressed: " + node.id),
+      draggingEnabled: true,
+      rotatingEnabled: true
+      // onPan: node => console.log("box panned: " + node.id),
+    }).then(node => console.log("sphere added: " + node.id));
+
+    args.object.addText({
+      text: "NativeScript",
+      position: {
+        x: 2.7,
+        y: -0.2,
+        z: -4
+      },
+      scale: 0.1,
+      depth: 1,
+      materials: [new Color("blue")],
+      rotation: {
+        x: 5,
+        y: 5,
+        z: 5
+      },
+      onTap: node => console.log("text tapped: " + node.id),
+      // onPan: node => console.log("text panned: " + node.id),
+    }).then(node => console.log("text added: " + node.id));
+
+    args.object.addText({
+      text: "is COOL",
+      position: {
+        x: 2.7,
+        y: -1,
+        z: -5
+      },
+      scale: 0.1,
+      depth: 1,
+      materials: [new Color("blue")],
+      rotation: {
+        x: 5,
+        y: 5,
+        z: 5
+      },
+      onTap: node => console.log("text tapped: " + node.id),
+    }).then(node => console.log("text added: " + node.id));
+
+    args.object.addTube({
+      position: {
+        x: 0.3,
+        y: 0.3,
+        z: -1.2
+      },
+      innerRadius: 0.1,
+      outerRadius: 0.15,
+      height: 0.2,
+      materials: [{
+        diffuse: {
+          contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+          wrapMode: "Repeat" // which is the default
+        },
+        roughness: "Assets.scnassets/Materials/tnsgranite/tnsgranite-roughness.png",
+        transparency: 1 // solid (which is the default)
+      }],
+      rotation: {
+        x: 20,
+        y: 0,
+        z: 0
+      },
+      onTap: node => console.log("tube tapped: " + node.id),
+    }).then(node => console.log("tube added: " + node.id));
+  }, 1000);
+    */
 }
 
 export function trackingFaceDetected(args: ARTrackingFaceEventData): void {
@@ -354,12 +367,12 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
         y: 10,
         z: 0
       });
-      interaction.node.scaleBy(0.9);
+      interaction.node.scaleBy(-0.01);
     },
     onLongPress: (interaction: ARNodeInteraction) => console.log("model longpressed: " + interaction.node.id)
   });
 
-  const boxDimensions = 0.11;
+  const boxDimensions = 0.09;
 
   args.object.addBox({
     position: {
@@ -396,6 +409,35 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     }
   }).then(arNode => {
     console.log("Box successfully added");
+    if (arNode.ios) {
+      // do something iOS specific here if you like
+    }
+  });
+
+  args.object.addSphere({
+    position: {
+      x: args.position.x + 1,
+      y: args.position.y + 1,
+      z: args.position.z
+    },
+    // scale: 0.5, // this messes up positioning
+    radius: 0.25,
+    materials: [new Color("yellow")],
+    // mass: 0.3,
+    onTap: model => {
+      console.log(`Sphere tapped: ${model.node} at ${model.touchPosition}, gonna move it`);
+      model.node.moveBy({
+        x: model.node.position.x,
+        y: model.node.position.y - 0.01, // moves the sphere down a little
+        z: model.node.position.z
+      })
+    },
+    onLongPress: model => {
+      console.log(">> long pressed sphere");
+      // model.remove()
+    }
+  }).then(arNode => {
+    console.log("Sphere successfully added");
     if (arNode.ios) {
       // do something iOS specific here if you like
     }
