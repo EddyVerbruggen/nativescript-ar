@@ -12,11 +12,7 @@ export class ARTube extends ARCommonGeometryNode {
 
 
       /*
-      innerRadius: number;
-    outerRadius: number;
-    height: number;
-    radialSegmentCount?: number;
-    heightSegmentCount?: number;
+      innerRadius is not used ShapeFactory makes a cylinder only 
        */
       const radius = options.outerRadius;
       const height = options.height;
