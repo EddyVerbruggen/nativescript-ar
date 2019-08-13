@@ -33,12 +33,24 @@ export abstract class ARCommonNode implements IARCommonNode {
 
     if (options.scale) {
       this.android.setLocalScale(
-          new (<any>com.google.ar.sceneform).math.Vector3(
-              options.scale instanceof ARScale ? options.scale.x : options.scale,
-              options.scale instanceof ARScale ? options.scale.y : options.scale,
-              options.scale instanceof ARScale ? options.scale.z : options.scale)
+        new (<any>com.google.ar.sceneform).math.Vector3(
+          options.scale instanceof ARScale ? options.scale.x : options.scale,
+          options.scale instanceof ARScale ? options.scale.y : options.scale,
+          options.scale instanceof ARScale ? options.scale.z : options.scale)
       );
       console.log("scale set to: " + this.android.getLocalScale());
+    }
+
+
+    if (options.position) {
+
+      this.android.setLocalPosition(
+        new (<any>com.google.ar.sceneform).math.Vector3(
+          options.position.x,
+          options.position.y,
+          options.position.z
+        )
+      );
     }
 
     // TODO for these, see TNSNode's gestures in Blackwell's fork
@@ -78,31 +90,32 @@ export abstract class ARCommonNode implements IARCommonNode {
   moveBy(by: ARRotation): void {
     const currentPosition = this.android.getLocalPosition();
     this.android.setLocalPosition(
-        new (<any>com.google.ar.sceneform).math.Vector3(
-            currentPosition.x + by.x,
-            currentPosition.y + by.y,
-            currentPosition.z + by.z)
+      new (<any>com.google.ar.sceneform).math.Vector3(
+        currentPosition.x + by.x,
+        currentPosition.y + by.y,
+        currentPosition.z + by.z
+      )
     );
   }
 
   rotateBy(by: ARRotation): void {
     const currentRotation = this.android.getLocalRotation();
     this.android.setLocalRotation(
-        new (<any>com.google.ar.sceneform).math.Quaternion(
-            currentRotation.x + ARCommonNode.degToRadians(by.x),
-            currentRotation.y + ARCommonNode.degToRadians(by.y),
-            currentRotation.z + ARCommonNode.degToRadians(by.z),
-            1)
+      new (<any>com.google.ar.sceneform).math.Quaternion(
+        currentRotation.x + ARCommonNode.degToRadians(by.x),
+        currentRotation.y + ARCommonNode.degToRadians(by.y),
+        currentRotation.z + ARCommonNode.degToRadians(by.z),
+        1)
     );
   }
 
   scaleBy(by: number | ARScale): void {
     const currentScale = this.android.getLocalScale();
     this.android.setLocalScale(
-        new (<any>com.google.ar.sceneform).math.Vector3(
-            currentScale.x + (by instanceof ARScale ? by.x : by),
-            currentScale.y + (by instanceof ARScale ? by.y : by),
-            currentScale.z + (by instanceof ARScale ? by.z : by))
+      new (<any>com.google.ar.sceneform).math.Vector3(
+        currentScale.x + (by instanceof ARScale ? by.x : by),
+        currentScale.y + (by instanceof ARScale ? by.y : by),
+        currentScale.z + (by instanceof ARScale ? by.z : by))
     );
   }
 
@@ -149,14 +162,14 @@ export abstract class ARCommonNode implements IARCommonNode {
       }
 
       com.google.ar.sceneform.rendering.MaterialFactory.makeOpaqueWithColor(
-          utils.ad.getApplicationContext(),
-          new com.google.ar.sceneform.rendering.Color(android.graphics.Color.MAGENTA))
-          .thenAccept(new java.util.function.Consumer({
-            accept: material => {
-              ARCommonNode.defaultMaterial = material;
-              resolve(material);
-            }
-          }));
+        utils.ad.getApplicationContext(),
+        new com.google.ar.sceneform.rendering.Color(android.graphics.Color.MAGENTA))
+        .thenAccept(new java.util.function.Consumer({
+          accept: material => {
+            ARCommonNode.defaultMaterial = material;
+            resolve(material);
+          }
+        }));
     });
   }
 

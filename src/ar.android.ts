@@ -1,33 +1,68 @@
 import * as application from "tns-core-modules/application";
 import * as utils from "tns-core-modules/utils/utils";
 
-import { AR as ARBase, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
+import { ARSphere } from "./nodes/android/arsphere";
 import { ARModel } from "./nodes/android/armodel";
 
 declare const com, android, global, java: any;
 
 let _fragment;
+let _origin;
 
-const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARModel.create(options, _fragment)
-        .then((model: ARModel) => {
-          model.android.setParent(parentNode);
-          resolve(model);
-        });
+      .then((model: ARModel) => {
+        model.android.setParent(parentNode);
+        resolve(model);
+      });
   });
 };
 
-const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.AnchorNode): Promise<ARModel> => {
+const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARBox.create(options, _fragment)
-        .then((box: ARBox) => {
-          box.android.setParent(parentNode);
-          resolve(box);
-        });
+      .then((box: ARBox) => {
+        box.android.setParent(parentNode);
+        resolve(box);
+      });
   });
 };
+
+const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    ARSphere.create(options, _fragment)
+      .then((sphere: ARSphere) => {
+        sphere.android.setParent(parentNode);
+        resolve(sphere);
+      });
+  });
+};
+
+const resolveParentNode = function(options: ARAddOptions) {
+  if (options.parentNode && options.parentNode.android) {
+    return options.parentNode.android;
+  }
+  return getOriginAnchor();
+};
+
+const getOriginAnchor = function() {
+
+  if (!_origin) {
+
+    const session = _fragment.getArSceneView().getSession();
+    const pose = com.google.ar.core.Pose.IDENTITY;
+    const anchor = session.createAnchor(pose);
+    const anchorNode = new com.google.ar.sceneform.AnchorNode(anchor);
+    anchorNode.setParent(_fragment.getArSceneView().getScene());
+    _origin = anchorNode;
+
+  }
+  return _origin;
+};
+
 
 class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragment {
 
@@ -62,6 +97,9 @@ export class AR extends ARBase {
     super.initNativeView();
     this.initAR();
   }
+
+
+
 
   private initAR() {
     this.nativeView.setId(android.view.View.generateViewId());
@@ -118,6 +156,7 @@ export class AR extends ARBase {
                 this.faceNodeMap.set(face, faceNode);
               }
             }
+
 
             // Remove any AugmentedFaceNodes associated with an AugmentedFace that stopped tracking.
             this.faceNodeMap.forEach((node: any, face: any) => {
@@ -217,6 +256,8 @@ export class AR extends ARBase {
 
   }
 
+
+
   private fireArLoadedEvent(attemptsLeft: number): void {
     if (attemptsLeft-- <= 0) {
       return;
@@ -224,10 +265,10 @@ export class AR extends ARBase {
 
     setTimeout(() => {
       if (_fragment.getArSceneView() &&
-          _fragment.getArSceneView().getSession() &&
-          _fragment.getArSceneView().getArFrame() &&
-          _fragment.getArSceneView().getArFrame().getCamera() &&
-          _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
+        _fragment.getArSceneView().getSession() &&
+        _fragment.getArSceneView().getArFrame() &&
+        _fragment.getArSceneView().getArFrame().getCamera() &&
+        _fragment.getArSceneView().getArFrame().getCamera().getTrackingState() === com.google.ar.core.TrackingState.TRACKING) {
 
         const eventData: ARLoadedEventData = {
           eventName: ARBase.arLoadedEvent,
@@ -241,6 +282,8 @@ export class AR extends ARBase {
     }, 300);
   }
 
+
+
   // TODO see sceneform example
   static isSupported(): boolean {
     return true;
@@ -253,6 +296,11 @@ export class AR extends ARBase {
     }
     return availability.isSupported();
     */
+  }
+
+
+  getFragment() {
+    return _fragment;
   }
 
   get android(): any {
@@ -301,37 +349,30 @@ export class AR extends ARBase {
     return null;
   }
 
+
+
+
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      // create the anchor
-      const session = _fragment.getArSceneView().getSession();
-      const pose = com.google.ar.core.Pose.makeTranslation(options.position.x, options.position.y, options.position.z);
-      const anchor = session.createAnchor(pose);
-      const anchorNode = new com.google.ar.sceneform.AnchorNode(anchor);
-      anchorNode.setParent(_fragment.getArSceneView().getScene());
 
-      addModel(options, anchorNode)
-          .then(model => resolve(model));
+      addModel(options, resolveParentNode(options))
+        .then(model => resolve(model));
     });
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      // create the anchor (TODO refactor for reuse)
-      const session = _fragment.getArSceneView().getSession();
-      const pose = com.google.ar.core.Pose.makeTranslation(options.position.x, options.position.y, options.position.z);
-      const anchor = session.createAnchor(pose);
-      const anchorNode = new com.google.ar.sceneform.AnchorNode(anchor);
-      anchorNode.setParent(_fragment.getArSceneView().getScene());
 
-      addBox(options, anchorNode)
-          .then(box => resolve(box));
+      addBox(options, resolveParentNode(options))
+        .then(box => resolve(box));
     });
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
-      reject("Method not implemented: addSphere");
+
+      addSphere(options, resolveParentNode(options))
+        .then(sphere => resolve(sphere));
     });
   }
 

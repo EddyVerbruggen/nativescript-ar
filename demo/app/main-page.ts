@@ -391,7 +391,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       // })
     },
     onLongPress: model => {
-      console.log(">> long press")
+      console.log(">> long press");
       // model.remove()
     }
   }).then(arNode => {
