@@ -430,7 +430,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
         x: 0,
         y: -0.02, // moves the sphere down a little
         z: 0
-      })
+      });
     },
     onLongPress: model => {
       console.log(">> long pressed sphere");
@@ -460,7 +460,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
         x: 0,
         y: +0.02, // moves the tube up a little
         z: 0
-      })
+      });
     }
   });
 }

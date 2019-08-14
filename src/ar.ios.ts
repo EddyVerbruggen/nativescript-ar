@@ -87,8 +87,6 @@ export class AR extends ARBase {
   }
 
 
-
-
   static isImageTrackingSupported(): boolean {
     try {
       return !!ARImageTrackingConfiguration && ARImageTrackingConfiguration.isSupported;
@@ -104,7 +102,6 @@ export class AR extends ARBase {
       return false;
     }
   }
-
 
 
   public setDebugLevel(to: ARDebugLevel): void {
@@ -285,7 +282,7 @@ export class AR extends ARBase {
       return options.parentNode.ios;
     }
     return this.sceneView.scene.rootNode;
-  };
+  }
 
   private addBottomPlane(scene): void {
     // For our physics interactions, we place a large node a couple of meters below the world
