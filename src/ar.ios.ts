@@ -524,7 +524,7 @@ export class AR extends ARBase {
   }
 
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
-    return addUIView(options, this.sceneView.scene.rootNode);
+    return addUIView(options, this.resolveParentNode(options));
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {

@@ -125,6 +125,8 @@ export interface ARAddGeometryOptions extends ARAddOptions {
 
 
 export interface ARUIViewOptions extends ARAddOptions {
+  chamferRadius?: number,
+  dimensions?: number | ARDimensions2D;
   view: ViewBase;
 }
 export interface ARAddModelOptions extends ARAddOptions {
