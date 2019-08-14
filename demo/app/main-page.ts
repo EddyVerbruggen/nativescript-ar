@@ -430,7 +430,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
         x: 0,
         y: -0.02, // moves the sphere down a little
         z: 0
-      })
+      });
     },
     onLongPress: model => {
       console.log(">> long pressed sphere");
@@ -440,6 +440,27 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     console.log("Sphere successfully added");
     if (arNode.ios) {
       // do something iOS specific here if you like
+    }
+  });
+
+  args.object.addTube({
+    position: {
+      x: args.position.x - 1,
+      y: args.position.y + 0.8,
+      z: args.position.z + 1
+    },
+    innerRadius: 0.1,
+    outerRadius: 0.2,
+    height: 0.5,
+    materials: [new Color("orange")],
+    // mass: 0.3,
+    onTap: model => {
+      console.log(`Tube tapped: ${model.node} at ${model.touchPosition}, gonna move it`);
+      model.node.moveBy({
+        x: 0,
+        y: +0.02, // moves the tube up a little
+        z: 0
+      });
     }
   });
 }
