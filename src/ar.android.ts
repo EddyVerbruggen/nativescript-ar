@@ -7,10 +7,13 @@ import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 
+import { VideoRecorder } from "./videorecorder.android";
+
 declare const com, android, global, java: any;
 
 let _fragment;
 let _origin;
+let _videoRecorder;
 
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
@@ -339,8 +342,9 @@ export class AR extends ARBase {
   }
 
   public startRecordingVideo(): Promise<boolean> {
-    console.log("Method not implemented: startRecordingVideo");
-    return null;
+    if(!_videoRecorder){
+      _videoRecorder=new VideoRecorder();
+    }
   }
 
   public stopRecordingVideo(): Promise<string> {
