@@ -1,5 +1,5 @@
 import * as application from 'tns-core-modules/application';
-import { AR as ARBase, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARUIViewOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARCommonNode } from "./nodes/ios/arcommon";
 import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
@@ -8,6 +8,8 @@ import { ARPlane } from "./nodes/ios/arplane";
 import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
+import { ARUIView } from "./nodes/ios/aruiview";
+
 
 export { ARDebugLevel, ARTrackingMode };
 
@@ -16,6 +18,15 @@ declare const ARImageAnchor: any;
 const ARState = {
   planes: new Map<string, ARPlane>(),
   shapes: new Map<string, ARCommonNode>(),
+};
+
+const addUIView = (options: ARUIViewOptions, parentNode: SCNNode): Promise<ARUIView> => {
+  return new Promise((resolve, reject) => {
+    const view = ARUIView.create(options);
+    ARState.shapes.set(view.id, view);
+    parentNode.addChildNode(view.ios);
+    resolve(view);
+  });
 };
 
 const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARBox> => {
@@ -482,6 +493,10 @@ export class AR extends ARBase {
       };
       this.notify(eventData);
     }
+  }
+
+  addUIView(options: ARUIViewOptions): Promise<ARUIView> {
+    return addUIView(options, this.sceneView.scene.rootNode);
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {

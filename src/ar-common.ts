@@ -2,7 +2,7 @@ import { Color } from "tns-core-modules/color";
 import { EventData } from "tns-core-modules/data/observable";
 import { ContentView } from "tns-core-modules/ui/content-view";
 import { Property } from "tns-core-modules/ui/core/view";
-import { booleanConverter } from "tns-core-modules/ui/core/view-base";
+import { booleanConverter, ViewBase } from "tns-core-modules/ui/core/view-base";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARModel } from "./nodes/ios/armodel";
 
@@ -126,7 +126,6 @@ export interface ARAddGeometryOptions extends ARAddOptions {
 
 export interface ARUIViewOptions extends ARAddOptions {
   view: ViewBase;
-  
 }
 export interface ARAddModelOptions extends ARAddOptions {
   name: string;
