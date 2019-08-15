@@ -6,17 +6,19 @@ export abstract class ARCommonGeometryNode extends ARCommonNode {
   constructor(options: ARAddGeometryOptions, node: SCNNode) {
     super(options, node);
 
-    if (options.materials) {
-      const materialArray: NSMutableArray<any> = NSMutableArray.alloc().initWithCapacity(options.materials.length);
-      options.materials.map(material => materialArray.addObject(ARMaterialFactory.getMaterial(material)));
-      node.geometry.materials = materialArray;
-    }
-  }
+		if (options.materials) {
+			ARCommonGeometryNode.applyMaterial(node, options.materials);
+		}
+	}
 
-	public setMaterials(materials: Array<string | Color | ARMaterial>) {
+	protected static applyMaterial(node: SCNNode, materials: Array<string | Color | ARMaterial>): void {
 		const materialArray: NSMutableArray<any> = NSMutableArray.alloc().initWithCapacity(materials.length);
 		materials.map(material => materialArray.addObject(ARMaterialFactory.getMaterial(material)));
-		this.ios.geometry.materials = materialArray;
+		node.geometry.materials = materialArray;
+	}
+
+	public setMaterials(materials: Array<string | Color | ARMaterial>) {
+		ARCommonGeometryNode.applyMaterial(this.ios, materials);
 	}
 
 }
