@@ -1,5 +1,7 @@
 import * as application from 'tns-core-modules/application';
+
 import { AR as ARBase, ARAddBoxOptions, ARUIViewOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
+
 import { ARBox } from "./nodes/ios/arbox";
 import { ARCommonNode } from "./nodes/ios/arcommon";
 import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
@@ -28,6 +30,7 @@ const addUIView = (options: ARUIViewOptions, parentNode: SCNNode): Promise<ARUIV
     resolve(view);
   });
 };
+
 
 const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARBox> => {
   return new Promise((resolve, reject) => {
@@ -59,6 +62,24 @@ const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARMo
   });
 };
 
+const addSphere = (options: ARAddSphereOptions, parentNode: SCNNode): Promise<ARNode> => {
+  return new Promise((resolve, reject) => {
+    const sphere: ARSphere = ARSphere.create(options);
+    ARState.shapes.set(sphere.id, sphere);
+    parentNode.addChildNode(sphere.ios);
+    resolve(sphere);
+  });
+};
+
+const addTube = (options: ARAddTubeOptions, parentNode: SCNNode): Promise<ARNode> => {
+  return new Promise((resolve, reject) => {
+    const tube: ARTube = ARTube.create(options);
+    ARState.shapes.set(tube.id, tube);
+    parentNode.addChildNode(tube.ios);
+    resolve(tube);
+  });
+};
+
 export class AR extends ARBase {
   sceneView: ARSCNView;
   private configuration: any; // TODO ARConfiguration;
@@ -78,6 +99,7 @@ export class AR extends ARBase {
     }
   }
 
+
   static isImageTrackingSupported(): boolean {
     try {
       return !!ARImageTrackingConfiguration && ARImageTrackingConfiguration.isSupported;
@@ -93,6 +115,7 @@ export class AR extends ARBase {
       return false;
     }
   }
+
 
   public setDebugLevel(to: ARDebugLevel): void {
     if (!this.sceneView) {
@@ -265,6 +288,13 @@ export class AR extends ARBase {
       };
       this.notify(eventData);
     });
+  }
+
+  private resolveParentNode(options: ARAddOptions): any {
+    if (options.parentNode && options.parentNode.ios) {
+      return options.parentNode.ios;
+    }
+    return this.sceneView.scene.rootNode;
   }
 
   private addBottomPlane(scene): void {
@@ -500,38 +530,24 @@ export class AR extends ARBase {
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
-    return addModel(options, this.sceneView.scene.rootNode);
+    return addModel(options, this.resolveParentNode(options));
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
-    return addBox(options, this.sceneView.scene.rootNode);
+    return addBox(options, this.resolveParentNode(options));
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      const sphere: ARSphere = ARSphere.create(options);
-      ARState.shapes.set(sphere.id, sphere);
-      this.sceneView.scene.rootNode.addChildNode(sphere.ios);
-      resolve(sphere);
-    });
+    return addSphere(options, this.resolveParentNode(options));
   }
 
   addText(options: ARAddTextOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      const text: ARText = ARText.create(options);
-      ARState.shapes.set(text.id, text);
-      this.sceneView.scene.rootNode.addChildNode(text.ios);
-      resolve(text);
-    });
+    return addText(options, this.resolveParentNode(options));
   }
 
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-      const tube: ARTube = ARTube.create(options);
-      ARState.shapes.set(tube.id, tube);
-      this.sceneView.scene.rootNode.addChildNode(tube.ios);
-      resolve(tube);
-    });
+    return addTube(options, this.resolveParentNode(options));
+
   }
 
   public reset(): void {

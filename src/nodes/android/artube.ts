@@ -10,10 +10,7 @@ export class ARTube extends ARCommonGeometryNode {
 
       const defaultMaterial = await ARCommonNode.getDefaultMaterial();
 
-
-      /*
-      innerRadius is not used ShapeFactory makes a cylinder only 
-       */
+      // innerRadius is not used ShapeFactory makes a cylinder only
       const radius = options.outerRadius;
       const height = options.height;
       const center = new (<any>com.google.ar.sceneform).math.Vector3(0, 0, 0);
