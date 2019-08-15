@@ -303,7 +303,7 @@ declare module com {
     module google {
         module ar {
             module sceneform {
-                class SceneView {
+                class SceneView extends android.view.SurfaceView {
                     static class: java.lang.Class<com.google.ar.sceneform.SceneView>;
                     static reclaimReleasedResources(): number;
                     isDebugEnabled(): boolean;

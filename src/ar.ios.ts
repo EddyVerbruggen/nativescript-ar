@@ -9,6 +9,8 @@ import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
 
+import { ImageSource, fromNativeSource } from "tns-core-modules/image-source";
+
 export { ARDebugLevel, ARTrackingMode };
 
 declare const ARImageAnchor: any;
@@ -119,8 +121,14 @@ export class AR extends ARBase {
     }
   }
 
-  public grabScreenshot(): any {
-    return this.sceneView ? this.sceneView.snapshot() : null;
+  public grabScreenshot(): Promise<ImageSource> {
+    return new Promise((resolve, reject) => {
+      if (this.sceneView) {
+        resolve(fromNativeSource(this.sceneView.snapshot()));
+        return;
+      }
+      reject("sceneView is not available");
+    });
   }
 
   public startRecordingVideo(): Promise<boolean> {
