@@ -72,7 +72,7 @@ export abstract class ARCommonNode implements IARCommonNode {
 
   setWorldPosition(worldPos: ARPosition): void {
 
-    const pos = this.ios.convertPositionFrom(worldPos, null);
+    const pos = this.ios.convertPositionFromNode(worldPos, null);
 
     this.ios.position = {
       x: pos.x,
