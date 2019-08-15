@@ -5,52 +5,18 @@ import * as views from "tns-core-modules/ui/core/view"
 
 export class ARUIView extends ARCommonNode {
 
-	_viewController: any;
-
-	constructor(options: ARAddOptions, node: SCNNode, controller: any) {
-		super(options, node);
-		this._viewController = controller;
-	}
-
-
 	static create(options: ARUIViewOptions): ARUIView {
 
 
-
-		
-
-
 		const view = options.view;
-
-		if (!view) {
-
-
-			
-		}
-
-		if (view) {
-
-			if (view.parent) {
-				//view.parent.removeChild(view);
-			}
-
-			if (!view.ios) {
-				
-			}
-
-		}
-
-		var nativeView=view.ios||view;
-		if(!(view instanceof UIView)){
-			throw "Expected a uiview";
-		}
+		const nativeView=view.ios||view;
+		
 
 		if(!options.dimensions){
 			options.dimensions={
 				x:Math.max(0.2,nativeView.bounds.size.width / 100), y:Math.max(0.2,nativeView.bounds.size.height / 100)
 			}
 		}
-
 
 		const dimensions: ARDimensions2D = <ARDimensions2D>(typeof options.dimensions !== "number" ? options.dimensions : {
 	      x: options.dimensions,
@@ -66,24 +32,22 @@ export class ARUIView extends ARCommonNode {
 		
         const materialPlane = SCNPlane.planeWithWidthHeight(dimensions.x, dimensions.y);
         materialPlane.cornerRadius=options.chamferRadius||0;
-		materialPlane.firstMaterial.diffuse.contents = view.ios;
+		//materialPlane.firstMaterial.diffuse.contents = nativeView.layer;
+		var interval=setTimeout(function(){
+			try{
+
+					UIGraphicsBeginImageContextWithOptions(nativeView.bounds.size, nativeView.opaque, 0.0);
+				    nativeView.layer.renderInContext(UIGraphicsGetCurrentContext());
+				    const img = UIGraphicsGetImageFromCurrentImageContext();
+				    UIGraphicsEndImageContext();
+					materialPlane.firstMaterial.diffuse.contents = img;
+				
+			}catch(e){
+				console.error(e);
+			}
+		},100);
 		const planeNode = SCNNode.nodeWithGeometry(materialPlane)
 
-		return new ARUIView(options, planeNode, null);
+		return new ARUIView(options, planeNode);
 	}
 }
-
-
-
-// class PlaneViewController extends UIViewController{
-// 	_view:UIView;
-// 	constructor(view:UIView) {
-// 	    //super();
-// 	    this._view = view
-// 	  } 
-// 	viewDidLoad() {
-//     super.viewDidLoad();
-//     this.view.addSubview(this._ios);
-
-//   }
-// }
