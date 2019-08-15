@@ -121,12 +121,25 @@ export abstract class ARCommonNode implements IARCommonNode {
 
   rotateBy(by: ARRotation): void {
     const currentRotation = this.android.getLocalRotation();
+    const rotateBy=new (<any>com.google.ar.sceneform).math.Quaternion(
+        new (<any>com.google.ar.sceneform).math.Vector3(
+          by.x,
+          by.y,
+          by.z
+        )
+      );
+    this.android.setLocalRotation((<any>com.google.ar.sceneform).math.Quaternion.multiply(currentRotation, rotateBy) );
+  }
+
+  setRotation(rot: ARRotation): void {
     this.android.setLocalRotation(
       new (<any>com.google.ar.sceneform).math.Quaternion(
-        currentRotation.x + ARCommonNode.degToRadians(by.x),
-        currentRotation.y + ARCommonNode.degToRadians(by.y),
-        currentRotation.z + ARCommonNode.degToRadians(by.z),
-        1)
+        new (<any>com.google.ar.sceneform).math.Vector3(
+          rot.x,
+          rot.y,
+          rot.z
+        )
+      )
     );
   }
 
