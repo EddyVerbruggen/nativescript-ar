@@ -342,14 +342,35 @@ export class AR extends ARBase {
   }
 
   public startRecordingVideo(): Promise<boolean> {
-    if(!_videoRecorder){
-      _videoRecorder=new VideoRecorder();
-    }
+    return new Promise((resolve, reject) => {
+      if (!_videoRecorder) {
+        _videoRecorder = VideoRecorder.fromFragment(_fragment);
+
+      }
+
+      if (_videoRecorder.isRecording()) {
+        reject("already recording");
+        return;
+      }
+      _videoRecorder.setVideoQualityAuto()
+      _videoRecorder.startRecordingVideo();
+
+      resolve(true);
+
+    });
   }
 
   public stopRecordingVideo(): Promise<string> {
-    console.log("Method not implemented: stopRecordingVideo");
-    return null;
+    return new Promise((resolve, reject) => {
+
+      if (!(_videoRecorder && _videoRecorder.isRecording())) {
+        reject("not recording");
+      }
+
+      _videoRecorder.stopRecordingVideo();
+      resolve(_videoRecorder.getVideoPath());
+
+    });
   }
 
   reset(): void {

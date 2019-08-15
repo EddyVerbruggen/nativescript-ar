@@ -1,9 +1,8 @@
 
-const TAG = "VideoRecorder";
-const DEFAULT_BITRATE = 10000000;
+import * as application from "tns-core-modules/application";
+
 const DEFAULT_FRAMERATE = 30;
-
-
+const DEFAULT_BITRATE = 10000000;
 
 const FALLBACK_QUALITY_LEVELS = [
 	android.media.CamcorderProfile.QUALITY_HIGH,
@@ -15,7 +14,7 @@ const FALLBACK_QUALITY_LEVELS = [
 
 export class VideoRecorder {
 
-	
+
 	private recordingVideoFlag = false;
 
 	private mediaRecorder;
@@ -37,7 +36,20 @@ export class VideoRecorder {
 		this.recordingVideoFlag = false;
 	}
 
-	public getVideoPath():any {
+
+	static fromFragment(fragment: com.google.ar.sceneform.ux.ArFragment) {
+		const videoRecorder = new VideoRecorder();
+		videoRecorder.setSceneView(fragment.getArSceneView());
+		return videoRecorder;
+	}
+
+	public setSceneView(sceneView: com.google.ar.sceneform.ArSceneView): void {
+		this.sceneView = sceneView;
+	}
+
+
+
+	public getVideoPath(): any {
 		return this.videoPath;
 	}
 
@@ -45,7 +57,7 @@ export class VideoRecorder {
 		this.bitRate = bitRate;
 	}
 
-	public setFrameRate( frameRate:number): void {
+	public setFrameRate(frameRate: number): void {
 		this.frameRate = frameRate;
 	}
 
@@ -58,7 +70,12 @@ export class VideoRecorder {
 		return this.recordingVideoFlag;
 	}
 
-	private startRecordingVideo(): void {
+	public startRecordingVideo(): void {
+
+		if (this.recordingVideoFlag) {
+			throw "already recording";
+		}
+
 		if (this.mediaRecorder == null) {
 			this.mediaRecorder = new android.media.MediaRecorder();
 		}
@@ -67,8 +84,8 @@ export class VideoRecorder {
 			this.buildFilename();
 			this.setUpMediaRecorder();
 		} catch (e) {
-			console.error("Exception setting up recorder");
-			return;
+			console.error(e);
+			throw "Exception setting up recorder";
 		}
 
 		// Set up Surface for the MediaRecorder
@@ -99,7 +116,11 @@ export class VideoRecorder {
 		}
 	}
 
-	private stopRecordingVideo(): void {
+	public stopRecordingVideo(): void {
+
+		if (!this.recordingVideoFlag) {
+			throw "not recording";
+		}
 		// UI
 		this.recordingVideoFlag = false;
 
@@ -134,6 +155,12 @@ export class VideoRecorder {
 
 	public setVideoSize(width: number, height: number): void {
 		this.videoSize = new android.util.Size(width, height);
+	}
+
+	public setVideoQualityAuto(): void {
+
+		const orientation = application.android.context.getResources().getConfiguration().orientation;
+		this.setVideoQuality(android.media.CamcorderProfile.QUALITY_2160P, orientation);
 	}
 
 	public setVideoQuality(quality: number, orientation: number): void {
