@@ -33,7 +33,7 @@ export class ARUIView extends ARCommonNode {
         const materialPlane = SCNPlane.planeWithWidthHeight(dimensions.x, dimensions.y);
         materialPlane.cornerRadius=options.chamferRadius||0;
 		//materialPlane.firstMaterial.diffuse.contents = nativeView.layer;
-		var interval=setTimeout(function(){
+		setTimeout(function(){
 			try{
 
 					UIGraphicsBeginImageContextWithOptions(nativeView.bounds.size, nativeView.opaque, 0.0);
