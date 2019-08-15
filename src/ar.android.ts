@@ -7,6 +7,9 @@ import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 
+
+import { FragmentScreenGrab } from "./screengrab";
+
 declare const com, android, global, java: any;
 
 let _fragment;
@@ -334,8 +337,7 @@ export class AR extends ARBase {
   }
 
   public grabScreenshot(): any {
-    console.log("Method not implemented: grabScreenshot");
-    return null;
+    return (new FragmentScreenGrab()).grabScreenshot(_fragment);
   }
 
   public startRecordingVideo(): Promise<boolean> {
