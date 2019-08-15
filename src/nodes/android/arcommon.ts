@@ -88,13 +88,33 @@ export abstract class ARCommonNode implements IARCommonNode {
     }));
   }
 
-  moveBy(by: ARRotation): void {
+  moveBy(by: ARPosition): void {
     const currentPosition = this.android.getLocalPosition();
     this.android.setLocalPosition(
       new (<any>com.google.ar.sceneform).math.Vector3(
         currentPosition.x + by.x,
         currentPosition.y + by.y,
         currentPosition.z + by.z
+      )
+    );
+  }
+
+  setPosition(pos: ARPosition): void {
+    this.android.setLocalPosition(
+      new (<any>com.google.ar.sceneform).math.Vector3(
+        pos.x,
+        pos.y,
+        pos.z
+      )
+    );
+  }
+
+  setWorldPosition(pos: ARPosition): void {
+    this.android.setWorldPosition(
+      new (<any>com.google.ar.sceneform).math.Vector3(
+        pos.x,
+        pos.y,
+        pos.z
       )
     );
   }

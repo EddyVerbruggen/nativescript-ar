@@ -53,11 +53,31 @@ export abstract class ARCommonNode implements IARCommonNode {
     this.ios = node;
   }
 
-  moveBy(by: ARRotation): void {
+  moveBy(by: ARPosition): void {
     this.ios.position = {
       x: this.ios.position.x + by.x,
       y: this.ios.position.y + by.y,
       z: this.ios.position.z + by.z
+    };
+  }
+
+  setPosition(pos: ARPosition): void {
+
+    this.ios.position = {
+      x: pos.x,
+      y: pos.y,
+      z: pos.z
+    };
+  }
+
+  setWorldPosition(worldPos: ARPosition): void {
+
+    const pos = this.ios.convertPositionFrom(worldPos, null);
+
+    this.ios.position = {
+      x: pos.x,
+      y: pos.y,
+      z: pos.z
     };
   }
 
@@ -68,6 +88,8 @@ export abstract class ARCommonNode implements IARCommonNode {
       z: this.ios.eulerAngles.z + ARCommonNode.degToRadians(by.z)
     };
   }
+
+
 
   scaleBy(by: number | ARScale): void {
     this.ios.scale = {
