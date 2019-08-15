@@ -1,4 +1,5 @@
 import * as application from "tns-core-modules/application";
+import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
 
 import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
@@ -7,8 +8,7 @@ import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 
-
-import { FragmentScreenGrab } from "./screengrab";
+import { FragmentScreenGrab } from "./screengrab-android";
 
 declare const com, android, global, java: any;
 
@@ -336,7 +336,7 @@ export class AR extends ARBase {
     // this.renderer.setDrawPlanes(drawPlanesAndPointClound);
   }
 
-  public grabScreenshot(): any {
+  public grabScreenshot(): Promise<ImageSource> {
     return (new FragmentScreenGrab()).grabScreenshot(_fragment);
   }
 

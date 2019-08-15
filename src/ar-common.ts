@@ -1,5 +1,6 @@
 import { Color } from "tns-core-modules/color";
 import { EventData } from "tns-core-modules/data/observable";
+import { ImageSource } from "tns-core-modules/image-source";
 import { ContentView } from "tns-core-modules/ui/content-view";
 import { Property } from "tns-core-modules/ui/core/view";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
@@ -308,7 +309,7 @@ export abstract class AR extends ContentView {
 
   abstract setDebugLevel(to: ARDebugLevel): void;
 
-  abstract grabScreenshot(): any /* UIImage on iOS */;
+  abstract grabScreenshot(): Promise<ImageSource>;
 
   abstract startRecordingVideo(): Promise<boolean>;
 
