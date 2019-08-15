@@ -39,4 +39,8 @@ export abstract class ARCommonGeometryNode extends ARCommonNode {
     });
   }
 
+  public setMaterials(materials: Array<number>): void {
+    ARCommonGeometryNode.applyMaterial(this.android, materials[0]);
+  }
+
 }
