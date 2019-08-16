@@ -8,6 +8,7 @@ import { ARPlane } from "./nodes/ios/arplane";
 import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
+import { ARGroup } from "./nodes/ios/argroup";
 
 import { ImageSource, fromNativeSource } from "tns-core-modules/image-source";
 
@@ -20,6 +21,15 @@ const ARState = {
   shapes: new Map<string, ARCommonNode>(),
 };
 
+const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> => {
+  return new Promise((resolve, reject) => {
+    const group = ARGroup.create(options)
+    ARState.shapes.set(group.id, group);
+    parentNode.addChildNode(group.ios);
+    resolve(group);
+
+  });
+};
 
 const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARBox> => {
   return new Promise((resolve, reject) => {
@@ -38,6 +48,7 @@ const addBox = (options: ARAddBoxOptions, parentNode: SCNNode): Promise<ARBox> =
     resolve(box);
   });
 };
+
 
 const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
@@ -518,6 +529,10 @@ export class AR extends ARBase {
       };
       this.notify(eventData);
     }
+  }
+
+  addNode(options: ARAddModelOptions): Promise<ARGroup> {
+    return addNode(options, this.resolveParentNode(options));
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
