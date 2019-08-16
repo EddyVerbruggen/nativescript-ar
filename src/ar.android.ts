@@ -355,7 +355,7 @@ export class AR extends ARBase {
         reject("already recording");
         return;
       }
-      _videoRecorder.setVideoQualityAuto()
+      _videoRecorder.setVideoQualityAuto();
       _videoRecorder.startRecordingVideo();
 
       resolve(true);
