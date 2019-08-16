@@ -17,7 +17,7 @@ declare const com, android, global, java: any;
 let _fragment;
 let _origin;
 
-const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> => {
+const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARGroup> => {
   return new Promise((resolve, reject) => {
     ARGroup.create(options, _fragment)
       .then((group: ARGroup) => {
