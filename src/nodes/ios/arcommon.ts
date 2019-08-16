@@ -90,6 +90,14 @@ export abstract class ARCommonNode implements IARCommonNode {
   }
 
 
+  setRotation(rot: ARRotation): void {
+    this.ios.eulerAngles = {
+      x: ARCommonNode.degToRadians(rot.x),
+      y: ARCommonNode.degToRadians(rot.y),
+      z: ARCommonNode.degToRadians(rot.z)
+    };
+  }
+
 
   scaleBy(by: number | ARScale): void {
     this.ios.scale = {
