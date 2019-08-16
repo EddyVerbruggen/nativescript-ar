@@ -8,12 +8,16 @@ import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 
+
+import { VideoRecorder } from "./videorecorder.android";
+
 import { FragmentScreenGrab } from "./screengrab-android";
 
 declare const com, android, global, java: any;
 
 let _fragment;
 let _origin;
+let _videoRecorder;
 
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
@@ -341,13 +345,35 @@ export class AR extends ARBase {
   }
 
   public startRecordingVideo(): Promise<boolean> {
-    console.log("Method not implemented: startRecordingVideo");
-    return null;
+    return new Promise((resolve, reject) => {
+      if (!_videoRecorder) {
+        _videoRecorder = VideoRecorder.fromFragment(_fragment);
+
+      }
+
+      if (_videoRecorder.isRecording()) {
+        reject("already recording");
+        return;
+      }
+      _videoRecorder.setVideoQualityAuto()
+      _videoRecorder.startRecordingVideo();
+
+      resolve(true);
+
+    });
   }
 
   public stopRecordingVideo(): Promise<string> {
-    console.log("Method not implemented: stopRecordingVideo");
-    return null;
+    return new Promise((resolve, reject) => {
+
+      if (!(_videoRecorder && _videoRecorder.isRecording())) {
+        reject("not recording");
+      }
+
+      _videoRecorder.stopRecordingVideo();
+      resolve(_videoRecorder.getVideoPath());
+
+    });
   }
 
   reset(): void {
