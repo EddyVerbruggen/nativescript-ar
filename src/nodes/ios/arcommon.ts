@@ -137,7 +137,7 @@ export abstract class ARCommonNode implements IARCommonNode {
   }
 
   setVisible(visible: boolean): void {
-    this.ios.hidden=!visible;
+    this.ios.hidden = !visible;
   }
 
   allowDragging(): boolean {
