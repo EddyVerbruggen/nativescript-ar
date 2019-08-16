@@ -1,6 +1,6 @@
 import { Color } from "tns-core-modules/color";
 import * as utils from "tns-core-modules/utils/utils";
-import { ARAddGeometryOptions } from "../../ar-common";
+import { ARAddGeometryOptions, ARMaterial } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
 declare const java: any;
@@ -22,26 +22,25 @@ export abstract class ARCommonGeometryNode extends ARCommonNode {
   protected static applyMaterial(node: com.google.ar.sceneform.Node, color: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       com.google.ar.sceneform.rendering.MaterialFactory.makeOpaqueWithColor(
-        utils.ad.getApplicationContext(),
-        new com.google.ar.sceneform.rendering.Color(color))
-        .thenAccept(new java.util.function.Consumer({
-          accept: material => {
-            console.log("applyMaterial, material: " + material);
-            console.log("applyMaterial, node: " + node);
-            const renderable = node.getRenderable();
-            console.log("applyMaterial, renderable: " + renderable);
-            if (renderable) {
-              renderable.setMaterial(material);
+          utils.ad.getApplicationContext(),
+          new com.google.ar.sceneform.rendering.Color(color))
+          .thenAccept(new java.util.function.Consumer({
+            accept: material => {
+              console.log("applyMaterial, material: " + material);
+              console.log("applyMaterial, node: " + node);
+              const renderable = node.getRenderable();
+              console.log("applyMaterial, renderable: " + renderable);
+              if (renderable) {
+                renderable.setMaterial(material);
+              }
+              resolve();
             }
-            resolve();
-          }
-        }));
+          }));
     });
   }
 
-  public setMaterials(materials: Array<number>): void {
-    ARCommonGeometryNode.applyMaterial(this.android, (<Color>materials[0]).android).catch(function(e) { console.log(e); });
+  public setMaterials(materials: Array<string | Color | ARMaterial>): void {
+    ARCommonGeometryNode.applyMaterial(this.android, (<Color>materials[0]).android).catch((e) => console.log(e));
   }
-
 
 }
