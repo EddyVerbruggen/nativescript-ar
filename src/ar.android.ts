@@ -24,17 +24,17 @@ let _videoRecorder;
 const AppPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
 const ContentPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
 
-function useAndroidX () {
+function useAndroidX() {
   return global.androidx && global.androidx.appcompat;
 }
 
 const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARGroup> => {
   return new Promise((resolve, reject) => {
     ARGroup.create(options, _fragment)
-      .then((group: ARGroup) => {
-        group.android.setParent(parentNode);
-        resolve(group);
-      });
+        .then((group: ARGroup) => {
+          group.android.setParent(parentNode);
+          resolve(group);
+        });
   });
 };
 

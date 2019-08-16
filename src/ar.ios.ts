@@ -23,11 +23,10 @@ const ARState = {
 
 const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> => {
   return new Promise((resolve, reject) => {
-    const group = ARGroup.create(options)
+    const group = ARGroup.create(options);
     ARState.shapes.set(group.id, group);
     parentNode.addChildNode(group.ios);
     resolve(group);
-
   });
 };
 
