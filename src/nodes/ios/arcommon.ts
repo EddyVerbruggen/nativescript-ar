@@ -53,11 +53,31 @@ export abstract class ARCommonNode implements IARCommonNode {
     this.ios = node;
   }
 
-  moveBy(by: ARRotation): void {
+  moveBy(by: ARPosition): void {
     this.ios.position = {
       x: this.ios.position.x + by.x,
       y: this.ios.position.y + by.y,
       z: this.ios.position.z + by.z
+    };
+  }
+
+  setPosition(pos: ARPosition): void {
+
+    this.ios.position = {
+      x: pos.x,
+      y: pos.y,
+      z: pos.z
+    };
+  }
+
+  setWorldPosition(worldPos: ARPosition): void {
+
+    const pos = this.ios.convertPositionFromNode(worldPos, null);
+
+    this.ios.position = {
+      x: pos.x,
+      y: pos.y,
+      z: pos.z
     };
   }
 
@@ -69,11 +89,29 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
+
+  setRotation(rot: ARRotation): void {
+    this.ios.eulerAngles = {
+      x: ARCommonNode.degToRadians(rot.x),
+      y: ARCommonNode.degToRadians(rot.y),
+      z: ARCommonNode.degToRadians(rot.z)
+    };
+  }
+
+
   scaleBy(by: number | ARScale): void {
     this.ios.scale = {
       x: this.ios.scale.x + (by instanceof ARScale ? by.x : by),
       y: this.ios.scale.y + (by instanceof ARScale ? by.y : by),
       z: this.ios.scale.z + (by instanceof ARScale ? by.z : by)
+    };
+  }
+
+  setScale(scale: number | ARScale): void {
+    this.ios.scale = {
+      x: (scale instanceof ARScale ? scale.x : scale),
+      y: (scale instanceof ARScale ? scale.y : scale),
+      z: (scale instanceof ARScale ? scale.z : scale)
     };
   }
 
@@ -96,6 +134,10 @@ export abstract class ARCommonNode implements IARCommonNode {
       node: this,
       touchPosition
     });
+  }
+
+  setVisible(visible: boolean): void {
+    this.ios.hidden=!visible;
   }
 
   allowDragging(): boolean {
