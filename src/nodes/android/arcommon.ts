@@ -199,7 +199,7 @@ export abstract class ARCommonNode implements IARCommonNode {
   remove(): void {
     // TODO would be nice if we could delete it from the cache.. perhaps move it to this common class as a static prop?
     // ARState.shapes.delete(this.id);
-    // this.ios.removeFromParentNode(); // TODO
+    this.android.setParentNode(null);
   }
 
   protected static getDefaultMaterial(): Promise<com.google.ar.sceneform.rendering.Material> {
