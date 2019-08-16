@@ -4,9 +4,11 @@ import * as utils from "tns-core-modules/utils/utils";
 
 import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
+import { ARCommonNode } from "./nodes/android/arcommon";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
+import { ARGroup } from "./nodes/android/argroup";
 
 import { FragmentScreenGrab } from "./screengrab-android";
 
@@ -14,6 +16,16 @@ declare const com, android, global, java: any;
 
 let _fragment;
 let _origin;
+
+const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> => {
+  return new Promise((resolve, reject) => {
+    ARGroup.create(options, _fragment)
+      .then((group: ARGroup) => {
+        group.android.setParent(parentNode);
+        resolve(group);
+      });
+  });
+};
 
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
@@ -355,6 +367,13 @@ export class AR extends ARBase {
     return null;
   }
 
+  addNode(options: ARAddOptions): Promise<ARGroup> {
+    return new Promise((resolve, reject) => {
+
+      addNode(options, resolveParentNode(options))
+          .then(model => resolve(model));
+    });
+  }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
