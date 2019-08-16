@@ -19,6 +19,13 @@ let _fragment;
 let _origin;
 let _videoRecorder;
 
+const AppPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
+const ContentPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
+
+function useAndroidX () {
+  return global.androidx && global.androidx.appcompat;
+}
+
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARModel.create(options, _fragment)
@@ -348,18 +355,26 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
       if (!_videoRecorder) {
         _videoRecorder = VideoRecorder.fromFragment(_fragment);
-
-      }
-
-      if (_videoRecorder.isRecording()) {
+      } else if (_videoRecorder.isRecording()) {
         reject("already recording");
         return;
       }
-      _videoRecorder.setVideoQualityAuto();
-      _videoRecorder.startRecordingVideo();
+
+      const record = () => {
+        _videoRecorder.setVideoQualityAuto();
+        _videoRecorder.startRecordingVideo();
+      };
+
+      const permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+      if (!this.wasPermissionGranted(permission)) {
+        // note that this will reset the AR experience, so perhaps better to request this permission up front instead
+        this._requestPermission(permission, record, reject);
+        return;
+      }
+
+      record();
 
       resolve(true);
-
     });
   }
 
@@ -418,5 +433,42 @@ export class AR extends ARBase {
       addTube(options, resolveParentNode(options))
           .then(tube => resolve(tube));
     });
+  }
+
+  private wasPermissionGranted(permission: string): boolean {
+    let hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
+    if (!hasPermission) {
+      hasPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ===
+          ContentPackageName.ContextCompat.checkSelfPermission(
+              utils.ad.getApplicationContext(),
+              android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+    return hasPermission;
+  }
+
+  private _requestPermission(permission: string, onPermissionGranted: Function, reject): void {
+    const permissionRequestCode = 678; // random-ish id
+
+    const onPermissionEvent = (args: any) => {
+      if (args.requestCode === permissionRequestCode) {
+        for (let i = 0; i < args.permissions.length; i++) {
+          if (args.grantResults[i] === android.content.pm.PackageManager.PERMISSION_DENIED) {
+            application.off(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+            reject("Please allow access to external storage and try again.");
+            return;
+          }
+        }
+        application.off(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+        onPermissionGranted();
+      }
+    };
+
+    application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+
+    AppPackageName.ActivityCompat.requestPermissions(
+        application.android.foregroundActivity || application.android.startActivity,
+        [permission],
+        permissionRequestCode
+    );
   }
 }

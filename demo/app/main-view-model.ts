@@ -93,6 +93,7 @@ export class HelloWorldModel extends Observable {
               console.log("Recording result: " + videoUrl);
             });
           }, 2000);
-        });
+        })
+        .catch(err => console.log(err));
   }
 }
