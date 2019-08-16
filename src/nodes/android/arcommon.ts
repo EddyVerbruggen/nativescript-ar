@@ -154,6 +154,15 @@ export abstract class ARCommonNode implements IARCommonNode {
     );
   }
 
+  setScale(scale: number | ARScale): void {
+    this.android.setLocalScale(
+      new (<any>com.google.ar.sceneform).math.Vector3(
+        (scale instanceof ARScale ? scale.x : scale),
+        (scale instanceof ARScale ? scale.y : scale),
+        (scale instanceof ARScale ? scale.z : scale))
+    );
+  }
+
   onTap(touchPosition: ARDimensions2D): void {
     this.onTapHandler && this.onTapHandler({
       node: this,
