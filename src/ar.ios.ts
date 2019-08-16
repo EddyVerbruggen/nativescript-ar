@@ -1,6 +1,7 @@
 import * as application from 'tns-core-modules/application';
 
-import { AR as ARBase, ARAddBoxOptions, ARUIViewOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
+
+import { AR as ARBase, ARAddBoxOptions, ARAddOptions, ARUIViewOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
 
 import { ARBox } from "./nodes/ios/arbox";
 import { ARCommonNode } from "./nodes/ios/arcommon";
@@ -30,7 +31,6 @@ const addUIView = (options: ARUIViewOptions, parentNode: SCNNode): Promise<ARUIV
     resolve(view);
   });
 };
-
 
 const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARBox> => {
   return new Promise((resolve, reject) => {
@@ -526,7 +526,7 @@ export class AR extends ARBase {
   }
 
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
-    return addUIView(options, this.sceneView.scene.rootNode);
+    return addUIView(options, this.resolveParentNode(options));
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
