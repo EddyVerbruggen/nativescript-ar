@@ -119,6 +119,7 @@ export abstract class ARCommonNode implements IARCommonNode {
     );
   }
 
+
   rotateBy(by: ARRotation): void {
     const currentRotation = this.android.getLocalRotation();
     const rotateBy=new (<any>com.google.ar.sceneform).math.Quaternion(
@@ -172,6 +173,10 @@ export abstract class ARCommonNode implements IARCommonNode {
       node: this,
       touchPosition
     });
+  }
+
+  setVisible(visible: boolean): void {
+    this.android.setEnabled(visible);
   }
 
   allowDragging(): boolean {
