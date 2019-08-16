@@ -76,9 +76,13 @@ export class VideoRecorder {
 			throw "already recording";
 		}
 
+
+
 		if (this.mediaRecorder == null) {
 			this.mediaRecorder = new android.media.MediaRecorder();
 		}
+
+		this.videoPath=null;
 
 		try {
 			this.buildFilename();
@@ -102,9 +106,9 @@ export class VideoRecorder {
 			this.videoDirectory =
 				new java.io.File(
 					android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_PICTURES)
-					+ "/Sceneform");
+					+ "/ARVideos");
 		}
-		if (this.videoBaseName == null || this.videoBaseName.isEmpty()) {
+		if (this.videoBaseName == null) {
 			this.videoBaseName = "Sample";
 		}
 		this.videoPath =
