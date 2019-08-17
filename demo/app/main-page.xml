@@ -2,7 +2,7 @@
   <GridLayout rows="auto, auto, *" columns="*">
     <Label text="{{ message }}" class="t-20 p-10 text-center c-black" textWrap="true"/>
 
-    <StackLayout row="1" id="l1" orientation="horizontal" class="p-10 c-bg-grey">
+    <StackLayout row="1" id="uselessToggleView" orientation="horizontal" class="p-10 c-white c-bg-orange">
       <Label text="Useless toggle:"/>
       <Switch checked="true" ontap="tapp"/>
     </StackLayout>

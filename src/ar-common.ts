@@ -125,7 +125,7 @@ export interface ARAddGeometryOptions extends ARAddOptions {
 
 
 export interface ARUIViewOptions extends ARAddOptions {
-  chamferRadius?: number,
+  chamferRadius?: number;
   dimensions?: number | ARDimensions2D;
   view: ViewBase;
 }
@@ -305,6 +305,8 @@ export abstract class AR extends ContentView {
   abstract addText(options: ARAddTextOptions): Promise<ARNode>;
 
   abstract addTube(options: ARAddTubeOptions): Promise<ARNode>;
+
+  abstract addUIView(options: ARUIViewOptions): Promise<ARNode>;
 
   abstract togglePlaneDetection(on: boolean): void;
 

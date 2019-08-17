@@ -2,6 +2,8 @@ import { ARUIViewOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 import * as utils from "tns-core-modules/utils/utils";
 
+declare const java: any;
+
 export class ARUIView extends ARCommonNode {
     static create(options: ARUIViewOptions, fragment): Promise<ARUIView> {
         return new Promise<ARUIView>(async (resolve, reject) => {
@@ -17,25 +19,17 @@ export class ARUIView extends ARCommonNode {
             const view = options.view;
 
             if (!view) {
-
                 // this is only here for testing and does not print if view is defined in ARUIViewOptions
-
                 const label = new android.widget.TextView(context);
                 label.setText("Hello World");
                 label.setShadowLayer(4, 0, 0, android.graphics.Color.WHITE);
                 label.setTextColor(android.graphics.Color.BLACK);
                 container.addView(label);
 
-
-            }
-
-            if (view) {
-
-                if (view.parent) {
-                    view.parent.removeChild(view);
+            } else {
+                if (view.android && view.android.getParent()) {
+                    view.android.getParent().removeView(view.android);
                 }
-
-
 
                 if (!view.android) {
                     view._setupUI(context);
@@ -43,9 +37,7 @@ export class ARUIView extends ARCommonNode {
                     view.requestLayout();
                 }
 
-
                 container.addView(view.android);
-
             }
 
 
@@ -63,22 +55,10 @@ export class ARUIView extends ARCommonNode {
                              */
                             renderable.setVerticalAlignment(com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.BOTTOM);
 
-
-
-
                             node.setRenderable(renderable);
-                            node.select(); // optional; this can be removed
                             resolve(new ARUIView(options, node));
                         }
                     }));
-
-
-
-
-
-
-
-
         });
     }
 }

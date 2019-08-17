@@ -20,11 +20,12 @@ declare const NSBundle: any;
 
 let ar: AR;
 let model: HelloWorldModel;
+let page;
 
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
   // Get the event sender
-  const page = <pages.Page>args.object;
+  page = <pages.Page>args.object;
   model = new HelloWorldModel();
   model.screenshot = page.getViewById("screenshot");
   page.bindingContext = model;
@@ -416,9 +417,9 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 
   args.object.addSphere({
     position: {
-      x: args.position.x + 1,
+      x: args.position.x + 0.5,
       y: args.position.y + 1,
-      z: args.position.z
+      z: args.position.z - 1
     },
     // scale: 0.5, // this messes up positioning
     radius: 0.25,
@@ -441,6 +442,13 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     if (arNode.ios) {
       // do something iOS specific here if you like
     }
+
+    ar.addUIView({
+      position: {x: 0, y: .4, z: 0},
+      parentNode: arNode,
+      view: page.getViewById("uselessToggleView")
+    });
+
   });
 
   args.object.addTube({

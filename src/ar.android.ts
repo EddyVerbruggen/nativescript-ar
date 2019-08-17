@@ -1,7 +1,7 @@
 import * as application from "tns-core-modules/application";
 import * as utils from "tns-core-modules/utils/utils";
 
-import { AR as ARBase, ARUIViewOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARUIViewOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode, ARAddOptions } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
@@ -252,31 +252,6 @@ export class AR extends ARBase {
           }
         }));
     */
-
-    /* this works, for rendering a custom UI
-    setTimeout(() => {
-      const l1 = this.parent.getViewById("l1").android;
-      l1.getParent().removeView(l1);
-
-      const customUI =
-          com.google.ar.sceneform.rendering.ViewRenderable.builder()
-              .setView(utils.ad.getApplicationContext(), l1)
-              .build()
-              .thenAccept(new java.util.function.Consumer({
-                accept: renderable => {
-                  console.log(">> accepted2, renderable: " + renderable);
-                  customUIRenderable = renderable;
-                }
-              }));
-    }, 2000);
-    */
-
-    // custom view experiment
-    // console.log(this.parent.getViewById("l1"));
-    // const page = topmost().currentPage;
-    // const forView = <View>page.getViewById("l1");
-    // console.log(forView);
-
   }
 
 
