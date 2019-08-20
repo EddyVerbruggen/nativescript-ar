@@ -28,7 +28,7 @@ export abstract class ARCommonNode implements IARCommonNode {
   private static defaultMaterial: com.google.ar.sceneform.rendering.Material;
 
 
-  constructor(options: ARAddOptions, node: com.google.ar.sceneform.Node) {
+  constructor(options: ARAddOptions, node: com.google.ar.sceneform.Node|com.google.ar.sceneform.ux.TransformableNode) {
     this.android = node;
 
     this.onTapHandler = options.onTap;
@@ -37,15 +37,17 @@ export abstract class ARCommonNode implements IARCommonNode {
     this.draggingEnabled = options.draggingEnabled;
     this.rotatingEnabled = options.rotatingEnabled;
 
-    if(!this.draggingEnabled){
-      node.getTranslationController().isEnabled=false;
-    }
-    if(!this.rotatingEnabled){
-      node.getRotationController().isEnabled=false;
-    }
+    if(node instanceof com.google.ar.sceneform.ux.TransformableNode){
+      if(!this.draggingEnabled){
+        node.getTranslationController().isEnabled=false;
+      }
+      if(!this.rotatingEnabled){
+        node.getRotationController().isEnabled=false;
+      }
 
-    if(!(this.draggingEnabled||this.rotatingEnabled)){
-       node.getScaleController().isEnabled=false;
+      if(!(this.draggingEnabled||this.rotatingEnabled)){
+         node.getScaleController().isEnabled=false;
+      }
     }
 
     if (options.rotation) {
