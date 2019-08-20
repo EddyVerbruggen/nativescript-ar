@@ -6,7 +6,7 @@ export class ARTube extends ARCommonGeometryNode {
 
   static create(options: ARAddTubeOptions, fragment): Promise<ARTube> {
     return new Promise<ARTube>(async (resolve, reject) => {
-      const node = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
+      const node = ARCommonNode.createNode(options, fragment);
 
       const defaultMaterial = await ARCommonNode.getDefaultMaterial();
 
@@ -23,7 +23,6 @@ export class ARTube extends ARCommonGeometryNode {
 
       node.setRenderable(renderable);
 
-      node.select(); // optional; this can be removed
       resolve(new ARTube(options, node));
     });
   }
