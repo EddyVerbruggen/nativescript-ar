@@ -6,7 +6,7 @@ export class ARSphere extends ARCommonGeometryNode {
 
   static create(options: ARAddSphereOptions, fragment): Promise<ARSphere> {
     return new Promise<ARSphere>(async (resolve, reject) => {
-      const node = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
+      const node = ARCommonNode.createNode(options, fragment);
 
       const defaultMaterial = await ARCommonNode.getDefaultMaterial();
 
@@ -21,7 +21,6 @@ export class ARSphere extends ARCommonGeometryNode {
 
       node.setRenderable(renderable);
 
-      node.select(); // optional; this can be removed
       resolve(new ARSphere(options, node));
     });
   }

@@ -6,7 +6,7 @@ export class ARBox extends ARCommonGeometryNode {
 
   static create(options: ARAddBoxOptions, fragment): Promise<ARBox> {
     return new Promise<ARBox>(async (resolve, reject) => {
-      const node = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
+      const node = ARCommonNode.createNode(options, fragment);
 
       const defaultMaterial = await ARCommonNode.getDefaultMaterial();
 
@@ -24,7 +24,6 @@ export class ARBox extends ARCommonGeometryNode {
 
       node.setRenderable(renderable);
 
-      node.select(); // optional; this can be removed
       resolve(new ARBox(options, node));
     });
   }

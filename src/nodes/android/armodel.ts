@@ -12,9 +12,8 @@ export class ARModel extends ARCommonNode {
           .build()
           .thenAccept(new java.util.function.Consumer({
             accept: renderable => {
-              const transformableNode = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
+              const transformableNode = ARCommonNode.createNode(options, fragment);
               transformableNode.setRenderable(renderable);
-              transformableNode.select(); // optional; this can be removed
               resolve(new ARModel(options, transformableNode));
             }
             // TODO add the exception case
