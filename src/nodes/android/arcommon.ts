@@ -24,6 +24,17 @@ export abstract class ARCommonNode implements IARCommonNode {
     this.draggingEnabled = options.draggingEnabled;
     this.rotatingEnabled = options.rotatingEnabled;
 
+    if(!this.draggingEnabled){
+      node.getTranslationController().isEnabled=false;
+    }
+    if(!this.rotatingEnabled){
+      node.getRotationController().isEnabled=false;
+    }
+
+    if(!(this.draggingEnabled||this.rotatingEnabled)){
+       node.getScaleController().isEnabled=false;
+    }
+
     if (options.rotation) {
       this.rotateBy(options.rotation);
     }
