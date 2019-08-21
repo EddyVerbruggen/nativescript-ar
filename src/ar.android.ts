@@ -1,17 +1,41 @@
 import * as application from "tns-core-modules/application";
+import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
 
 import { AR as ARBase, ARUIViewOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode, ARAddOptions } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
+import { ARCommonNode } from "./nodes/android/arcommon";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 import { ARUIView} from "./nodes/android/aruiview";
+import { ARGroup } from "./nodes/android/argroup";
+import { VideoRecorder } from "./videorecorder.android";
+import { FragmentScreenGrab } from "./screengrab-android";
+
 
 declare const com, android, global, java: any;
 
 let _fragment;
 let _origin;
+let _videoRecorder;
+
+const AppPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
+const ContentPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
+
+function useAndroidX() {
+  return global.androidx && global.androidx.appcompat;
+}
+
+const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARGroup> => {
+  return new Promise((resolve, reject) => {
+    ARGroup.create(options, _fragment)
+        .then((group: ARGroup) => {
+          group.android.setParent(parentNode);
+          resolve(group);
+        });
+  });
+};
 
 const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
@@ -325,19 +349,48 @@ export class AR extends ARBase {
     // this.renderer.setDrawPlanes(drawPlanesAndPointClound);
   }
 
-  public grabScreenshot(): any {
-    console.log("Method not implemented: grabScreenshot");
-    return null;
+  public grabScreenshot(): Promise<ImageSource> {
+    return (new FragmentScreenGrab()).grabScreenshot(_fragment);
   }
 
   public startRecordingVideo(): Promise<boolean> {
-    console.log("Method not implemented: startRecordingVideo");
-    return null;
+    return new Promise((resolve, reject) => {
+      if (!_videoRecorder) {
+        _videoRecorder = VideoRecorder.fromFragment(_fragment);
+      } else if (_videoRecorder.isRecording()) {
+        reject("already recording");
+        return;
+      }
+
+      const record = () => {
+        _videoRecorder.setVideoQualityAuto();
+        _videoRecorder.startRecordingVideo();
+      };
+
+      const permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+      if (!this.wasPermissionGranted(permission)) {
+        // note that this will reset the AR experience, so perhaps better to request this permission up front instead
+        this._requestPermission(permission, record, reject);
+        return;
+      }
+
+      record();
+
+      resolve(true);
+    });
   }
 
   public stopRecordingVideo(): Promise<string> {
-    console.log("Method not implemented: stopRecordingVideo");
-    return null;
+    return new Promise((resolve, reject) => {
+
+      if (!(_videoRecorder && _videoRecorder.isRecording())) {
+        reject("not recording");
+      }
+
+      _videoRecorder.stopRecordingVideo();
+      resolve(_videoRecorder.getVideoPath());
+
+    });
   }
 
   reset(): void {
@@ -345,6 +398,13 @@ export class AR extends ARBase {
     return null;
   }
 
+  addNode(options: ARAddOptions): Promise<ARGroup> {
+    return new Promise((resolve, reject) => {
+
+      addNode(options, resolveParentNode(options))
+          .then(model => resolve(model));
+    });
+  }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
     return new Promise((resolve, reject) => {
@@ -390,6 +450,43 @@ export class AR extends ARBase {
       addUIView(options, resolveParentNode(options))
         .then(view => resolve(view));
     });
+  }
+
+  private wasPermissionGranted(permission: string): boolean {
+    let hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
+    if (!hasPermission) {
+      hasPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ===
+          ContentPackageName.ContextCompat.checkSelfPermission(
+              utils.ad.getApplicationContext(),
+              android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+    return hasPermission;
+  }
+
+  private _requestPermission(permission: string, onPermissionGranted: Function, reject): void {
+    const permissionRequestCode = 678; // random-ish id
+
+    const onPermissionEvent = (args: any) => {
+      if (args.requestCode === permissionRequestCode) {
+        for (let i = 0; i < args.permissions.length; i++) {
+          if (args.grantResults[i] === android.content.pm.PackageManager.PERMISSION_DENIED) {
+            application.off(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+            reject("Please allow access to external storage and try again.");
+            return;
+          }
+        }
+        application.off(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+        onPermissionGranted();
+      }
+    };
+
+    application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+
+    AppPackageName.ActivityCompat.requestPermissions(
+        application.android.foregroundActivity || application.android.startActivity,
+        [permission],
+        permissionRequestCode
+    );
   }
 
 }

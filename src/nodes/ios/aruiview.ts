@@ -36,7 +36,7 @@ export class ARUIView extends ARCommonNode {
 		setTimeout(function(){
 			try{
 
-					UIGraphicsBeginImageContextWithOptions(nativeView.bounds.size, nativeView.opaque, 0.0);
+					UIGraphicsBeginImageContextWithOptions(CGSizeMake(dimensions.x, dimensions.y), nativeView.opaque, 0.0);
 				    nativeView.layer.renderInContext(UIGraphicsGetCurrentContext());
 				    const img = UIGraphicsGetImageFromCurrentImageContext();
 				    UIGraphicsEndImageContext();
@@ -45,7 +45,7 @@ export class ARUIView extends ARCommonNode {
 			}catch(e){
 				console.error(e);
 			}
-		},100);
+		},5000);
 		const planeNode = SCNNode.nodeWithGeometry(materialPlane)
 
 		return new ARUIView(options, planeNode);

@@ -1,6 +1,6 @@
 import { Color } from "tns-core-modules/color";
 import * as utils from "tns-core-modules/utils/utils";
-import { ARAddGeometryOptions } from "../../ar-common";
+import { ARAddGeometryOptions, ARMaterial } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
 declare const java: any;
@@ -37,6 +37,10 @@ export abstract class ARCommonGeometryNode extends ARCommonNode {
             }
           }));
     });
+  }
+
+  public setMaterials(materials: Array<string | Color | ARMaterial>): void {
+    ARCommonGeometryNode.applyMaterial(this.android, (<Color>materials[0]).android).catch((e) => console.log(e));
   }
 
 }

@@ -7,8 +7,7 @@ declare const java: any;
 export class ARUIView extends ARCommonNode {
     static create(options: ARUIViewOptions, fragment): Promise<ARUIView> {
         return new Promise<ARUIView>(async (resolve, reject) => {
-            const node = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
-
+            const node = ARCommonNode.createNode(options, fragment);
 
             const context = utils.ad.getApplicationContext();
             const container = new android.widget.LinearLayout(context);

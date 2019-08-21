@@ -12,7 +12,8 @@ import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
 import { ARUIView } from "./nodes/ios/aruiview";
-
+import { ARGroup } from "./nodes/ios/argroup";
+import { ImageSource, fromNativeSource } from "tns-core-modules/image-source";
 
 export { ARDebugLevel, ARTrackingMode };
 
@@ -23,12 +24,23 @@ const ARState = {
   shapes: new Map<string, ARCommonNode>(),
 };
 
+
 const addUIView = (options: ARUIViewOptions, parentNode: SCNNode): Promise<ARUIView> => {
   return new Promise((resolve, reject) => {
     const view = ARUIView.create(options);
     ARState.shapes.set(view.id, view);
     parentNode.addChildNode(view.ios);
     resolve(view);
+  });
+};
+
+const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> => {
+  return new Promise((resolve, reject) => {
+    const group = ARGroup.create(options);
+    ARState.shapes.set(group.id, group);
+    parentNode.addChildNode(group.ios);
+    resolve(group);
+
   });
 };
 
@@ -49,6 +61,7 @@ const addBox = (options: ARAddBoxOptions, parentNode: SCNNode): Promise<ARBox> =
     resolve(box);
   });
 };
+
 
 const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
@@ -132,8 +145,14 @@ export class AR extends ARBase {
     }
   }
 
-  public grabScreenshot(): any {
-    return this.sceneView ? this.sceneView.snapshot() : null;
+  public grabScreenshot(): Promise<ImageSource> {
+    return new Promise((resolve, reject) => {
+      if (this.sceneView) {
+        resolve(fromNativeSource(this.sceneView.snapshot()));
+        return;
+      }
+      reject("sceneView is not available");
+    });
   }
 
   public startRecordingVideo(): Promise<boolean> {
@@ -525,8 +544,14 @@ export class AR extends ARBase {
     }
   }
 
+
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
     return addUIView(options, this.resolveParentNode(options));
+  }
+
+  addNode(options: ARAddModelOptions): Promise<ARGroup> {
+    return addNode(options, this.resolveParentNode(options));
+
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {

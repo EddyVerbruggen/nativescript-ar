@@ -30,7 +30,7 @@
         planeDetected="planeDetected"
         planeTapped="planeTapped">
     </AR:AR>
-    <iOS>
+<!--    <iOS>-->
       <StackLayout row="2" horizontalAlignment="right" verticalAlignment="bottom">
         <Button text="Grab screenshot" class="bg-primary grab-screenshot" horizontalAlignment="right" tap="{{ grabScreenshot }}"/>
         <Button text="Record video" class="bg-primary record-video" horizontalAlignment="right" tap="{{ recordVideo }}"/>
@@ -41,6 +41,6 @@
         </GridLayout>
       </StackLayout>
       <Image row="2" id="screenshot" width="180" class="screenshot" horizontalAlignment="left" verticalAlignment="bottom"/>
-    </iOS>
+<!--    </iOS>-->
   </GridLayout>
 </Page>

@@ -25,12 +25,12 @@ export class HelloWorldModel extends Observable {
     console.log(`Image tracking supported? ${AR.isImageTrackingSupported()}`);
   }
 
-  public grabScreenshot(): void {
+  public async grabScreenshot(): Promise<void> {
     if (!this.ar) {
       return;
     }
 
-    this.screenshot.src = this.ar.grabScreenshot();
+    this.screenshot.src = await this.ar.grabScreenshot();
 
     // let's animate the grabbed image on and off screen in an iOS-screenshot style fashion
     this.screenshot.animate({
@@ -45,6 +45,7 @@ export class HelloWorldModel extends Observable {
       },
       duration: 500
     });
+
     setTimeout(() => {
       this.screenshot.animate({
         opacity: 0,
@@ -92,6 +93,7 @@ export class HelloWorldModel extends Observable {
               console.log("Recording result: " + videoUrl);
             });
           }, 2000);
-        });
+        })
+        .catch(err => console.log(err));
   }
 }
