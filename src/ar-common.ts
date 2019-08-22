@@ -3,7 +3,8 @@ import { EventData } from "tns-core-modules/data/observable";
 import { ImageSource } from "tns-core-modules/image-source";
 import { ContentView } from "tns-core-modules/ui/content-view";
 import { Property } from "tns-core-modules/ui/core/view";
-import { booleanConverter, ViewBase } from "tns-core-modules/ui/core/view-base";
+import { booleanConverter } from "tns-core-modules/ui/core/view-base";
+import { View } from "tns-core-modules/ui/core/view";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARModel } from "./nodes/ios/armodel";
 
@@ -128,7 +129,7 @@ export interface ARAddGeometryOptions extends ARAddOptions {
 export interface ARUIViewOptions extends ARAddOptions {
   chamferRadius?: number;
   dimensions?: number | ARDimensions2D;
-  view: ViewBase;
+  view: View;
 }
 export interface ARAddModelOptions extends ARAddOptions {
   name: string;
