@@ -2,14 +2,14 @@ import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
 
-import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARAddOptions, ARAddImageOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARCommonNode } from "./nodes/android/arcommon";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 import { ARGroup } from "./nodes/android/argroup";
-
+import { ARImage } from "./nodes/android/arimage";
 
 import { VideoRecorder } from "./videorecorder.android";
 
@@ -34,6 +34,16 @@ const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node
         .then((group: ARGroup) => {
           group.android.setParent(parentNode);
           resolve(group);
+        });
+  });
+};
+
+const addImage = (options: ARAddImageOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARImage> => {
+  return new Promise((resolve, reject) => {
+    ARImage.create(options, _fragment)
+        .then((image: ARImage) => {
+          image.android.setParent(parentNode);
+          resolve(image);
         });
   });
 };
@@ -413,6 +423,14 @@ export class AR extends ARBase {
 
       addNode(options, resolveParentNode(options))
           .then(model => resolve(model));
+    });
+  }
+
+  addImage(options: ARAddImageOptions): Promise<ARImage> {
+    return new Promise((resolve, reject) => {
+
+      addImage(options, resolveParentNode(options))
+          .then(image => resolve(image));
     });
   }
 
