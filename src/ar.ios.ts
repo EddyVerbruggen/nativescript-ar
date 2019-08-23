@@ -1,5 +1,5 @@
 import * as application from 'tns-core-modules/application';
-import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARAddOptions, ARAddImageOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARCommonNode } from "./nodes/ios/arcommon";
 import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
@@ -9,6 +9,7 @@ import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
 import { ARGroup } from "./nodes/ios/argroup";
+import { ARImage } from "./nodes/ios/arimage";
 
 import { ImageSource, fromNativeSource } from "tns-core-modules/image-source";
 
@@ -27,6 +28,14 @@ const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> =
     ARState.shapes.set(group.id, group);
     parentNode.addChildNode(group.ios);
     resolve(group);
+  });
+};
+
+const addImage = (options: ARAddImageOptions, parentNode: SCNNode): Promise<ARImage> => {
+  return ARImage.create(options).then((image) => {
+    ARState.shapes.set(image.id, image);
+    parentNode.addChildNode(image.ios);
+    return image;
   });
 };
 
@@ -530,8 +539,12 @@ export class AR extends ARBase {
     }
   }
 
-  addNode(options: ARAddModelOptions): Promise<ARGroup> {
+  addNode(options: ARAddOptions): Promise<ARGroup> {
     return addNode(options, this.resolveParentNode(options));
+  }
+
+  addImage(options: ARAddImageOptions): Promise<ARGroup> {
+    return addImage(options, this.resolveParentNode(options));
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {

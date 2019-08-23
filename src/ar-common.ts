@@ -123,6 +123,11 @@ export interface ARMaterial {
 export interface ARAddGeometryOptions extends ARAddOptions {
   materials?: Array<string | Color | ARMaterial>;
 }
+export interface ARAddImageOptions extends ARAddOptions {
+  image: string | ImageSource;
+  dimensions?:ARDimensions2D;
+}
+
 
 export interface ARAddModelOptions extends ARAddOptions {
   name: string;
