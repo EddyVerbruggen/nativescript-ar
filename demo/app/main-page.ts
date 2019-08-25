@@ -360,6 +360,17 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
   }).catch(console.error);
 
 
+  ar.addImage({
+    position: {
+      x: args.position.x,
+      y: args.position.y + 0.5,
+      z: args.position.z
+    },
+    image: "https://d2odgkulk9w7if.cloudfront.net/images/default-source/logos/ns-logo-shadowed-min.png"
+
+  }).catch(console.error);
+
+
   args.object.addModel({
     name: isIOS ? "Models.scnassets/Car.dae" : "andy.sfb",
     position: args.position,

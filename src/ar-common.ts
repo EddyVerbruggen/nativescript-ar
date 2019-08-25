@@ -124,6 +124,11 @@ export interface ARAddGeometryOptions extends ARAddOptions {
   materials?: Array<string | Color | ARMaterial>;
 }
 
+export interface ARAddImageOptions extends ARAddOptions {
+  image: string | ImageSource;
+  dimensions?: ARDimensions2D;
+}
+
 export interface ARAddModelOptions extends ARAddOptions {
   name: string;
   childNodeName?: string;
@@ -303,6 +308,8 @@ export abstract class AR extends ContentView {
   abstract addModel(options: ARAddModelOptions): Promise<ARNode>;
 
   abstract addVideo(options: ARAddVideoOptions): Promise<ARNode>;
+  
+  abstract addImage(options: ARAddImageOptions): Promise<ARNode>;
 
   abstract addBox(options: ARAddBoxOptions): Promise<ARNode>;
 
