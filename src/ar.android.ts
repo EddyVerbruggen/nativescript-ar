@@ -2,14 +2,14 @@ import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
 
-import { AR as ARBase, ARAddOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARAddOptions, ARAddVideoOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARCommonNode } from "./nodes/android/arcommon";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
 import { ARGroup } from "./nodes/android/argroup";
-
+import { ARVideo } from "./nodes/android/arvideo";
 
 import { VideoRecorder } from "./videorecorder.android";
 
@@ -34,6 +34,16 @@ const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node
         .then((group: ARGroup) => {
           group.android.setParent(parentNode);
           resolve(group);
+        });
+  });
+};
+
+const addVideo = (options: ARAddVideoOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARVideo> => {
+  return new Promise((resolve, reject) => {
+    ARVideo.create(options, _fragment)
+        .then((video: ARVideo) => {
+          video.android.setParent(parentNode);
+          resolve(video);
         });
   });
 };
@@ -412,6 +422,14 @@ export class AR extends ARBase {
     return new Promise((resolve, reject) => {
 
       addNode(options, resolveParentNode(options))
+          .then(model => resolve(model));
+    });
+  }
+
+  addVideo(options: ARAddVideoOptions): Promise<ARVideo> {
+    return new Promise((resolve, reject) => {
+
+      addVideo(options, resolveParentNode(options))
           .then(model => resolve(model));
     });
   }

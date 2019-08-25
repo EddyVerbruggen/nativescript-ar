@@ -129,6 +129,15 @@ export interface ARAddModelOptions extends ARAddOptions {
   childNodeName?: string;
 }
 
+export interface ARAddVideoOptions extends ARAddOptions {
+  video: any;
+  loop?:boolean;
+  play?:boolean;
+  dimensions?:  ARDimensions2D;
+}
+
+
+
 export interface ARAddBoxOptions extends ARAddGeometryOptions {
   dimensions: number | ARDimensions;
   chamferRadius?: number;
@@ -292,6 +301,8 @@ export abstract class AR extends ContentView {
   abstract reset(): void;
 
   abstract addModel(options: ARAddModelOptions): Promise<ARNode>;
+
+  abstract addVideo(options: ARAddVideoOptions): Promise<ARNode>;
 
   abstract addBox(options: ARAddBoxOptions): Promise<ARNode>;
 
