@@ -13,17 +13,20 @@ export class ARVideo extends ARCommonNode {
 
         const video = options.video;
 
-        if (!options.dimensions) {
-            options.dimensions = {
-                x: .32,
-                y: .18
-            }
-        }
+       
 
 
         //const size=tvVideoNode.size;
 
-        const dimensions = options.dimensions;
+        let dimensions = options.dimensions;
+
+         if (!options.dimensions) {
+            dimensions = {
+                x: .96,
+                y: .56
+            }
+        }
+
         const materialPlane = SCNPlane.planeWithWidthHeight(dimensions.x, dimensions.y);
 
         let nativeUrl;
@@ -86,8 +89,11 @@ export class ARVideo extends ARCommonNode {
 
         }
 
+        
+
         materialPlane.firstMaterial.diffuse.contents = videoPlayer;
         materialPlane.firstMaterial.doubleSided = true;
+
 
         if (options.loop!==false) {
             const AVPlayerItemDidPlayToEndTimeNotificationObserver = application.ios.addNotificationObserver(
@@ -105,8 +111,10 @@ export class ARVideo extends ARCommonNode {
             videoPlayer.play();
         }
 
+        const node=SCNNode.nodeWithGeometry(materialPlane);
+        //node.addAudioPlayer(SCNAudioPlayer);
   
-        return new ARVideo(options, SCNNode.nodeWithGeometry(materialPlane));
+        return new ARVideo(options, node);
 
 
     }

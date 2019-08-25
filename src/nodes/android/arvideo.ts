@@ -4,6 +4,7 @@ import { ImageSource, fromFileOrResource, fromUrl } from "tns-core-modules/image
 import { File } from "tns-core-modules/file-system";
 import * as utils from "tns-core-modules/utils/utils";
 
+let pixelsPerMeter=500;
 
 export class ARVideo extends ARCommonNode {
 
@@ -13,17 +14,25 @@ export class ARVideo extends ARCommonNode {
 
 		return new Promise<ARVideo>(async (resolve, reject) => {
 			const node = ARCommonNode.createNode(options, fragment);
+			
+
+			//use a child node to provide sizing without interfering with user defined size/scale
+			const videoNode = ARCommonNode.createNode(options, fragment);
+			videoNode.setParent(node);
 
 
 
 			const size = new (<any>com.google.ar.sceneform).math.Vector3(
-				options.dimensions instanceof Object ? options.dimensions.x : options.dimensions || 0.32,
-				options.dimensions instanceof Object ? options.dimensions.y : options.dimensions || 0.18,
+				options.dimensions instanceof Object ? options.dimensions.x : options.dimensions || 0.96,
+				options.dimensions instanceof Object ? options.dimensions.y : options.dimensions || 0.56,
 				1);
+
+			videoNode.setLocalScale(size);
 
 			const texture = new com.google.ar.sceneform.rendering.ExternalTexture();
 			const mediaPlayer = ARVideo.getPlayer(options);
 			mediaPlayer.setSurface(texture.getSurface());
+			mediaPlayer.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
 
 
 			const loop = options.loop !== false;
@@ -47,7 +56,7 @@ export class ARVideo extends ARCommonNode {
 					.thenAccept(new (<any>java.util).function.Consumer({
 						accept: material => {
 							renderable.setMaterial(material);
-							node.setRenderable(renderable);
+							videoNode.setRenderable(renderable);
 							resolve(new ARVideo(options, node));
 						}
 					}));
@@ -60,6 +69,22 @@ export class ARVideo extends ARCommonNode {
 
 				mediaPlayer.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener({
 					onPrepared: (mp: android.media.MediaPlayer) => {
+
+							const width=mp.getVideoWidth();
+							const height=mp.getVideoHeight();
+
+
+							
+
+
+							if(!options.dimensions){
+								videoNode.setLocalScale(new (<any>com.google.ar.sceneform).math.Vector3(
+									width/pixelsPerMeter,
+									height/pixelsPerMeter,
+								1));
+							}
+
+							console.log([height, width]);
 
 
 							mediaPlayer.start();
