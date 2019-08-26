@@ -136,12 +136,10 @@ export interface ARAddModelOptions extends ARAddOptions {
 
 export interface ARAddVideoOptions extends ARAddOptions {
   video: any;
-  loop?:boolean;
-  play?:boolean;
-  dimensions?:  ARDimensions2D;
+  loop?: boolean;
+  play?: boolean;
+  dimensions?: ARDimensions2D;
 }
-
-
 
 export interface ARAddBoxOptions extends ARAddGeometryOptions {
   dimensions: number | ARDimensions;
@@ -308,7 +306,7 @@ export abstract class AR extends ContentView {
   abstract addModel(options: ARAddModelOptions): Promise<ARNode>;
 
   abstract addVideo(options: ARAddVideoOptions): Promise<ARNode>;
-  
+
   abstract addImage(options: ARAddImageOptions): Promise<ARNode>;
 
   abstract addBox(options: ARAddBoxOptions): Promise<ARNode>;

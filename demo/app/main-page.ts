@@ -344,21 +344,14 @@ export function planeDetected(args: ARPlaneDetectedEventData): void {
 export function planeTapped(args: ARPlaneTappedEventData): void {
   console.log("Plane tapped @ x coordinate: " + args.position.x);
 
-
-
   ar.addVideo({
-    position:{
+    position: {
       x: args.position.x,
       y: args.position.y + 1, // want to drop the box from a meter high (when mass > 0)? add +1
       z: args.position.z
     },
-    //dimensions:{
-     // x:1.6,
-      //y:.2
-    //},
-    video:"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4"//"art.scnassets/celebration.mp4"//
+    video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4" // "art.scnassets/celebration.mp4"//
   }).catch(console.error);
-
 
   ar.addImage({
     position: {
