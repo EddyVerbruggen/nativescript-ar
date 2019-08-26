@@ -102,7 +102,7 @@ export class ARVideo extends ARCommonNode {
   static model(): Promise<com.google.ar.sceneform.rendering.ModelRenderable> {
     return new Promise<com.google.ar.sceneform.rendering.ModelRenderable>((resolve, reject) => {
       com.google.ar.sceneform.rendering.ModelRenderable.builder()
-          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("VideoPlane.sfb")) // eg. "andy.sfb"
+          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("VideoPlane.sfb"))
           .build()
           .thenAccept(new (<any>java.util).function.Consumer({
             accept: renderable => {

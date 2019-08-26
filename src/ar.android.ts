@@ -254,7 +254,7 @@ export class AR extends ARBase {
     }));
 
     // don't fire the event now, because that's too early.. but there doesn't seem to be an event we can listen to, so using our own impl here
-    this.fireArLoadedEvent(100);
+    this.fireArLoadedEvent(1000);
 
 
     // TODO below is a bunch of experiments that need to be transformed in decent code (but they mostly work)
