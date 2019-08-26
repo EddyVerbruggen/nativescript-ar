@@ -12,6 +12,7 @@ import { Color } from 'tns-core-modules/color';
 import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
 import { isIOS } from 'tns-core-modules/ui/page';
+import { ARVideoNode } from "../../src";
 import { HelloWorldModel } from './main-view-model';
 
 const flashlight = require("nativescript-flashlight");
@@ -350,7 +351,15 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       y: args.position.y + 1, // want to drop the box from a meter high (when mass > 0)? add +1
       z: args.position.z
     },
-    video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4" // "art.scnassets/celebration.mp4"//
+    video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4", // "art.scnassets/celebration.mp4"//
+    onTap: (interaction: ARNodeInteraction) => {
+      const node = <ARVideoNode>interaction.node;
+      if (node.isPlaying()) {
+        node.pause();
+      } else {
+        node.play();
+      }
+    }
   }).catch(console.error);
 
   ar.addImage({

@@ -2,9 +2,8 @@ import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
 
-import { AR as ARBase, ARAddOptions, ARAddImageOptions, ARAddVideoOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode } from "./ar-common";
+import { AR as ARBase, ARAddOptions, ARAddImageOptions, ARAddVideoOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
-import { ARCommonNode } from "./nodes/android/arcommon";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARModel } from "./nodes/android/armodel";
@@ -39,11 +38,10 @@ const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node
   });
 };
 
-
-const addVideo = (options: ARAddVideoOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARVideo> => {
-  return new Promise((resolve, reject) => {
+const addVideo = (options: ARAddVideoOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARVideoNode> => {
+  return new Promise<ARVideoNode>((resolve, reject) => {
     ARVideo.create(options, _fragment)
-        .then((video: ARVideo) => {
+        .then((video: ARVideoNode) => {
           video.android.setParent(parentNode);
           resolve(video);
         });
@@ -439,7 +437,7 @@ export class AR extends ARBase {
   }
 
 
-  addVideo(options: ARAddVideoOptions): Promise<ARVideo> {
+  addVideo(options: ARAddVideoOptions): Promise<ARVideoNode> {
     return new Promise((resolve, reject) => {
 
       addVideo(options, resolveParentNode(options))

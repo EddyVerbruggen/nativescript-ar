@@ -1,11 +1,28 @@
-import { ARAddVideoOptions } from "../../ar-common";
+import { ARAddVideoOptions, ARVideoNode } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
 import * as application from 'tns-core-modules/application';
 
-export class ARVideo extends ARCommonNode {
+export class ARVideo extends ARCommonNode implements ARVideoNode {
+  private videoPlayer: AVPlayer;
 
-  static create(options: ARAddVideoOptions): ARVideo {
+  isPlaying(): boolean {
+    return this.videoPlayer && this.videoPlayer.timeControlStatus === AVPlayerTimeControlStatus.Playing;
+  }
+
+  play(): void {
+    if (this.videoPlayer) {
+      this.videoPlayer.play();
+    }
+  }
+
+  pause(): void {
+    if (this.videoPlayer) {
+      this.videoPlayer.pause();
+    }
+  }
+
+  static create(options: ARAddVideoOptions): ARVideoNode {
     const video = options.video;
     // const size=tvVideoNode.size;
 
@@ -53,7 +70,7 @@ export class ARVideo extends ARCommonNode {
       }
 
       if (!nativeUrl) {
-        throw 'Unable to resolve file/url';
+        throw "Unable to resolve file/url: " + nativeUrl;
       }
 
       videoPlayer = AVPlayer.playerWithURL(nativeUrl);
@@ -89,6 +106,8 @@ export class ARVideo extends ARCommonNode {
     const node = SCNNode.nodeWithGeometry(materialPlane);
     // node.addAudioPlayer(SCNAudioPlayer);
 
-    return new ARVideo(options, node);
+    const arVideo = new ARVideo(options, node);
+    arVideo.videoPlayer = videoPlayer;
+    return arVideo;
   }
 }

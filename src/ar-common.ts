@@ -77,11 +77,26 @@ export interface ARNodeInteraction {
 }
 
 export interface ARCommonNode extends ARNode {
+  draggingEnabled?: boolean;
+  rotatingEnabled?: boolean;
+
   moveBy?(to: ARPosition): void;
 
   rotateBy?(by: ARRotation): void;
 
   scaleBy?(by: number | ARScale): void;
+
+  onTap(touchPosition: ARDimensions2D): void;
+
+  onLongPress(touchPosition: ARDimensions2D): void;
+
+  onPan(touchPosition: ARDimensions2D): void;
+}
+
+export interface ARVideoNode extends ARCommonNode {
+  play(): void;
+  pause(): void;
+  isPlaying(): boolean;
 }
 
 export interface ARAddOptions {
@@ -305,7 +320,7 @@ export abstract class AR extends ContentView {
 
   abstract addModel(options: ARAddModelOptions): Promise<ARNode>;
 
-  abstract addVideo(options: ARAddVideoOptions): Promise<ARNode>;
+  abstract addVideo(options: ARAddVideoOptions): Promise<ARVideoNode>;
 
   abstract addImage(options: ARAddImageOptions): Promise<ARNode>;
 

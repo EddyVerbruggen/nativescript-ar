@@ -1,15 +1,30 @@
-import { ARAddVideoOptions } from "../../ar-common";
-import { ARCommonNode } from "./arcommon";
-import { ImageSource, fromFileOrResource, fromUrl } from "tns-core-modules/image-source";
-import { File } from "tns-core-modules/file-system";
 import * as utils from "tns-core-modules/utils/utils";
+import { ARAddVideoOptions, ARVideoNode } from "../../ar-common";
+import { ARCommonNode } from "./arcommon";
 
 let pixelsPerMeter = 500;
 
-export class ARVideo extends ARCommonNode {
+export class ARVideo extends ARCommonNode implements ARVideoNode {
+  private mediaPlayer: android.media.MediaPlayer;
 
-  static create(options: ARAddVideoOptions, fragment): Promise<ARVideo> {
-    return new Promise<ARVideo>(async (resolve, reject) => {
+  isPlaying(): boolean {
+    return this.mediaPlayer && this.mediaPlayer.isPlaying();
+  }
+
+  play(): void {
+    if (this.mediaPlayer) {
+      this.mediaPlayer.start();
+    }
+  }
+
+  pause(): void {
+    if (this.mediaPlayer) {
+      this.mediaPlayer.pause();
+    }
+  }
+
+  static create(options: ARAddVideoOptions, fragment): Promise<ARVideoNode> {
+    return new Promise<ARVideoNode>(async (resolve, reject) => {
       const node = ARCommonNode.createNode(options, fragment);
 
       // use a child node to provide sizing without interfering with user defined size/scale
@@ -47,7 +62,9 @@ export class ARVideo extends ARCommonNode {
               accept: material => {
                 renderable.setMaterial(material);
                 videoNode.setRenderable(renderable);
-                resolve(new ARVideo(options, node));
+                const arVideo = new ARVideo(options, node);
+                arVideo.mediaPlayer = mediaPlayer;
+                resolve(arVideo);
               }
             }));
 
