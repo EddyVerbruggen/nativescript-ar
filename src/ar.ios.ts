@@ -1,5 +1,7 @@
 import * as application from 'tns-core-modules/application';
-import { AR as ARBase, ARAddOptions, ARAddImageOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
+
+import { AR as ARBase, ARAddOptions, ARAddImageOptions, ARAddVideoOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
+
 import { ARBox } from "./nodes/ios/arbox";
 import { ARCommonNode } from "./nodes/ios/arcommon";
 import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
@@ -9,7 +11,12 @@ import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
 import { ARGroup } from "./nodes/ios/argroup";
+
+import { ARVideo } from "./nodes/ios/arvideo";
+
+
 import { ARImage } from "./nodes/ios/arimage";
+
 
 import { ImageSource, fromNativeSource } from "tns-core-modules/image-source";
 
@@ -31,6 +38,17 @@ const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> =
   });
 };
 
+
+const addVideo = (options: ARAddVideoOptions, parentNode: SCNNode): Promise<ARVideo> => {
+  return new Promise((resolve, reject) => {
+    const video = ARVideo.create(options);
+    ARState.shapes.set(video.id, video);
+    parentNode.addChildNode(video.ios);
+    resolve(video);
+  });
+};
+
+
 const addImage = (options: ARAddImageOptions, parentNode: SCNNode): Promise<ARImage> => {
   return ARImage.create(options).then((image) => {
     ARState.shapes.set(image.id, image);
@@ -38,6 +56,7 @@ const addImage = (options: ARAddImageOptions, parentNode: SCNNode): Promise<ARIm
     return image;
   });
 };
+
 
 const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARBox> => {
   return new Promise((resolve, reject) => {
@@ -543,6 +562,10 @@ export class AR extends ARBase {
     return addNode(options, this.resolveParentNode(options));
   }
 
+
+  addVideo(options: ARAddVideoOptions): Promise<ARVideo> {
+    return addVideo(options, this.resolveParentNode(options));
+  }
   addImage(options: ARAddImageOptions): Promise<ARGroup> {
     return addImage(options, this.resolveParentNode(options));
   }
