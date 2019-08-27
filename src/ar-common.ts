@@ -2,9 +2,8 @@ import { Color } from "tns-core-modules/color";
 import { EventData } from "tns-core-modules/data/observable";
 import { ImageSource } from "tns-core-modules/image-source";
 import { ContentView } from "tns-core-modules/ui/content-view";
-import { Property } from "tns-core-modules/ui/core/view";
+import { Property, View } from "tns-core-modules/ui/core/view";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
-import { View } from "tns-core-modules/ui/core/view";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARModel } from "./nodes/ios/armodel";
 
@@ -78,11 +77,28 @@ export interface ARNodeInteraction {
 }
 
 export interface ARCommonNode extends ARNode {
+  draggingEnabled?: boolean;
+  rotatingEnabled?: boolean;
+
   moveBy?(to: ARPosition): void;
 
   rotateBy?(by: ARRotation): void;
 
   scaleBy?(by: number | ARScale): void;
+
+  onTap(touchPosition: ARDimensions2D): void;
+
+  onLongPress(touchPosition: ARDimensions2D): void;
+
+  onPan(touchPosition: ARDimensions2D): void;
+}
+
+export interface ARVideoNode extends ARCommonNode {
+  play(): void;
+
+  pause(): void;
+
+  isPlaying(): boolean;
 }
 
 export interface ARAddOptions {
@@ -125,15 +141,27 @@ export interface ARAddGeometryOptions extends ARAddOptions {
   materials?: Array<string | Color | ARMaterial>;
 }
 
-
 export interface ARUIViewOptions extends ARAddOptions {
   chamferRadius?: number;
   dimensions?: number | ARDimensions2D;
   view: View;
 }
+
+export interface ARAddImageOptions extends ARAddOptions {
+  image: string | ImageSource;
+  dimensions?: ARDimensions2D;
+}
+
 export interface ARAddModelOptions extends ARAddOptions {
   name: string;
   childNodeName?: string;
+}
+
+export interface ARAddVideoOptions extends ARAddOptions {
+  video: any;
+  loop?: boolean;
+  play?: boolean;
+  dimensions?: ARDimensions2D;
 }
 
 export interface ARAddBoxOptions extends ARAddGeometryOptions {
@@ -299,6 +327,10 @@ export abstract class AR extends ContentView {
   abstract reset(): void;
 
   abstract addModel(options: ARAddModelOptions): Promise<ARNode>;
+
+  abstract addVideo(options: ARAddVideoOptions): Promise<ARVideoNode>;
+
+  abstract addImage(options: ARAddImageOptions): Promise<ARNode>;
 
   abstract addBox(options: ARAddBoxOptions): Promise<ARNode>;
 

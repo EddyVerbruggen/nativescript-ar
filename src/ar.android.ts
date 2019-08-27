@@ -1,18 +1,17 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-
-import { AR as ARBase, ARUIViewOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode, ARAddOptions } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
-import { ARCommonNode } from "./nodes/android/arcommon";
+import { ARGroup } from "./nodes/android/argroup";
+import { ARImage } from "./nodes/android/arimage";
+import { ARModel } from "./nodes/android/armodel";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
-import { ARModel } from "./nodes/android/armodel";
-import { ARUIView} from "./nodes/android/aruiview";
-import { ARGroup } from "./nodes/android/argroup";
-import { VideoRecorder } from "./videorecorder.android";
+import { ARUIView } from "./nodes/android/aruiview";
+import { ARVideo } from "./nodes/android/arvideo";
 import { FragmentScreenGrab } from "./screengrab-android";
-
+import { VideoRecorder } from "./videorecorder.android";
 
 declare const com, android, global, java: any;
 
@@ -33,6 +32,26 @@ const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node
         .then((group: ARGroup) => {
           group.android.setParent(parentNode);
           resolve(group);
+        });
+  });
+};
+
+const addVideo = (options: ARAddVideoOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARVideoNode> => {
+  return new Promise<ARVideoNode>((resolve, reject) => {
+    ARVideo.create(options, _fragment)
+        .then((video: ARVideoNode) => {
+          video.android.setParent(parentNode);
+          resolve(video);
+        });
+  });
+};
+
+const addImage = (options: ARAddImageOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARImage> => {
+  return new Promise((resolve, reject) => {
+    ARImage.create(options, _fragment)
+        .then((image: ARImage) => {
+          image.android.setParent(parentNode);
+          resolve(image);
         });
   });
 };
@@ -67,8 +86,6 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
   });
 };
 
-
-
 const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARUIView.create(options, _fragment)
@@ -79,8 +96,6 @@ const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform
   });
 };
 
-
-
 const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARTube.create(options, _fragment)
@@ -90,7 +105,6 @@ const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.
         });
   });
 };
-
 
 const resolveParentNode = (options: ARAddOptions) => {
 
@@ -247,7 +261,7 @@ export class AR extends ARBase {
     }));
 
     // don't fire the event now, because that's too early.. but there doesn't seem to be an event we can listen to, so using our own impl here
-    this.fireArLoadedEvent(100);
+    this.fireArLoadedEvent(1000);
 
 
     // TODO below is a bunch of experiments that need to be transformed in decent code (but they mostly work)
@@ -403,6 +417,23 @@ export class AR extends ARBase {
 
       addNode(options, resolveParentNode(options))
           .then(model => resolve(model));
+    });
+  }
+
+
+  addVideo(options: ARAddVideoOptions): Promise<ARVideoNode> {
+    return new Promise((resolve, reject) => {
+
+      addVideo(options, resolveParentNode(options))
+          .then(video => resolve(video));
+    });
+  }
+
+  addImage(options: ARAddImageOptions): Promise<ARImage> {
+    return new Promise((resolve, reject) => {
+
+      addImage(options, resolveParentNode(options))
+          .then(image => resolve(image));
     });
   }
 
