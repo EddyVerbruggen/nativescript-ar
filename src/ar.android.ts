@@ -1,19 +1,17 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-
-import { AR as ARBase, ARAddOptions, ARAddImageOptions, ARAddVideoOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode, ARVideoNode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
+import { ARGroup } from "./nodes/android/argroup";
+import { ARImage } from "./nodes/android/arimage";
+import { ARModel } from "./nodes/android/armodel";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
-import { ARModel } from "./nodes/android/armodel";
-import { ARGroup } from "./nodes/android/argroup";
+import { ARUIView } from "./nodes/android/aruiview";
 import { ARVideo } from "./nodes/android/arvideo";
-import { ARImage } from "./nodes/android/arimage";
-
-import { VideoRecorder } from "./videorecorder.android";
-
 import { FragmentScreenGrab } from "./screengrab-android";
+import { VideoRecorder } from "./videorecorder.android";
 
 declare const com, android, global, java: any;
 
@@ -88,6 +86,16 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
   });
 };
 
+const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+  return new Promise((resolve, reject) => {
+    ARUIView.create(options, _fragment)
+      .then((view: ARUIView) => {
+        view.android.setParent(parentNode);
+        resolve(view);
+      });
+  });
+};
+
 const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARTube.create(options, _fragment)
@@ -99,6 +107,7 @@ const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.
 };
 
 const resolveParentNode = (options: ARAddOptions) => {
+
   if (options.parentNode && options.parentNode.android) {
     return options.parentNode.android;
   }
@@ -281,31 +290,6 @@ export class AR extends ARBase {
           }
         }));
     */
-
-    /* this works, for rendering a custom UI
-    setTimeout(() => {
-      const l1 = this.parent.getViewById("l1").android;
-      l1.getParent().removeView(l1);
-
-      const customUI =
-          com.google.ar.sceneform.rendering.ViewRenderable.builder()
-              .setView(utils.ad.getApplicationContext(), l1)
-              .build()
-              .thenAccept(new java.util.function.Consumer({
-                accept: renderable => {
-                  console.log(">> accepted2, renderable: " + renderable);
-                  customUIRenderable = renderable;
-                }
-              }));
-    }, 2000);
-    */
-
-    // custom view experiment
-    // console.log(this.parent.getViewById("l1"));
-    // const page = topmost().currentPage;
-    // const forView = <View>page.getViewById("l1");
-    // console.log(forView);
-
   }
 
 
@@ -491,6 +475,14 @@ export class AR extends ARBase {
     });
   }
 
+  addUIView(options: ARUIViewOptions): Promise<ARNode> {
+    return new Promise((resolve, reject) => {
+
+      addUIView(options, resolveParentNode(options))
+        .then(view => resolve(view));
+    });
+  }
+
   private wasPermissionGranted(permission: string): boolean {
     let hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
     if (!hasPermission) {
@@ -527,4 +519,5 @@ export class AR extends ARBase {
         permissionRequestCode
     );
   }
+
 }

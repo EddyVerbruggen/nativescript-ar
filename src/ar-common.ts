@@ -2,7 +2,7 @@ import { Color } from "tns-core-modules/color";
 import { EventData } from "tns-core-modules/data/observable";
 import { ImageSource } from "tns-core-modules/image-source";
 import { ContentView } from "tns-core-modules/ui/content-view";
-import { Property } from "tns-core-modules/ui/core/view";
+import { Property, View } from "tns-core-modules/ui/core/view";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARModel } from "./nodes/ios/armodel";
@@ -95,7 +95,9 @@ export interface ARCommonNode extends ARNode {
 
 export interface ARVideoNode extends ARCommonNode {
   play(): void;
+
   pause(): void;
+
   isPlaying(): boolean;
 }
 
@@ -137,6 +139,12 @@ export interface ARMaterial {
 
 export interface ARAddGeometryOptions extends ARAddOptions {
   materials?: Array<string | Color | ARMaterial>;
+}
+
+export interface ARUIViewOptions extends ARAddOptions {
+  chamferRadius?: number;
+  dimensions?: number | ARDimensions2D;
+  view: View;
 }
 
 export interface ARAddImageOptions extends ARAddOptions {
@@ -331,6 +339,8 @@ export abstract class AR extends ContentView {
   abstract addText(options: ARAddTextOptions): Promise<ARNode>;
 
   abstract addTube(options: ARAddTubeOptions): Promise<ARNode>;
+
+  abstract addUIView(options: ARUIViewOptions): Promise<ARNode>;
 
   abstract togglePlaneDetection(on: boolean): void;
 
