@@ -4,8 +4,6 @@ import { ImageSource } from "tns-core-modules/image-source";
 import { ContentView } from "tns-core-modules/ui/content-view";
 import { Property, View } from "tns-core-modules/ui/core/view";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
-import { ARBox } from "./nodes/ios/arbox";
-import { ARModel } from "./nodes/ios/armodel";
 
 export enum ARDebugLevel {
   NONE = <any>"NONE",
@@ -248,9 +246,9 @@ export interface ARTrackingFaceEventData extends AREventData {
 }
 
 export interface ARFaceTrackingActions {
-  addModel(options: ARAddModelOptions): Promise<ARModel>;
+  addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
 
-  addText(options: ARAddTextOptions): Promise<ARModel>;
+  addText(options: ARAddTextOptions): Promise<ARCommonNode>;
 }
 
 export interface ARImageTrackingActions {
@@ -258,9 +256,9 @@ export interface ARImageTrackingActions {
 
   stopVideoLoop(): void;
 
-  addBox(options: ARAddBoxOptions): Promise<ARBox>;
+  addBox(options: ARAddBoxOptions): Promise<ARCommonNode>;
 
-  addModel(options: ARAddModelOptions): Promise<ARModel>;
+  addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
 }
 
 export class ARDimensions {

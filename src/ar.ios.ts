@@ -58,8 +58,8 @@ const addImage = (options: ARAddImageOptions, parentNode: SCNNode): Promise<ARIm
   });
 };
 
-const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARBox> => {
-  return new Promise((resolve, reject) => {
+const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARText> => {
+  return new Promise<ARText>((resolve, reject) => {
     const text = ARText.create(options);
     ARState.shapes.set(text.id, text);
     parentNode.addChildNode(text.ios);
@@ -979,7 +979,7 @@ class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
     return addModel(options, this.node);
   }
 
-  addText(options: ARAddTextOptions): Promise<ARModel> {
+  addText(options: ARAddTextOptions): Promise<ARText> {
     return addText(options, this.node);
   }
 }
