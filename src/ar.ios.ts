@@ -1,17 +1,17 @@
 import * as application from 'tns-core-modules/application';
-import { AR as ARBase, ARAddOptions, ARAddImageOptions, ARAddBoxOptions, ARAddModelOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode } from "./ar-common";
+import { fromNativeSource, ImageSource } from "tns-core-modules/image-source";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
-import { ARCommonNode } from "./nodes/ios/arcommon";
+import { ARGroup } from "./nodes/ios/argroup";
+import { ARImage } from "./nodes/ios/arimage";
 import { ARMaterialFactory } from "./nodes/ios/armaterialfactory";
 import { ARModel } from "./nodes/ios/armodel";
 import { ARPlane } from "./nodes/ios/arplane";
 import { ARSphere } from "./nodes/ios/arsphere";
 import { ARText } from "./nodes/ios/artext";
 import { ARTube } from "./nodes/ios/artube";
-import { ARGroup } from "./nodes/ios/argroup";
-import { ARImage } from "./nodes/ios/arimage";
-
-import { ImageSource, fromNativeSource } from "tns-core-modules/image-source";
+import { ARUIView } from "./nodes/ios/aruiview";
+import { ARVideo } from "./nodes/ios/arvideo";
 
 export { ARDebugLevel, ARTrackingMode };
 
@@ -22,12 +22,31 @@ const ARState = {
   shapes: new Map<string, ARCommonNode>(),
 };
 
+const addUIView = (options: ARUIViewOptions, parentNode: SCNNode): Promise<ARUIView> => {
+  return new Promise((resolve, reject) => {
+    const view = ARUIView.create(options);
+    ARState.shapes.set(view.id, view);
+    parentNode.addChildNode(view.ios);
+    resolve(view);
+  });
+};
+
 const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> => {
   return new Promise((resolve, reject) => {
     const group = ARGroup.create(options);
     ARState.shapes.set(group.id, group);
     parentNode.addChildNode(group.ios);
     resolve(group);
+
+  });
+};
+
+const addVideo = (options: ARAddVideoOptions, parentNode: SCNNode): Promise<ARVideoNode> => {
+  return new Promise<ARVideoNode>((resolve, reject) => {
+    const video = ARVideo.create(options);
+    ARState.shapes.set(video.id, video);
+    parentNode.addChildNode(video.ios);
+    resolve(video);
   });
 };
 
@@ -39,8 +58,8 @@ const addImage = (options: ARAddImageOptions, parentNode: SCNNode): Promise<ARIm
   });
 };
 
-const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARBox> => {
-  return new Promise((resolve, reject) => {
+const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARText> => {
+  return new Promise<ARText>((resolve, reject) => {
     const text = ARText.create(options);
     ARState.shapes.set(text.id, text);
     parentNode.addChildNode(text.ios);
@@ -56,7 +75,6 @@ const addBox = (options: ARAddBoxOptions, parentNode: SCNNode): Promise<ARBox> =
     resolve(box);
   });
 };
-
 
 const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
@@ -539,10 +557,19 @@ export class AR extends ARBase {
     }
   }
 
-  addNode(options: ARAddOptions): Promise<ARGroup> {
-    return addNode(options, this.resolveParentNode(options));
+
+  addUIView(options: ARUIViewOptions): Promise<ARUIView> {
+    return addUIView(options, this.resolveParentNode(options));
   }
 
+  addNode(options: ARAddOptions): Promise<ARGroup> {
+    return addNode(options, this.resolveParentNode(options));
+
+  }
+
+  addVideo(options: ARAddVideoOptions): Promise<ARVideoNode> {
+    return addVideo(options, this.resolveParentNode(options));
+  }
   addImage(options: ARAddImageOptions): Promise<ARGroup> {
     return addImage(options, this.resolveParentNode(options));
   }
@@ -952,7 +979,7 @@ class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
     return addModel(options, this.node);
   }
 
-  addText(options: ARAddTextOptions): Promise<ARModel> {
+  addText(options: ARAddTextOptions): Promise<ARText> {
     return addText(options, this.node);
   }
 }

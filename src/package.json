@@ -23,6 +23,7 @@
     "plugin.tscwatch": "npm run tsc -- -w",
     "demo.ios": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run ios",
     "demo.android": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run android",
+    "demo.android.GalaxyS10Eddy": "npm run demo android -- --device RF8M70REQCP",
     "demo.solarsystem.ios": "npm i && npm run tsc && npm run tsc.demo.solarsystem && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns run ios --bundle",
     "demo.solarsystem.android": "npm i && npm run tsc && npm run tsc.demo.solarsystem && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns run android --bundle",
     "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src",

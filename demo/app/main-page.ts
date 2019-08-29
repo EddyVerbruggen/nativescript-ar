@@ -12,6 +12,7 @@ import { Color } from 'tns-core-modules/color';
 import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
 import { isIOS } from 'tns-core-modules/ui/page';
+import { ARVideoNode } from "../../src";
 import { HelloWorldModel } from './main-view-model';
 
 const flashlight = require("nativescript-flashlight");
@@ -20,11 +21,12 @@ declare const NSBundle: any;
 
 let ar: AR;
 let model: HelloWorldModel;
+let page;
 
 // Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
   // Get the event sender
-  const page = <pages.Page>args.object;
+  page = <pages.Page>args.object;
   model = new HelloWorldModel();
   model.screenshot = page.getViewById("screenshot");
   page.bindingContext = model;
@@ -344,6 +346,23 @@ export function planeDetected(args: ARPlaneDetectedEventData): void {
 export function planeTapped(args: ARPlaneTappedEventData): void {
   console.log("Plane tapped @ x coordinate: " + args.position.x);
 
+  ar.addVideo({
+    position: {
+      x: args.position.x,
+      y: args.position.y + 1, // want to drop the box from a meter high (when mass > 0)? add +1
+      z: args.position.z
+    },
+    video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4", // "art.scnassets/celebration.mp4"//
+    onTap: (interaction: ARNodeInteraction) => {
+      const node = <ARVideoNode>interaction.node;
+      if (node.isPlaying()) {
+        node.pause();
+      } else {
+        node.play();
+      }
+    }
+  }).catch(console.error);
+
   ar.addImage({
     position: {
       x: args.position.x,
@@ -351,6 +370,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       z: args.position.z
     },
     image: "https://d2odgkulk9w7if.cloudfront.net/images/default-source/logos/ns-logo-shadowed-min.png"
+
   }).catch(console.error);
 
 
@@ -421,9 +441,9 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 
   args.object.addSphere({
     position: {
-      x: args.position.x + 1,
+      x: args.position.x + 0.5,
       y: args.position.y + 1,
-      z: args.position.z
+      z: args.position.z - 1
     },
     // scale: 0.5, // this messes up positioning
     radius: 0.25,
@@ -446,6 +466,13 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     if (arNode.ios) {
       // do something iOS specific here if you like
     }
+
+    ar.addUIView({
+      position: {x: 0, y: .4, z: 0},
+      parentNode: arNode,
+      view: page.getViewById("uselessToggleView")
+    });
+
   });
 
   args.object.addTube({

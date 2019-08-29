@@ -2,10 +2,8 @@ import { Color } from "tns-core-modules/color";
 import { EventData } from "tns-core-modules/data/observable";
 import { ImageSource } from "tns-core-modules/image-source";
 import { ContentView } from "tns-core-modules/ui/content-view";
-import { Property } from "tns-core-modules/ui/core/view";
+import { Property, View } from "tns-core-modules/ui/core/view";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
-import { ARBox } from "./nodes/ios/arbox";
-import { ARModel } from "./nodes/ios/armodel";
 
 export enum ARDebugLevel {
   NONE = <any>"NONE",
@@ -77,11 +75,28 @@ export interface ARNodeInteraction {
 }
 
 export interface ARCommonNode extends ARNode {
+  draggingEnabled?: boolean;
+  rotatingEnabled?: boolean;
+
   moveBy?(to: ARPosition): void;
 
   rotateBy?(by: ARRotation): void;
 
   scaleBy?(by: number | ARScale): void;
+
+  onTap(touchPosition: ARDimensions2D): void;
+
+  onLongPress(touchPosition: ARDimensions2D): void;
+
+  onPan(touchPosition: ARDimensions2D): void;
+}
+
+export interface ARVideoNode extends ARCommonNode {
+  play(): void;
+
+  pause(): void;
+
+  isPlaying(): boolean;
 }
 
 export interface ARAddOptions {
@@ -124,6 +139,12 @@ export interface ARAddGeometryOptions extends ARAddOptions {
   materials?: Array<string | Color | ARMaterial>;
 }
 
+export interface ARUIViewOptions extends ARAddOptions {
+  chamferRadius?: number;
+  dimensions?: number | ARDimensions2D;
+  view: View;
+}
+
 export interface ARAddImageOptions extends ARAddOptions {
   image: string | ImageSource;
   dimensions?: ARDimensions2D;
@@ -132,6 +153,13 @@ export interface ARAddImageOptions extends ARAddOptions {
 export interface ARAddModelOptions extends ARAddGeometryOptions {
   name: string;
   childNodeName?: string;
+}
+
+export interface ARAddVideoOptions extends ARAddOptions {
+  video: any;
+  loop?: boolean;
+  play?: boolean;
+  dimensions?: ARDimensions2D;
 }
 
 export interface ARAddBoxOptions extends ARAddGeometryOptions {
@@ -218,9 +246,9 @@ export interface ARTrackingFaceEventData extends AREventData {
 }
 
 export interface ARFaceTrackingActions {
-  addModel(options: ARAddModelOptions): Promise<ARModel>;
+  addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
 
-  addText(options: ARAddTextOptions): Promise<ARModel>;
+  addText(options: ARAddTextOptions): Promise<ARCommonNode>;
 }
 
 export interface ARImageTrackingActions {
@@ -228,9 +256,9 @@ export interface ARImageTrackingActions {
 
   stopVideoLoop(): void;
 
-  addBox(options: ARAddBoxOptions): Promise<ARBox>;
+  addBox(options: ARAddBoxOptions): Promise<ARCommonNode>;
 
-  addModel(options: ARAddModelOptions): Promise<ARModel>;
+  addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
 }
 
 export class ARDimensions {
@@ -298,6 +326,8 @@ export abstract class AR extends ContentView {
 
   abstract addModel(options: ARAddModelOptions): Promise<ARNode>;
 
+  abstract addVideo(options: ARAddVideoOptions): Promise<ARVideoNode>;
+
   abstract addImage(options: ARAddImageOptions): Promise<ARNode>;
 
   abstract addBox(options: ARAddBoxOptions): Promise<ARNode>;
@@ -307,6 +337,8 @@ export abstract class AR extends ContentView {
   abstract addText(options: ARAddTextOptions): Promise<ARNode>;
 
   abstract addTube(options: ARAddTubeOptions): Promise<ARNode>;
+
+  abstract addUIView(options: ARUIViewOptions): Promise<ARNode>;
 
   abstract togglePlaneDetection(on: boolean): void;
 
