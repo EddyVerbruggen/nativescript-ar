@@ -129,7 +129,7 @@ export interface ARAddImageOptions extends ARAddOptions {
   dimensions?: ARDimensions2D;
 }
 
-export interface ARAddModelOptions extends ARAddOptions {
+export interface ARAddModelOptions extends ARAddGeometryOptions {
   name: string;
   childNodeName?: string;
 }
