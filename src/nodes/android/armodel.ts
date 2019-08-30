@@ -3,8 +3,6 @@ import { ARAddModelOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 import { ARCommonGeometryNode } from "./arcommongeometry";
 
-import { knownFolders, Folder, File } from "tns-core-modules/file-system";
-
 declare const java: any;
 
 export class ARModel extends ARCommonGeometryNode {

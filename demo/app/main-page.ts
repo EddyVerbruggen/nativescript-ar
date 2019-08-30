@@ -375,27 +375,32 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 
 
   args.object.addModel({
-    name: isIOS ? "Models.scnassets/plainwall.obj" : "plainwall.obj",
+    name: isIOS ? "Models.scnassets/Car.dae" : "andy.sfb",
     position: args.position,
     rotation: {
       x: 0,
-      y: 180+45,
+      y: 45,
       z: 0
     },
     scale: 0.1,
-    materials:[
-      {
-      diffuse: {
-        contents: "brick.png",
-      },
-      normal: {
-        contents: "brick-normals.png",
-      }
- 
-    }]
-  }).then(wall=>{
-    console.log("Created a brick wall");
-  }).catch(console.error);
+    onTap: (interaction: ARNodeInteraction) => {
+      console.log("tapped model id: " + interaction.node.id);
+      console.log("tapped model position: " + interaction.node.position);
+      console.log("tapped model touchPosition: " + interaction.touchPosition);
+      interaction.node.moveBy({
+        x: 0.02,
+        y: 0.02,
+        z: 0.02
+      });
+      interaction.node.rotateBy({
+        x: 0,
+        y: 10,
+        z: 0
+      });
+      interaction.node.scaleBy(-0.01);
+    },
+    onLongPress: (interaction: ARNodeInteraction) => console.log("model longpressed: " + interaction.node.id)
+  });
 
   const boxDimensions = 0.09;
 
@@ -410,7 +415,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     chamferRadius: 0.01,
     materials: [{
       diffuse: {
-        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+        contents: isIOS?"Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png":"tnsgranite-diffuse.png",
         wrapMode: "ClampToBorder"
       }
     }],
