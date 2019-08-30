@@ -324,6 +324,8 @@ export abstract class AR extends ContentView {
    */
   abstract reset(): void;
 
+  abstract addNode(options: ARAddOptions): Promise<ARNode>;
+
   abstract addModel(options: ARAddModelOptions): Promise<ARNode>;
 
   abstract addVideo(options: ARAddVideoOptions): Promise<ARVideoNode>;
