@@ -96,8 +96,7 @@
 
   const renderSolarsystemObject = (ar, solarSystemObject, parentNode) => {
     ar.addNode({
-      parentNode: parentNode,
-
+      parentNode,
       rotation: {
         x: 0,
         y: 0,
@@ -112,14 +111,20 @@
       });
 
       ar.addNode({
+        parentNode: orbitNode,
         position: {
           x: 0,
           y: 0,
           z: -solarSystemObject.distance
-        },
-        parentNode: orbitNode,
+        }
 
       }).then(objectNode => {
+
+        childOrbitals.push({
+          node: objectNode,
+          speed: solarSystemObject.orbitSpeed
+        });
+
         ar.addModel({
           parentNode: objectNode,
           scale: solarSystemObject.scale,
@@ -141,11 +146,22 @@
 
   const fps = 60;
   const orbitals = [];
+  const childOrbitals = [];
   const animator = setInterval(() => {
+    // this makes the orbitals rotate around their parent
     orbitals.forEach(orbit => {
       orbit.node.rotateBy({
         x: 0,
         y: orbit.speed / fps,
+        z: 0
+      });
+    });
+
+    // and this makes the planets and moons rotate around their own axis
+    childOrbitals.forEach(orbit => {
+      orbit.node.rotateBy({
+        x: 0,
+        y: 2 * orbit.speed / fps,
         z: 0
       });
     });
