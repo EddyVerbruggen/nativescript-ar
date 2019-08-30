@@ -1,7 +1,16 @@
 <template>
-  <Page>
+  <Page @loaded="pageLoaded">
     <ActionBar title="Welcome to NativeScript-Vue!"></ActionBar>
     <GridLayout columns="*" rows="*">
+
+      <!-- because this controlPanel layout is "below" the AR node (z-index-wise) it's not shown to the user -->
+      <StackLayout id="controlPanel" class="control-panel">
+        <Label text="Orbit Speed:" horizontalAlignment="center"></Label>
+        <Slider v-model="orbitSpeed" width="100%" minValue="-10" maxValue="10" horizontalAlignment="center"></Slider>
+        <Label text="Rotation Speed:" horizontalAlignment="center"></Label>
+        <Slider v-model="rotationSpeed" width="100%" minValue="-10" maxValue="10" horizontalAlignment="center"></Slider>
+      </StackLayout>
+
       <AR
           debugLevel="FEATURE_POINTS"
           detectPlanes="true"
@@ -9,12 +18,15 @@
           @arLoaded="arLoaded"
           @planeTapped="loadSolarSystem">
       </AR>
+
+      <!-- because this label is "above" the AR node, it _is_ visible -->
+      <Label :text="arLabel" class="ar-label" verticalAlignment="top"></Label>
     </GridLayout>
   </Page>
 </template>
 
 <script lang="ts">
-  import { AR } from "nativescript-ar";
+  import { AR, ARCommonNode } from "nativescript-ar";
   import { Color } from "tns-core-modules/color";
 
   const solarSystemDefinition = {
@@ -94,78 +106,7 @@
     }]
   };
 
-  const renderSolarsystemObject = (ar, solarSystemObject, parentNode) => {
-    ar.addNode({
-      parentNode,
-      rotation: {
-        x: 0,
-        y: 0,
-        z: solarSystemObject.tilt
-      }
-    }).then(orbitNode => {
-      console.log("orbitNode added: " + orbitNode);
-
-      orbitals.push({
-        node: orbitNode,
-        speed: solarSystemObject.orbitSpeed
-      });
-
-      ar.addNode({
-        parentNode: orbitNode,
-        position: {
-          x: 0,
-          y: 0,
-          z: -solarSystemObject.distance
-        }
-
-      }).then(objectNode => {
-
-        childOrbitals.push({
-          node: objectNode,
-          speed: solarSystemObject.orbitSpeed
-        });
-
-        ar.addModel({
-          parentNode: objectNode,
-          scale: solarSystemObject.scale,
-          name: solarSystemObject.model
-        }).then(o => {
-          console.log("model added: " + o);
-        }).catch(e => {
-          console.error("error adding model: " + e);
-        });
-
-        if (solarSystemObject.children) {
-          solarSystemObject.children.forEach(child => {
-            renderSolarsystemObject(ar, child, objectNode);
-          });
-        }
-      }).catch(e => console.error(e))
-    }).catch(e => console.error(e))
-  };
-
   const fps = 60;
-  const orbitals = [];
-  const childOrbitals = [];
-  const animator = setInterval(() => {
-    // this makes the orbitals rotate around their parent
-    orbitals.forEach(orbit => {
-      orbit.node.rotateBy({
-        x: 0,
-        y: orbit.speed / fps,
-        z: 0
-      });
-    });
-
-    // and this makes the planets and moons rotate around their own axis
-    childOrbitals.forEach(orbit => {
-      orbit.node.rotateBy({
-        x: 0,
-        y: 2 * orbit.speed / fps,
-        z: 0
-      });
-    });
-  }, 1000 / fps);
 
   export default {
     mounted() {
@@ -174,11 +115,44 @@
     data() {
       return {
         msg: 'Hello World!',
-        ar: undefined
+        arLabel: 'Look for a surface and tap it..',
+        orbitSpeed: 1,
+        rotationSpeed: 1,
+        hasControlPanel: false,
+        page: undefined,
+        ar: undefined,
+        orbitals: [],
+        rotators: []
       }
     },
 
     methods: {
+      pageLoaded(event) {
+        this.page = event.object;
+
+        const animator = setInterval(() => {
+          // this makes the orbitals rotate around their parent
+          const orbitSpeedCompensation = this.orbitSpeed > 0 ? this.orbitSpeed : 1 / Math.max(1.5, Math.abs(this.orbitSpeed));
+          this.orbitals.forEach(orbit => {
+            orbit.node.rotateBy({
+              x: 0,
+              y: orbitSpeedCompensation * orbit.speed / fps,
+              z: 0
+            });
+          });
+
+          // and this makes the planets and moons rotate around their own axis
+          const rotationSpeedCompensation = this.rotationSpeed > 0 ? this.rotationSpeed : 1 / Math.max(1.5, Math.abs(this.rotationSpeed));
+          this.rotators.forEach(orbit => {
+            orbit.node.rotateBy({
+              x: 0,
+              y: rotationSpeedCompensation * 2 * orbit.speed / fps,
+              z: 0
+            });
+          });
+        }, 1000 / fps);
+      },
+
       arLoaded(arLoadedEventData) {
         console.log(">> AR Loaded! Object: " + arLoadedEventData.object);
         this.ar = arLoadedEventData.object;
@@ -195,8 +169,73 @@
           }
         }).then(solarSystemNode => {
           console.log("solarSystemNode added: " + solarSystemNode);
-          renderSolarsystemObject(ar, solarSystemDefinition, solarSystemNode)
+          this.renderSolarsystemObject(ar, solarSystemDefinition, solarSystemNode);
+          this.arLabel = "Now tap the sun for controls..";
         })
+      },
+
+      renderSolarsystemObject(ar, solarSystemObject, parentNode) {
+        ar.addNode({
+          parentNode,
+          rotation: {
+            x: 0,
+            y: 0,
+            z: solarSystemObject.tilt
+          }
+        }).then(orbitNode => {
+          console.log("orbitNode added: " + orbitNode);
+
+          this.orbitals.push({
+            node: orbitNode,
+            speed: solarSystemObject.orbitSpeed
+          });
+
+          ar.addNode({
+            parentNode: orbitNode,
+            position: {
+              x: 0,
+              y: 0,
+              z: -solarSystemObject.distance
+            }
+
+          }).then(objectNode => {
+            this.rotators.push({
+              node: objectNode,
+              speed: solarSystemObject.orbitSpeed
+            });
+
+            ar.addModel({
+              parentNode: objectNode,
+              scale: solarSystemObject.scale,
+              name: solarSystemObject.model,
+              onTap: () => {
+                console.log("Tapped " + solarSystemObject.model);
+                this.arLabel = solarSystemObject.model + " tapped";
+                if (solarSystemObject.model === "Sol.sfb") {
+                  if (!this.hasControlPanel) {
+                    this.hasControlPanel = true;
+                    ar.addUIView({
+                      position: {x: 0, y: .22, z: 0},
+                      parentNode: objectNode,
+                      view: this.page.getViewById("controlPanel"),
+                      scale: 0.35
+                    });
+                  }
+                }
+              }
+            }).then(o => {
+              console.log("model added: " + o);
+            }).catch(e => {
+              console.error("error adding model: " + e);
+            });
+
+            if (solarSystemObject.children) {
+              solarSystemObject.children.forEach(child => {
+                this.renderSolarsystemObject(ar, child, objectNode);
+              });
+            }
+          }).catch(e => console.error(e))
+        }).catch(e => console.error(e))
       }
     }
   }
@@ -206,5 +245,28 @@
   ActionBar {
     background-color: #53ba82;
     color: #ffffff;
+  }
+
+  .ar-label {
+    padding: 12 14;
+    color: black;
+    background-color: white;
+    font-weight: bold;
+    opacity: .7;
+  }
+
+  .control-panel {
+    width: 280;
+    height: 240;
+    padding: 24;
+    opacity: 0.8;
+    font-size: 24;
+    color: white;
+    border-radius: 10;
+    background-color: cornflowerblue;
+  }
+
+  .control-panel Label {
+    margin-bottom: 20;
   }
 </style>
