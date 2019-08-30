@@ -26,7 +26,7 @@ function useAndroidX() {
   return global.androidx && global.androidx.appcompat;
 }
 
-const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARGroup> => {
+const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARNode> => {
   return new Promise((resolve, reject) => {
     ARGroup.create(options, _fragment)
         .then((group: ARGroup) => {
@@ -107,7 +107,6 @@ const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.
 };
 
 const resolveParentNode = (options: ARAddOptions) => {
-
   if (options.parentNode && options.parentNode.android) {
     return options.parentNode.android;
   }
@@ -160,7 +159,6 @@ export class AR extends ARBase {
     super.initNativeView();
     this.initAR();
   }
-
 
   private initAR() {
     this.nativeView.setId(android.view.View.generateViewId());
@@ -419,10 +417,9 @@ export class AR extends ARBase {
     return null;
   }
 
-  addNode(options: ARAddOptions): Promise<ARGroup> {
+  addNode(options: ARAddOptions): Promise<ARNode> {
     return addNode(options, resolveParentNode(options));
   }
-
 
   addVideo(options: ARAddVideoOptions): Promise<ARVideoNode> {
     return addVideo(options, resolveParentNode(options));

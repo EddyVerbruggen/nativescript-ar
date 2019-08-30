@@ -31,13 +31,12 @@ const addUIView = (options: ARUIViewOptions, parentNode: SCNNode): Promise<ARUIV
   });
 };
 
-const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARGroup> => {
+const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARNode> => {
   return new Promise((resolve, reject) => {
     const group = ARGroup.create(options);
     ARState.shapes.set(group.id, group);
     parentNode.addChildNode(group.ios);
     resolve(group);
-
   });
 };
 
@@ -562,14 +561,14 @@ export class AR extends ARBase {
     return addUIView(options, this.resolveParentNode(options));
   }
 
-  addNode(options: ARAddOptions): Promise<ARGroup> {
+  addNode(options: ARAddOptions): Promise<ARNode> {
     return addNode(options, this.resolveParentNode(options));
-
   }
 
   addVideo(options: ARAddVideoOptions): Promise<ARVideoNode> {
     return addVideo(options, this.resolveParentNode(options));
   }
+
   addImage(options: ARAddImageOptions): Promise<ARGroup> {
     return addImage(options, this.resolveParentNode(options));
   }
