@@ -375,7 +375,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 
 
   args.object.addModel({
-    name: isIOS ? "Models.scnassets/Car.dae" : "example.glb",
+    name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
      position: {
       x: args.position.x+0.2,
       y: args.position.y + 0.5,
