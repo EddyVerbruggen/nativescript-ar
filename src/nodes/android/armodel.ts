@@ -3,6 +3,8 @@ import { ARAddModelOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 import { ARCommonGeometryNode } from "./arcommongeometry";
 
+import { knownFolders, Folder, File } from "tns-core-modules/file-system";
+
 declare const java: any;
 
 export class ARModel extends ARCommonGeometryNode {
@@ -17,9 +19,10 @@ export class ARModel extends ARCommonGeometryNode {
               transformableNode.setRenderable(renderable);
               resolve(new ARModel(options, transformableNode));
             }
-            // TODO add the exception case
           }))
-          //.exceptionally(new );
+          .exceptionally(new java.util.function.Function({
+              apply: error => reject(error)
+          }));
     });
   }
 }

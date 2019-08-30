@@ -66,6 +66,9 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
                 arVideo.mediaPlayer = mediaPlayer;
                 resolve(arVideo);
               }
+            }))
+            .exceptionally(new (<any>java.util).function.Function({
+              apply: error => reject(error)
             }));
 
         videoMat.setExternalTexture("videoTexture", texture);
@@ -125,7 +128,9 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
             accept: renderable => {
               resolve(renderable);
             }
-            // TODO add the exception case
+          }))
+          .exceptionally(new (<any>java.util).function.Function({
+              apply: error => reject(error)
           }));
     });
   }

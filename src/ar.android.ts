@@ -32,7 +32,7 @@ const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node
         .then((group: ARGroup) => {
           group.android.setParent(parentNode);
           resolve(group);
-        });
+        }).catch(reject);
   });
 };
 
@@ -42,7 +42,7 @@ const addVideo = (options: ARAddVideoOptions, parentNode: com.google.ar.scenefor
         .then((video: ARVideoNode) => {
           video.android.setParent(parentNode);
           resolve(video);
-        });
+        }).catch(reject);
   });
 };
 
@@ -52,7 +52,7 @@ const addImage = (options: ARAddImageOptions, parentNode: com.google.ar.scenefor
         .then((image: ARImage) => {
           image.android.setParent(parentNode);
           resolve(image);
-        });
+        }).catch(reject);
   });
 };
 
@@ -62,47 +62,47 @@ const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.scenefor
         .then((model: ARModel) => {
           model.android.setParent(parentNode);
           resolve(model);
-        });
+        }).catch(reject);
   });
 };
 
-const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARBox> => {
   return new Promise((resolve, reject) => {
     ARBox.create(options, _fragment)
         .then((box: ARBox) => {
           box.android.setParent(parentNode);
           resolve(box);
-        });
+        }).catch(reject);
   });
 };
 
-const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARSphere> => {
   return new Promise((resolve, reject) => {
     ARSphere.create(options, _fragment)
         .then((sphere: ARSphere) => {
           sphere.android.setParent(parentNode);
           resolve(sphere);
-        });
+        }).catch(reject);
   });
 };
 
-const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARUIView> => {
   return new Promise((resolve, reject) => {
     ARUIView.create(options, _fragment)
       .then((view: ARUIView) => {
         view.android.setParent(parentNode);
         resolve(view);
-      });
+      }).catch(reject);
   });
 };
 
-const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+const addTube = (options: ARAddTubeOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARTube> => {
   return new Promise((resolve, reject) => {
     ARTube.create(options, _fragment)
         .then((tube: ARTube) => {
           tube.android.setParent(parentNode);
           resolve(tube);
-        });
+        }).catch(reject);
   });
 };
 
@@ -181,7 +181,11 @@ export class AR extends ARBase {
               foxFaceRenderable.setShadowCaster(false);
               foxFaceRenderable.setShadowReceiver(false);
             }
+          }))
+          .exceptionally(new java.util.function.Function({
+              apply: error => console.error(error)
           }));
+
 
       // Load the face mesh texture.
       com.google.ar.sceneform.rendering.Texture.builder()
@@ -189,6 +193,9 @@ export class AR extends ARBase {
           .build()
           .thenAccept(new java.util.function.Consumer({
             accept: texture => foxFaceMeshTexture = texture
+          }))
+          .exceptionally(new java.util.function.Function({
+              apply: error => console.error(error)
           }));
 
       setTimeout(() => {
@@ -413,52 +420,28 @@ export class AR extends ARBase {
   }
 
   addNode(options: ARAddOptions): Promise<ARGroup> {
-    return new Promise((resolve, reject) => {
-
-      addNode(options, resolveParentNode(options))
-          .then(model => resolve(model));
-    });
+    return addNode(options, resolveParentNode(options));
   }
 
 
   addVideo(options: ARAddVideoOptions): Promise<ARVideoNode> {
-    return new Promise((resolve, reject) => {
-
-      addVideo(options, resolveParentNode(options))
-          .then(video => resolve(video));
-    });
+    return addVideo(options, resolveParentNode(options));
   }
 
   addImage(options: ARAddImageOptions): Promise<ARImage> {
-    return new Promise((resolve, reject) => {
-
-      addImage(options, resolveParentNode(options))
-          .then(image => resolve(image));
-    });
+    return addImage(options, resolveParentNode(options));
   }
 
   addModel(options: ARAddModelOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-
-      addModel(options, resolveParentNode(options))
-          .then(model => resolve(model));
-    });
+    return addModel(options, resolveParentNode(options));
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-
-      addBox(options, resolveParentNode(options))
-          .then(box => resolve(box));
-    });
+    return addBox(options, resolveParentNode(options));
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-
-      addSphere(options, resolveParentNode(options))
-          .then(sphere => resolve(sphere));
-    });
+    return addSphere(options, resolveParentNode(options));
   }
 
   addText(options: ARAddTextOptions): Promise<ARNode> {
@@ -468,19 +451,11 @@ export class AR extends ARBase {
   }
 
   addTube(options: ARAddTubeOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-
-      addTube(options, resolveParentNode(options))
-          .then(tube => resolve(tube));
-    });
+    return addTube(options, resolveParentNode(options));
   }
 
   addUIView(options: ARUIViewOptions): Promise<ARNode> {
-    return new Promise((resolve, reject) => {
-
-      addUIView(options, resolveParentNode(options))
-        .then(view => resolve(view));
-    });
+    return addUIView(options, resolveParentNode(options));
   }
 
   private wasPermissionGranted(permission: string): boolean {

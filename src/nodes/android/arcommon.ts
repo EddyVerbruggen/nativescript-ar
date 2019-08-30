@@ -229,6 +229,9 @@ export abstract class ARCommonNode implements IARCommonNode {
               ARCommonNode.defaultMaterial = material;
               resolve(material);
             }
+          }))
+          .exceptionally(new java.util.function.Function({
+              apply: error => reject(error)
           }));
     });
   }

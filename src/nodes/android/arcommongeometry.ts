@@ -21,6 +21,9 @@ export abstract class ARCommonGeometryNode extends ARCommonNode {
 
   protected static applyMaterial(node: com.google.ar.sceneform.Node, color: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+
+
+
       com.google.ar.sceneform.rendering.MaterialFactory.makeOpaqueWithColor(
           utils.ad.getApplicationContext(),
           new com.google.ar.sceneform.rendering.Color(color))
@@ -35,6 +38,9 @@ export abstract class ARCommonGeometryNode extends ARCommonNode {
               }
               resolve();
             }
+          }))
+          .exceptionally(new java.util.function.Function({
+              apply: error => reject(error)
           }));
     });
   }
