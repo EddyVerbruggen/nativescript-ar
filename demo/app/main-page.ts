@@ -415,7 +415,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     chamferRadius: 0.01,
     materials: [{
       diffuse: {
-        contents: "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png",
+        contents: isIOS?"Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png":"tnsgranite-diffuse.png",
         wrapMode: "ClampToBorder"
       }
     }],

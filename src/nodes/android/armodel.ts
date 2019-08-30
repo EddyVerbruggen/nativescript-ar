@@ -1,10 +1,11 @@
 import * as utils from "tns-core-modules/utils/utils";
 import { ARAddModelOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
+import { ARCommonGeometryNode } from "./arcommongeometry";
 
 declare const java: any;
 
-export class ARModel extends ARCommonNode {
+export class ARModel extends ARCommonGeometryNode {
   static create(options: ARAddModelOptions, fragment): Promise<ARModel> {
     return new Promise<ARModel>((resolve, reject) => {
       com.google.ar.sceneform.rendering.ModelRenderable.builder()
@@ -16,7 +17,9 @@ export class ARModel extends ARCommonNode {
               transformableNode.setRenderable(renderable);
               resolve(new ARModel(options, transformableNode));
             }
-            // TODO add the exception case
+          }))
+          .exceptionally(new java.util.function.Function({
+              apply: error => reject(error)
           }));
     });
   }

@@ -1,7 +1,7 @@
 import { ARAddModelOptions } from "../../ar-common";
-import { ARCommonNode } from "./arcommon";
+import { ARCommonGeometryNode } from "./arcommongeometry";
 
-export class ARModel extends ARCommonNode {
+export class ARModel extends ARCommonGeometryNode {
   static create(options: ARAddModelOptions) {
     let modelScene = SCNScene.sceneNamed(options.name);
 

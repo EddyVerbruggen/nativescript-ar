@@ -57,6 +57,9 @@ export class ARUIView extends ARCommonNode {
                             node.setRenderable(renderable);
                             resolve(new ARUIView(options, node));
                         }
+                    }))
+                    .exceptionally(new java.util.function.Function({
+                        apply: error => reject(error)
                     }));
         });
     }

@@ -41,6 +41,9 @@ export class ARImage extends ARCommonNode {
               node.setRenderable(renderable);
               resolve(new ARImage(options, node));
             }
+          }))
+          .exceptionally(new (<any>java.util).function.Function({
+              apply: error => reject(error)
           }));
     });
   }
