@@ -13,7 +13,6 @@
   "scripts": {
     "tsc": "tsc --skipLibCheck",
     "tsc.demo": "npm run tsc ../demo/*.ts",
-    "tsc.demo.solarsystem": "npm run tsc ../demo-solarsystem/app/*.ts",
     "build": "npm i && npm run tsc",
     "postclone": "npm i && cd ../demo && npm i && cd ../src && npm run plugin.link",
     "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
@@ -24,8 +23,8 @@
     "demo.ios": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run ios",
     "demo.android": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run android",
     "demo.android.GalaxyS10Eddy": "npm run demo android -- --device RF8M70REQCP",
-    "demo.solarsystem.ios": "npm i && npm run tsc && npm run tsc.demo.solarsystem && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns run ios --bundle",
-    "demo.solarsystem.android": "npm i && npm run tsc && npm run tsc.demo.solarsystem && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns run android --bundle",
+    "demo.solarsystem.ios": "npm i && npm run tsc && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc --skipLibCheck app/*.ts && tns run ios --bundle",
+    "demo.solarsystem.android": "npm i && npm run tsc && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc --skipLibCheck app/*.ts && tns run android --bundle",
     "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src",
     "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
     "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**' --exclude '**/typings/**'",
