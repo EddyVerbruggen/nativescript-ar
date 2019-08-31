@@ -375,8 +375,12 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 
 
   args.object.addModel({
-    name: isIOS ? "Models.scnassets/Car.dae" : "andy.sfb",
-    position: args.position,
+    name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+     position: {
+      x: args.position.x+0.2,
+      y: args.position.y + 0.5,
+      z: args.position.z
+    },
     rotation: {
       x: 0,
       y: 45,
@@ -400,7 +404,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       interaction.node.scaleBy(-0.01);
     },
     onLongPress: (interaction: ARNodeInteraction) => console.log("model longpressed: " + interaction.node.id)
-  });
+  }).catch(console.error);
 
   const boxDimensions = 0.09;
 
