@@ -47,7 +47,7 @@ export class ARModel extends ARCommonGeometryNode {
     const context = utils.ad.getApplicationContext();
 
 
-        const type=(asset.indexOf(".glb")>0)?(<any>com.google.ar.sceneform).assets.RenderableSource.SourceType.GLB:(<any>com.google.ar.sceneform).assets.RenderableSource.SourceType.GLTF;
+        const type=(asset.indexOf(".glb")>0)?(<any>com.google.ar.sceneform).assets.RenderableSource.SourceType.GLB:(<any>com.google.ar.sceneform).assets.RenderableSource.SourceType.GLTF2;
 
         return (<any>com.google.ar.sceneform).assets.RenderableSource.builder().setSource(
             context, android.net.Uri.parse(asset), type
