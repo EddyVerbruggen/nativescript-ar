@@ -15,6 +15,7 @@ export class ARUIView extends ARCommonNode {
 
   constructor(options: ARUIViewOptions) {
     try {
+      // TODO remove
       if (!options.view) {
         options.view = new Label();
         (<Label>options.view).text = "Hello World";
@@ -22,6 +23,7 @@ export class ARUIView extends ARCommonNode {
       }
 
       const view = options.view;
+      view.visibility = "visible";
       const stackLayout = new StackLayout();
 
       if (view.parent) {

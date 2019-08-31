@@ -335,8 +335,8 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
   }
 }
 
-export function tapp(): void {
-  console.log(">>> tapppppp");
+export function switchTapped(): void {
+  console.log("Switch tapped");
 }
 
 export function planeDetected(args: ARPlaneDetectedEventData): void {
@@ -352,7 +352,8 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       y: args.position.y + 1, // want to drop the box from a meter high (when mass > 0)? add +1
       z: args.position.z
     },
-    video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4", // "art.scnassets/celebration.mp4"//
+    // you can use either a local or remote video, but beware: sometimes sample-videos.com is down or your device has slow Internet
+    video: isIOS ? "art.scnassets/celebration.mp4" : "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4",
     onTap: (interaction: ARNodeInteraction) => {
       const node = <ARVideoNode>interaction.node;
       if (node.isPlaying()) {
@@ -376,8 +377,8 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 
   args.object.addModel({
     name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
-     position: {
-      x: args.position.x+0.2,
+    position: {
+      x: args.position.x + 0.2,
       y: args.position.y + 0.5,
       z: args.position.z
     },
@@ -419,7 +420,7 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     chamferRadius: 0.01,
     materials: [{
       diffuse: {
-        contents: isIOS?"Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png":"tnsgranite-diffuse.png",
+        contents: isIOS ? "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png" : "tnsgranite-diffuse.png",
         wrapMode: "ClampToBorder"
       }
     }],
