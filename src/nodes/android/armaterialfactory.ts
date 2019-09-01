@@ -117,7 +117,7 @@ export class ARMaterialFactory {
       }
 
 
-      var p = path.join(knownFolders.documents().path, "ar-" + (new Date()).getTime());
+      var p = path.join(knownFolders.temp().path, "ar-" + (new Date()).getTime());
 
 
       const tmp = Folder.fromPath(p)
@@ -218,7 +218,7 @@ const addPbrMetallic = (gltf, property) => {
     gltf.materials[0]["pbrMetallicRoughness"] = {};
   }
 
-  Object.keys(property).forEach(key => gltf[key] = property[key]);
+  Object.keys(property).forEach(key => gltf.materials[0]["pbrMetallicRoughness"][key] = property[key]);
 }
 
 
