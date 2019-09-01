@@ -457,17 +457,21 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     },
     // scale: 0.5, // this messes up positioning
     radius: 0.25,
-    materials: [{
+    materials: (isIOS?[{
+      diffuse:"Models.scnassets/Earth_Mat_baseColor.png",
+      normal:"Models.scnassets/Earth_Mat_normal.png",
+      roughness:"Models.scnassets/Earth_Mat_occlusionRoughnessMetallic.png"
+    }]:[{
       diffuse:"Earth_Mat_baseColor.png",
       normal:"Earth_Mat_normal.png",
       roughness:"Earth_Mat_occlusionRoughnessMetallic.png"
-    }],
+    }]),
     // mass: 0.3,
     onTap: model => {
       console.log(`Sphere tapped: ${model.node} at ${model.touchPosition}, gonna move it`);
       model.node.moveBy({
         x: 0,
-        y: -0.02, // moves the sphere down a little
+        y: 0.02, // moves the sphere down a little
         z: 0
       });
     },
@@ -475,19 +479,37 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       console.log(">> long pressed sphere");
       // model.remove()
     }
-  }).then(arNode => {
-    console.log("Sphere successfully added");
-    if (arNode.ios) {
-      // do something iOS specific here if you like
-    }
+  }).then(earthNode => {
+    console.log("Earth successfully added");
+    
+    //return;
+    args.object.addSphere({
+      position:{x:-.0001,y:0,z:0},
+      parentNode:earthNode,
+      radius: 0.26,
+      materials: (isIOS?[{
+        diffuse:"Models.scnassets/Earth_Clouds_mat_baseColor.png"
+      }]:[{
+        diffuse:"Earth_Clouds_mat_baseColor.png"
+      }])
+    }).then(clouds=>{
+        let fps=60;
+        let degreePerSecond=3;
+        setInterval(()=>{
+
+          clouds.rotateBy({x:0, y:degreePerSecond/fps, z:0})
+
+        },1000/fps);
+        
+      }).catch(console.error);
 
     ar.addUIView({
       position: {x: 0, y: .4, z: 0},
-      parentNode: arNode,
+      parentNode: earthNode,
       view: page.getViewById("uselessToggleView")
     });
 
-  });
+  }).catch(console.error);
 
   args.object.addTube({
     position: {
