@@ -457,7 +457,11 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     },
     // scale: 0.5, // this messes up positioning
     radius: 0.25,
-    materials: [new Color("yellow")],
+    materials: [{
+      diffuse:"Earth_Mat_baseColor.png",
+      normal:"Earth_Mat_normal.png",
+      roughness:"Earth_Mat_occlusionRoughnessMetallic.png"
+    }],
     // mass: 0.3,
     onTap: model => {
       console.log(`Sphere tapped: ${model.node} at ${model.touchPosition}, gonna move it`);
