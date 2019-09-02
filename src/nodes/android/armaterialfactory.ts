@@ -63,113 +63,129 @@ export class ARMaterialFactory {
   protected static applyARMaterial(node: com.google.ar.sceneform.Node, material: ARMaterial): Promise<void> {
     return new Promise<void>((resolve, reject) => {
 
+     android.os.AsyncTask.execute(new java.lang.Runnable({
+  
+       run:()=>{
+          //TODO your background code
+       
+
+          let gltf = blankGLTF();
+          let index = 0;
+
+          if (material.diffuse) {
+            if (material.diffuse.constructor.name === "Color") {
 
 
-      let gltf = blankGLTF();
+             
+              addPbrMetallic(gltf, {
+                "baseColorFactor": colorFrom(<Color>material.diffuse),
+              });
 
-      let index = 0;
-
-      if (material.diffuse) {
-        if (material.diffuse.constructor.name === "Color") {
-
-        } else {
-          addTexture(gltf, material.diffuse, index);
-          addPbrMetallic(gltf, {
-            "baseColorTexture": {
-              "index": index
+            } else {
+              addTexture(gltf, material.diffuse, index);
+              addPbrMetallic(gltf, {
+                "baseColorTexture": {
+                  "index": index
+                }
+              });
+              gltf.materials[0]["extensions"] = {
+                "KHR_materials_pbrSpecularGlossiness": {
+                  "diffuseTexture": {
+                    "index": index
+                  }
+                }
+              };
+              index++;
             }
-          });
-          gltf.materials[0]["extensions"] = {
-            "KHR_materials_pbrSpecularGlossiness": {
-              "diffuseTexture": {
+          }
+
+          if (material.normal) {
+            if (material.normal.constructor.name === "Color") {
+
+            } else {
+              addTexture(gltf, material.normal, index);
+              gltf.materials[0]["normalTexture"] = {
                 "index": index
-              }
+              };
+              index++;
             }
-          };
-          index++;
-        }
-      }
+          }
 
-      if (material.normal) {
-        if (material.normal.constructor.name === "Color") {
+          if (material.roughness) {
+            if (material.roughness.constructor.name === "Color") {
 
-        } else {
-          addTexture(gltf, material.normal, index);
-          gltf.materials[0]["normalTexture"] = {
-            "index": index
-          };
-          index++;
-        }
-      }
-
-      if (material.roughness) {
-        if (material.roughness.constructor.name === "Color") {
-
-        } else {
-          addTexture(gltf, material.roughness, index);
-          addPbrMetallic(gltf, {
-            "metallicRoughnessTexture": {
-              "index": index
+            } else {
+              addTexture(gltf, material.roughness, index);
+              addPbrMetallic(gltf, {
+                "metallicRoughnessTexture": {
+                  "index": index
+                }
+              });
+              index++;
             }
+          }
+
+
+          var p = path.join(knownFolders.temp().path, "ar-" + (new Date()).getTime());
+
+
+          const tmp = Folder.fromPath(p)
+          const file = tmp.getFile("model_source.gltf");
+          const modelPath = file.path;
+
+
+
+          let promise = file.writeText(JSON.stringify(gltf, null, "   "))
+            .then(() => {
+              return copyAsset("material.bin", tmp.getFile("material.bin").path);
+            });
+
+
+          gltf.images.forEach(image => {
+            promise = promise.then(() => {
+              return copyAsset(image.uri, tmp.getFile(image.uri).path).then(() => console.log("copy success: " + image.uri))
+            });
           });
-          index++;
-        }
+
+
+          promise.then(() => {
+
+
+            let context = utils.ad.getApplicationContext();
+            let model = com.google.ar.sceneform.assets.RenderableSource.builder().setSource(
+              context, android.net.Uri.parse(modelPath), com.google.ar.sceneform.assets.RenderableSource.SourceType.GLTF2
+            ).build();
+
+            com.google.ar.sceneform.rendering.ModelRenderable.builder()
+              .setSource(context, model) // eg. "andy.sfb"
+              .build()
+              .thenAccept(new (<any>java.util).function.Consumer({
+                accept: renderable => {
+
+                  node.getRenderable().setMaterial(renderable.getMaterial());
+
+                }
+              }))
+              .exceptionally(new (<any>java.util).function.Function({
+                apply: error => {
+                  console.log(error);
+                  console.error("failed loading: custom material");
+                  reject(error);
+                }
+              }));
+
+          }).catch((err) => {
+            console.error("failed to load custom material");
+            console.log(err);
+            reject(err);
+          });
+
+
+
       }
+    }));
 
 
-      var p = path.join(knownFolders.temp().path, "ar-" + (new Date()).getTime());
-
-
-      const tmp = Folder.fromPath(p)
-      const file = tmp.getFile("model_source.gltf");
-      const modelPath = file.path;
-
-
-
-      let promise = file.writeText(JSON.stringify(gltf, null, "   "))
-        .then(() => {
-          return copyAsset("material.bin", tmp.getFile("material.bin").path);
-        });
-
-
-      gltf.images.forEach(image => {
-        promise = promise.then(() => {
-          return copyAsset(image.uri, tmp.getFile(image.uri).path).then(() => console.log("copy success: " + image.uri))
-        });
-      });
-
-
-      promise.then(() => {
-
-
-        let context = utils.ad.getApplicationContext();
-        let model = com.google.ar.sceneform.assets.RenderableSource.builder().setSource(
-          context, android.net.Uri.parse(modelPath), com.google.ar.sceneform.assets.RenderableSource.SourceType.GLTF2
-        ).build();
-
-        com.google.ar.sceneform.rendering.ModelRenderable.builder()
-          .setSource(context, model) // eg. "andy.sfb"
-          .build()
-          .thenAccept(new (<any>java.util).function.Consumer({
-            accept: renderable => {
-
-              node.getRenderable().setMaterial(renderable.getMaterial());
-
-            }
-          }))
-          .exceptionally(new (<any>java.util).function.Function({
-            apply: error => {
-              console.log(error);
-              console.error("failed loading: custom material");
-              reject(error);
-            }
-          }));
-
-      }).catch((err) => {
-        console.error("failed to load custom material");
-        console.log(err);
-        reject(err);
-      });
     });
   }
 
@@ -211,6 +227,12 @@ const copyAsset = (asset: string, to: string): Promise<void> => {
 
   });
 
+}
+
+const colorFrom=(color:Color):Array<number> => {
+
+   const c= new com.google.ar.sceneform.rendering.Color(color.android)
+   return [c.r, c.g, c.b, c.a];
 }
 
 const addPbrMetallic = (gltf, property) => {
@@ -278,6 +300,7 @@ const blankGLTF = () => {
     "materials": [
       {
         "name": "Material",
+        "alphaMode":"BLEND"
       }
     ],
     "samplers": [
