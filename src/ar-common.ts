@@ -132,7 +132,13 @@ export interface ARMaterial {
   metalness?: string | Color | ARMaterialProperty;
   normal?: string | Color | ARMaterialProperty;
   specular?: string | Color | ARMaterialProperty;
+  emission?: string | Color | ARMaterialProperty;
   transparency?: number;
+  /**
+   * Default PHYSICALLY_BASED.
+   * iOS only.
+   */
+  lightingModel?: "PHYSICALLY_BASED" | "CONSTANT";
 }
 
 export interface ARAddGeometryOptions extends ARAddOptions {
@@ -164,7 +170,14 @@ export interface ARAddVideoOptions extends ARAddOptions {
 
 export interface ARAddBoxOptions extends ARAddGeometryOptions {
   dimensions: number | ARDimensions;
+  /**
+   * iOS only
+   */
   chamferRadius?: number;
+}
+
+export interface ARAddPlaneOptions extends ARAddGeometryOptions {
+  dimensions: number | ARDimensions2D;
 }
 
 export interface ARAddSphereOptions extends ARAddGeometryOptions {
@@ -324,23 +337,25 @@ export abstract class AR extends ContentView {
    */
   abstract reset(): void;
 
-  abstract addNode(options: ARAddOptions): Promise<ARNode>;
+  abstract addNode(options: ARAddOptions): Promise<ARCommonNode>;
 
-  abstract addModel(options: ARAddModelOptions): Promise<ARNode>;
+  abstract addPlane(options: ARAddOptions): Promise<ARCommonNode>;
+
+  abstract addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
 
   abstract addVideo(options: ARAddVideoOptions): Promise<ARVideoNode>;
 
-  abstract addImage(options: ARAddImageOptions): Promise<ARNode>;
+  abstract addImage(options: ARAddImageOptions): Promise<ARCommonNode>;
 
-  abstract addBox(options: ARAddBoxOptions): Promise<ARNode>;
+  abstract addBox(options: ARAddBoxOptions): Promise<ARCommonNode>;
 
-  abstract addSphere(options: ARAddSphereOptions): Promise<ARNode>;
+  abstract addSphere(options: ARAddSphereOptions): Promise<ARCommonNode>;
 
-  abstract addText(options: ARAddTextOptions): Promise<ARNode>;
+  abstract addText(options: ARAddTextOptions): Promise<ARCommonNode>;
 
-  abstract addTube(options: ARAddTubeOptions): Promise<ARNode>;
+  abstract addTube(options: ARAddTubeOptions): Promise<ARCommonNode>;
 
-  abstract addUIView(options: ARUIViewOptions): Promise<ARNode>;
+  abstract addUIView(options: ARUIViewOptions): Promise<ARCommonNode>;
 
   abstract togglePlaneDetection(on: boolean): void;
 

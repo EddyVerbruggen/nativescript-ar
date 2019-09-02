@@ -41,9 +41,18 @@ export class ARMaterialFactory {
     this.applyMaterialProperty(mat.metalness, material.metalness);
     this.applyMaterialProperty(mat.normal, material.normal);
     this.applyMaterialProperty(mat.specular, material.specular);
+    this.applyMaterialProperty(mat.emission, material.emission);
 
     if (material.transparency !== undefined) {
       mat.transparency = material.transparency; // lower is more transparent
+    }
+
+    if (material.lightingModel === "CONSTANT") {
+      console.log("lightingmodel is constant for mat.diffuse: " + mat.diffuse);
+      mat.lightingModelName = SCNLightingModelConstant;
+      mat.writesToDepthBuffer = false;
+    // } else {
+    //   mat.lightingModelName = SCNLightingModelPhysicallyBased;
     }
   }
 

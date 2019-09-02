@@ -1,6 +1,6 @@
 import * as application from 'tns-core-modules/application';
 import { fromNativeSource, ImageSource } from "tns-core-modules/image-source";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARNode, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARGroup } from "./nodes/ios/argroup";
 import { ARImage } from "./nodes/ios/arimage";
@@ -31,7 +31,7 @@ const addUIView = (options: ARUIViewOptions, parentNode: SCNNode): Promise<ARUIV
   });
 };
 
-const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARNode> => {
+const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARCommonNode> => {
   return new Promise((resolve, reject) => {
     const group = ARGroup.create(options);
     ARState.shapes.set(group.id, group);
@@ -50,7 +50,7 @@ const addVideo = (options: ARAddVideoOptions, parentNode: SCNNode): Promise<ARVi
 };
 
 const addImage = (options: ARAddImageOptions, parentNode: SCNNode): Promise<ARImage> => {
-  return ARImage.create(options).then((image) => {
+  return ARImage.create(options).then(image => {
     ARState.shapes.set(image.id, image);
     parentNode.addChildNode(image.ios);
     return image;
@@ -75,6 +75,15 @@ const addBox = (options: ARAddBoxOptions, parentNode: SCNNode): Promise<ARBox> =
   });
 };
 
+const addPlane = (options: ARAddPlaneOptions, parentNode: SCNNode): Promise<ARPlane> => {
+  return new Promise((resolve, reject) => {
+    const plane = ARPlane.createExternal(options);
+    ARState.shapes.set(plane.id, plane);
+    parentNode.addChildNode(plane.ios);
+    resolve(plane);
+  });
+};
+
 const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     const model: ARModel = ARModel.create(options);
@@ -87,7 +96,7 @@ const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARMo
   });
 };
 
-const addSphere = (options: ARAddSphereOptions, parentNode: SCNNode): Promise<ARNode> => {
+const addSphere = (options: ARAddSphereOptions, parentNode: SCNNode): Promise<ARCommonNode> => {
   return new Promise((resolve, reject) => {
     const sphere: ARSphere = ARSphere.create(options);
     ARState.shapes.set(sphere.id, sphere);
@@ -96,7 +105,7 @@ const addSphere = (options: ARAddSphereOptions, parentNode: SCNNode): Promise<AR
   });
 };
 
-const addTube = (options: ARAddTubeOptions, parentNode: SCNNode): Promise<ARNode> => {
+const addTube = (options: ARAddTubeOptions, parentNode: SCNNode): Promise<ARCommonNode> => {
   return new Promise((resolve, reject) => {
     const tube: ARTube = ARTube.create(options);
     ARState.shapes.set(tube.id, tube);
@@ -305,7 +314,8 @@ export class AR extends ARBase {
     this.sceneView.antialiasingMode = SCNAntialiasingMode.Multisampling4X;
 
     setTimeout(() => {
-      this.recorder = RecordAR.alloc().initWithARSceneKit(this.sceneView);
+      // TODO only do this when recording is actually requested!
+      // this.recorder = RecordAR.alloc().initWithARSceneKit(this.sceneView);
 
       // commented, because it allegedly screws things up, but let's try: his.recorder.prepare(this.configuration)
       // this.recorder.prepare(new ARWorldTrackingConfiguration());
@@ -561,7 +571,7 @@ export class AR extends ARBase {
     return addUIView(options, this.resolveParentNode(options));
   }
 
-  addNode(options: ARAddOptions): Promise<ARNode> {
+  addNode(options: ARAddOptions): Promise<ARCommonNode> {
     return addNode(options, this.resolveParentNode(options));
   }
 
@@ -569,29 +579,32 @@ export class AR extends ARBase {
     return addVideo(options, this.resolveParentNode(options));
   }
 
-  addImage(options: ARAddImageOptions): Promise<ARGroup> {
+  addImage(options: ARAddImageOptions): Promise<ARCommonNode> {
     return addImage(options, this.resolveParentNode(options));
   }
 
-  addModel(options: ARAddModelOptions): Promise<ARNode> {
+  addModel(options: ARAddModelOptions): Promise<ARCommonNode> {
     return addModel(options, this.resolveParentNode(options));
   }
 
-  addBox(options: ARAddBoxOptions): Promise<ARNode> {
+  addPlane(options: ARAddPlaneOptions): Promise<ARCommonNode> {
+    return addPlane(options, this.resolveParentNode(options));
+  }
+
+  addBox(options: ARAddBoxOptions): Promise<ARCommonNode> {
     return addBox(options, this.resolveParentNode(options));
   }
 
-  addSphere(options: ARAddSphereOptions): Promise<ARNode> {
+  addSphere(options: ARAddSphereOptions): Promise<ARCommonNode> {
     return addSphere(options, this.resolveParentNode(options));
   }
 
-  addText(options: ARAddTextOptions): Promise<ARNode> {
+  addText(options: ARAddTextOptions): Promise<ARCommonNode> {
     return addText(options, this.resolveParentNode(options));
   }
 
-  addTube(options: ARAddTubeOptions): Promise<ARNode> {
+  addTube(options: ARAddTubeOptions): Promise<ARCommonNode> {
     return addTube(options, this.resolveParentNode(options));
-
   }
 
   public reset(): void {

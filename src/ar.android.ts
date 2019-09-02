@@ -1,11 +1,12 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARDebugLevel, ARLoadedEventData, ARNode, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
 import { ARImage } from "./nodes/android/arimage";
 import { ARModel } from "./nodes/android/armodel";
+import { ARPlane } from "./nodes/android/arplane";
 import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARUIView } from "./nodes/android/aruiview";
@@ -15,9 +16,7 @@ import { VideoRecorder } from "./videorecorder.android";
 
 declare const com, android, global, java: any;
 
-let _fragment;
-let _origin;
-let _videoRecorder;
+let _fragment, _origin, _videoRecorder;
 
 const AppPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
 const ContentPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
@@ -26,7 +25,7 @@ function useAndroidX() {
   return global.androidx && global.androidx.appcompat;
 }
 
-const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARNode> => {
+const addNode = (options: ARAddOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARCommonNode> => {
   return new Promise((resolve, reject) => {
     ARGroup.create(options, _fragment)
         .then((group: ARGroup) => {
@@ -52,6 +51,16 @@ const addImage = (options: ARAddImageOptions, parentNode: com.google.ar.scenefor
         .then((image: ARImage) => {
           image.android.setParent(parentNode);
           resolve(image);
+        }).catch(reject);
+  });
+};
+
+const addPlane = (options: ARAddPlaneOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARPlane> => {
+  return new Promise((resolve, reject) => {
+    ARPlane.create(options, _fragment)
+        .then((model: ARModel) => {
+          model.android.setParent(parentNode);
+          resolve(model);
         }).catch(reject);
   });
 };
@@ -89,10 +98,10 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
 const addUIView = (options: ARUIViewOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARUIView> => {
   return new Promise((resolve, reject) => {
     ARUIView.create(options, _fragment)
-      .then((view: ARUIView) => {
-        view.android.setParent(parentNode);
-        resolve(view);
-      }).catch(reject);
+        .then((view: ARUIView) => {
+          view.android.setParent(parentNode);
+          resolve(view);
+        }).catch(reject);
   });
 };
 
@@ -157,7 +166,16 @@ export class AR extends ARBase {
 
   initNativeView(): void {
     super.initNativeView();
+
+    // the SceneForm fragment sometimes fails to request camera permission, so we do it ourselves
+    // const permission = android.Manifest.permission.CAMERA;
+    // if (!this.wasPermissionGranted(permission)) {
+    //   setTimeout(() => {
+    //     this._requestPermission(permission, this.initAR);
+    //   }, 2000);
+    // } else {
     this.initAR();
+    // }
   }
 
   private initAR() {
@@ -181,7 +199,7 @@ export class AR extends ARBase {
             }
           }))
           .exceptionally(new java.util.function.Function({
-              apply: error => console.error(error)
+            apply: error => console.error(error)
           }));
 
 
@@ -193,7 +211,7 @@ export class AR extends ARBase {
             accept: texture => foxFaceMeshTexture = texture
           }))
           .exceptionally(new java.util.function.Function({
-              apply: error => console.error(error)
+            apply: error => console.error(error)
           }));
 
       setTimeout(() => {
@@ -241,60 +259,62 @@ export class AR extends ARBase {
       }
     }
 
-    const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
-    supportFragmentManager.beginTransaction().add(this.nativeView.getId(), _fragment).commit();
+    setTimeout(() => {
+      const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
+      supportFragmentManager.beginTransaction().add(this.nativeView.getId(), _fragment).commit();
 
-    // no need for these - the fragment will manage session suspending etc.. unless we get crashes which are not caused by livesync..
-    // application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
-    // });
-    // application.android.on(application.AndroidApplication.activityPausedEvent, (args: any) => {
-    // });
+      // no need for these - the fragment will manage session suspending etc.. unless we get crashes which are not caused by livesync..
+      // application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
+      // });
+      // application.android.on(application.AndroidApplication.activityPausedEvent, (args: any) => {
+      // });
 
-    _fragment.setOnTapArPlaneListener(new com.google.ar.sceneform.ux.BaseArFragment.OnTapArPlaneListener({
-      onTapPlane: (hitResult, plane, motionEvent) => {
-        const eventData: ARPlaneTappedEventData = {
-          eventName: ARBase.planeTappedEvent,
-          object: this,
-          position: {
-            x: hitResult.getHitPose().tx(),
-            y: hitResult.getHitPose().ty(),
-            z: hitResult.getHitPose().tz()
-          }
-        };
-        this.notify(eventData);
-      }
-    }));
-
-    // don't fire the event now, because that's too early.. but there doesn't seem to be an event we can listen to, so using our own impl here
-    this.fireArLoadedEvent(1000);
-
-
-    // TODO below is a bunch of experiments that need to be transformed in decent code (but they mostly work)
-
-    // const context = application.android.context;
-    // const resourcestmp = context.getResources();
-    // const ident = resourcestmp.getIdentifier("andy", "raw", context.getPackageName());
-
-    /* this model-loading approach also works
-    let earthRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
-    const earthStage =
-        com.google.ar.sceneform.rendering.ModelRenderable.builder()
-            .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("Earth.sfb"))
-            .build();
-
-    java.util.concurrent.CompletableFuture
-        .allOf([earthStage])
-        .handle(new java.util.function.BiFunction({
-          apply: (notUsed, throwable) => {
-            console.log(">> handled! throwable: " + throwable);
-            try {
-              earthRenderable = earthStage.get();
-            } catch (e) {
-              console.log(e);
+      _fragment.setOnTapArPlaneListener(new com.google.ar.sceneform.ux.BaseArFragment.OnTapArPlaneListener({
+        onTapPlane: (hitResult, plane, motionEvent) => {
+          const eventData: ARPlaneTappedEventData = {
+            eventName: ARBase.planeTappedEvent,
+            object: this,
+            position: {
+              x: hitResult.getHitPose().tx(),
+              y: hitResult.getHitPose().ty(),
+              z: hitResult.getHitPose().tz()
             }
-          }
-        }));
-    */
+          };
+          this.notify(eventData);
+        }
+      }));
+
+      // don't fire the event now, because that's too early.. but there doesn't seem to be an event we can listen to, so using our own impl here
+      this.fireArLoadedEvent(1000);
+
+
+      // TODO below is a bunch of experiments that need to be transformed in decent code (but they mostly work)
+
+      // const context = application.android.context;
+      // const resourcestmp = context.getResources();
+      // const ident = resourcestmp.getIdentifier("andy", "raw", context.getPackageName());
+
+      /* this model-loading approach also works
+      let earthRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
+      const earthStage =
+          com.google.ar.sceneform.rendering.ModelRenderable.builder()
+              .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("Earth.sfb"))
+              .build();
+
+      java.util.concurrent.CompletableFuture
+          .allOf([earthStage])
+          .handle(new java.util.function.BiFunction({
+            apply: (notUsed, throwable) => {
+              console.log(">> handled! throwable: " + throwable);
+              try {
+                earthRenderable = earthStage.get();
+              } catch (e) {
+                console.log(e);
+              }
+            }
+          }));
+      */
+    }, 0);
   }
 
 
@@ -417,7 +437,7 @@ export class AR extends ARBase {
     return null;
   }
 
-  addNode(options: ARAddOptions): Promise<ARNode> {
+  addNode(options: ARAddOptions): Promise<ARCommonNode> {
     return addNode(options, resolveParentNode(options));
   }
 
@@ -425,33 +445,37 @@ export class AR extends ARBase {
     return addVideo(options, resolveParentNode(options));
   }
 
-  addImage(options: ARAddImageOptions): Promise<ARImage> {
+  addImage(options: ARAddImageOptions): Promise<ARCommonNode> {
     return addImage(options, resolveParentNode(options));
   }
 
-  addModel(options: ARAddModelOptions): Promise<ARNode> {
+  addModel(options: ARAddModelOptions): Promise<ARCommonNode> {
     return addModel(options, resolveParentNode(options));
   }
 
-  addBox(options: ARAddBoxOptions): Promise<ARNode> {
+  addPlane(options: ARAddPlaneOptions): Promise<ARCommonNode> {
+    return addPlane(options, resolveParentNode(options));
+  }
+
+  addBox(options: ARAddBoxOptions): Promise<ARCommonNode> {
     return addBox(options, resolveParentNode(options));
   }
 
-  addSphere(options: ARAddSphereOptions): Promise<ARNode> {
+  addSphere(options: ARAddSphereOptions): Promise<ARCommonNode> {
     return addSphere(options, resolveParentNode(options));
   }
 
-  addText(options: ARAddTextOptions): Promise<ARNode> {
+  addText(options: ARAddTextOptions): Promise<ARCommonNode> {
     return new Promise((resolve, reject) => {
       reject("Method not implemented: addText");
     });
   }
 
-  addTube(options: ARAddTubeOptions): Promise<ARNode> {
+  addTube(options: ARAddTubeOptions): Promise<ARCommonNode> {
     return addTube(options, resolveParentNode(options));
   }
 
-  addUIView(options: ARUIViewOptions): Promise<ARNode> {
+  addUIView(options: ARUIViewOptions): Promise<ARCommonNode> {
     return addUIView(options, resolveParentNode(options));
   }
 
@@ -461,12 +485,13 @@ export class AR extends ARBase {
       hasPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ===
           ContentPackageName.ContextCompat.checkSelfPermission(
               utils.ad.getApplicationContext(),
-              android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+              permission);
     }
     return hasPermission;
   }
 
-  private _requestPermission(permission: string, onPermissionGranted: Function, reject): void {
+  private _requestPermission(permission: string, onPermissionGranted: Function, reject?): void {
+    console.log(">> requesting permission");
     const permissionRequestCode = 678; // random-ish id
 
     const onPermissionEvent = (args: any) => {
@@ -474,7 +499,7 @@ export class AR extends ARBase {
         for (let i = 0; i < args.permissions.length; i++) {
           if (args.grantResults[i] === android.content.pm.PackageManager.PERMISSION_DENIED) {
             application.off(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
-            reject("Please allow access to external storage and try again.");
+            reject && reject("Please allow access to external storage and try again.");
             return;
           }
         }

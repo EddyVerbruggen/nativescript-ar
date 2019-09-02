@@ -4,12 +4,12 @@ import { ARCommonNode } from "./arcommon";
 import { ARMaterialFactory } from "./armaterialfactory";
 
 export abstract class ARCommonGeometryNode extends ARCommonNode {
-  
+
   constructor(options: ARAddGeometryOptions, node: com.google.ar.sceneform.Node) {
     super(options, node);
 
     if (options.materials) {
-      let material=options.materials[0];
+      let material = options.materials[0];
       ARMaterialFactory.applyMaterial(node, <ARMaterial>material);
     }
   }

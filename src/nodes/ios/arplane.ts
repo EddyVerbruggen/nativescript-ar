@@ -1,12 +1,29 @@
-import { ARPlane as IARPlane, ARPosition } from "../../ar-common";
+import { ARAddGeometryOptions, ARAddPlaneOptions, ARDimensions, ARPlane as IARPlane, ARPosition } from "../../ar-common";
+import { ARCommonGeometryNode } from "./arcommongeometry";
 
-export class ARPlane implements IARPlane {
+export class ARPlane extends ARCommonGeometryNode implements IARPlane {
   private planeGeometry: SCNBox;
   private anchor: ARAnchor;
 
   id: string;
   position: ARPosition;
   ios: SCNNode;
+
+  constructor(options?: ARAddPlaneOptions, node?: SCNNode) {
+    if (options) {
+      super(options, node);
+    }
+  }
+
+  static createExternal(options: ARAddPlaneOptions): ARPlane {
+    const dimensions: ARDimensions = <ARDimensions>(typeof options.dimensions !== "number" ? options.dimensions : {
+      x: options.dimensions,
+      y: options.dimensions
+    });
+
+    const plane = SCNPlane.planeWithWidthHeight(dimensions.x, dimensions.y);
+    return new ARPlane(options, SCNNode.nodeWithGeometry(plane));
+  }
 
   static create(anchor: ARAnchor, opacity: number, material: SCNMaterial) {
     const instance = new ARPlane();
