@@ -1,37 +1,45 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page" xmlns:AR="nativescript-ar">
-  <GridLayout rows="auto, auto, *" columns="*">
+  <GridLayout rows="auto, *" columns="*">
     <Label text="{{ message }}" class="t-20 p-10 text-center c-black" textWrap="true"/>
 
-    <StackLayout row="1" id="uselessToggleView" orientation="horizontal" class="p-10 c-white c-bg-orange">
-      <Label text="Useless toggle:"/>
-      <Switch checked="true" ontap="tapp"/>
-    </StackLayout>
+    <GridLayout row="1" columns="*" rows="*">
 
-    <!-- TIPS (iOS):
-     - To enable 'face tracking', set 'trackingMode' to FACE and film your face, then look at the console log.
-     - To enable 'image tracking', set 'trackingMode' to IMAGE and configure some images in app/App_Resources/iOS/Assets.xcassets/AR Resources.arresourcegroup
-     - To enable 'world tracking', set 'trackingMode' to WORLD and point the camera at a flat surface - then tap the drawn plane.
-    -->
-    <AR:AR
-        row="2"
-        trackingMode="WORLD"
-        trackingImagesBundle="AR Resources"
-        trackingImageDetected="trackingImageDetected"
-        trackingFaceDetected="trackingFaceDetected"
-        debugLevel="FEATURE_POINTS"
-        faceMaterial__DISABLED="Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"
-        faceMaterial__DISABLED2="Assets.xcassets/wireframeTexture.imageset"
-        planeMaterial="{{ planeMaterial }}"
-        planeOpacity="0.25"
-        detectPlanes="true"
-        showStatistics="true"
-        arLoaded="arLoaded"
-        sceneTapped="sceneTapped"
-        planeDetected="planeDetected"
-        planeTapped="planeTapped">
-    </AR:AR>
-<!--    <iOS>-->
-      <StackLayout row="2" horizontalAlignment="right" verticalAlignment="bottom">
+      <StackLayout id="uselessToggleView">
+        <StackLayout orientation="horizontal" class="p-10 c-white c-bg-orange">
+          <Label text="Useless toggle:"/>
+          <Switch checked="true" ontap="switchTapped"/>
+        </StackLayout>
+      </StackLayout>
+
+      <!-- this will hide the above layouts during the time the app is loaded and the AR camera view is showing -->
+      <StackLayout class="cover">
+      </StackLayout>
+
+      <!-- TIPS (iOS):
+       - To enable 'face tracking', set 'trackingMode' to FACE and film your face, then look at the console log.
+       - To enable 'image tracking', set 'trackin gMode' to IMAGE and configure some images in app/App_Resources/iOS/Assets.xcassets/AR Resources.arresourcegroup
+       - To enable 'world tracking', set 'trackingMode' to WORLD and point the camera at a flat surface - then tap the drawn plane.
+      -->
+      <AR:AR
+          row="2"
+          trackingMode="WORLD"
+          trackingImagesBundle="AR Resources"
+          trackingImageDetected="trackingImageDetected"
+          trackingFaceDetected="trackingFaceDetected"
+          debugLevel="FEATURE_POINTS"
+          faceMaterial__DISABLED="Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"
+          faceMaterial__DISABLED2="Assets.xcassets/wireframeTexture.imageset"
+          planeMaterial="{{ planeMaterial }}"
+          planeOpacity="0.25"
+          detectPlanes="true"
+          showStatistics="true"
+          arLoaded="arLoaded"
+          sceneTapped="sceneTapped"
+          planeDetected="planeDetected"
+          planeTapped="planeTapped">
+      </AR:AR>
+
+      <StackLayout horizontalAlignment="right" verticalAlignment="bottom">
         <Button text="Grab screenshot" class="bg-primary grab-screenshot" horizontalAlignment="right" tap="{{ grabScreenshot }}"/>
         <Button text="Record video" class="bg-primary record-video" horizontalAlignment="right" tap="{{ recordVideo }}"/>
 
@@ -40,7 +48,10 @@
           <Switch id="flashlightSwitch" col="1" checked="false"/>
         </GridLayout>
       </StackLayout>
-      <Image row="2" id="screenshot" width="180" class="screenshot" horizontalAlignment="left" verticalAlignment="bottom"/>
-<!--    </iOS>-->
+
+      <Image id="screenshot" width="180" class="screenshot" horizontalAlignment="left" verticalAlignment="bottom"/>
+
+    </GridLayout>
+
   </GridLayout>
 </Page>

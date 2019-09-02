@@ -23,7 +23,6 @@ export class ARUIView extends ARCommonNode {
       }
 
       const view = options.view;
-      view.visibility = "visible";
       const stackLayout = new StackLayout();
 
       if (view.parent) {

@@ -392,51 +392,52 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       console.log("tapped model id: " + interaction.node.id);
       console.log("tapped model position: " + interaction.node.position);
       console.log("tapped model touchPosition: " + interaction.touchPosition);
-      interaction.node.moveBy({
-        x: 0.02,
-        y: 0.02,
-        z: 0.02
-      });
+      // interaction.node.moveBy({
+      //   x: 0.02,
+      //   y: 0.02,
+      //   z: 0.02
+      // });
       interaction.node.rotateBy({
-        x: 0,
+        x: 10,
         y: 10,
-        z: 0
+        z: 10
       });
-      interaction.node.scaleBy(-0.01);
+      // interaction.node.scaleBy(-0.01);
     },
     onLongPress: (interaction: ARNodeInteraction) => console.log("model longpressed: " + interaction.node.id)
   }).catch(console.error);
 
   const boxDimensions = 0.09;
+  const boxMaterialPrefix = isIOS ? "Assets.scnassets/Materials/tnsgranite/" : "";
 
-  args.object.addBox({
+  args.object.addSphere({
     position: {
       x: args.position.x,
       y: args.position.y + (boxDimensions / 2), // want to drop the box from a meter high (when mass > 0)? add +1
       z: args.position.z
     },
     // scale: 0.5, // this messes up positioning
-    dimensions: boxDimensions,
-    chamferRadius: 0.01,
+    // dimensions: boxDimensions,
+    radius: 0.15,
+    rotation: {
+      x: 0,
+      y: 0,
+      z: 0.2
+    },
     materials: [{
       diffuse: {
-        contents: isIOS ? "Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png" : "tnsgranite-diffuse.png",
+        contents: boxMaterialPrefix + "tnsgranite-diffuse.png",
         wrapMode: "ClampToBorder"
       }
     }],
     // mass: 0.3,
-    onTap: model => {
-      console.log(`Box tapped: ${model}, gonna move it`);
-      // model.rotateBy({
-      //   x: 0,
-      //   y: 0,
-      //   z: -5
-      // })
-      // model.moveTo({
-      //   x: model.position.x,
-      //   y: model.position.y + 0.01, // moves the box up a little
-      //   z: model.position.z
-      // })
+    onTap: (interaction: ARNodeInteraction) => {
+      // let's rotate the box 5 degrees to the right
+      interaction.node.rotateBy({
+        x: 0,
+        y: 3,
+        z: 0
+      });
     },
     onLongPress: model => {
       console.log(">> long press");
@@ -449,23 +450,20 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     }
   });
 
+  const earthMaterialPrefix = isIOS ? "Assets.scnassets/Materials/Earth/" : "";
   args.object.addSphere({
     position: {
-      x: args.position.x + 0.5,
-      y: args.position.y + 1,
-      z: args.position.z - 1
+      x: args.position.x + 0.3,
+      y: args.position.y + 0.5,
+      z: args.position.z - 0.5
     },
     // scale: 0.5, // this messes up positioning
     radius: 0.25,
-    materials: (isIOS?[{
-      diffuse:"Models.scnassets/Earth_Mat_baseColor.png",
-      normal:"Models.scnassets/Earth_Mat_normal.png",
-      roughness:"Models.scnassets/Earth_Mat_occlusionRoughnessMetallic.png"
-    }]:[{
-      diffuse:"Earth_Mat_baseColor.png",
-      normal:"Earth_Mat_normal.png",
-      roughness:"Earth_Mat_occlusionRoughnessMetallic.png"
-    }]),
+    materials: [{
+      diffuse: earthMaterialPrefix + "Earth_Mat_baseColor.png",
+      normal: earthMaterialPrefix + "Earth_Mat_normal.png",
+      roughness: earthMaterialPrefix + "Earth_Mat_occlusionRoughnessMetallic.png"
+    }],
     // mass: 0.3,
     onTap: model => {
       console.log(`Sphere tapped: ${model.node} at ${model.touchPosition}, gonna move it`);
@@ -481,27 +479,21 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
     }
   }).then(earthNode => {
     console.log("Earth successfully added");
-    
-    //return;
+
     args.object.addSphere({
-      position:{x:-.0001,y:0,z:0},
-      parentNode:earthNode,
+      position: {x: -.0001, y: 0, z: 0},
+      parentNode: earthNode,
       radius: 0.26,
-      materials: (isIOS?[{
-        diffuse:"Models.scnassets/Earth_Clouds_mat_baseColor.png"
-      }]:[{
-        diffuse:"Earth_Clouds_mat_baseColor.png"
-      }])
-    }).then(clouds=>{
-        let fps=60;
-        let degreePerSecond=3;
-        setInterval(()=>{
-
-          clouds.rotateBy({x:0, y:degreePerSecond/fps, z:0})
-
-        },1000/fps);
-        
-      }).catch(console.error);
+      materials: [{
+        diffuse: earthMaterialPrefix + "Earth_Clouds_mat_baseColor.png"
+      }]
+    }).then(clouds => {
+      let fps = 60;
+      let degreePerSecond = 3;
+      setInterval(() => {
+        clouds.rotateBy({x: 0, y: degreePerSecond / fps, z: 0});
+      }, 1000 / fps);
+    }).catch(console.error);
 
     ar.addUIView({
       position: {x: 0, y: .4, z: 0},
