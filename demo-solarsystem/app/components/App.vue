@@ -270,10 +270,19 @@
                     this.hasControlPanel = true;
                     ar.addUIView({
                       position: {x: 0, y: .22, z: 0},
+                      // dimensions:{x:1, y:0.8}, //ios might need this
                       parentNode: objectNode,
                       view: this.page.getViewById("controlPanel"),
                       // 0.35 for Android
                       scale: 0.5 // TODO (in the plugin code).. prolly do something with screen density
+                    }).then(view=>{
+                        setInterval(()=>{
+                          try{
+                            view.lookAtWorldPosition(ar.getCameraPosition());
+                          }catch(e){
+                            console.error(e);
+                          }
+                        }, 100);
                     });
                   }
                 } else {

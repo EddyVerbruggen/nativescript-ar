@@ -111,6 +111,25 @@ export abstract class ARCommonNode implements IARCommonNode {
     );
   }
 
+
+  getPosition():ARPosition{
+    const pos = this.android.getLocalPosition();
+    return {
+      x: pos.x,
+      y: pos.y,
+      z: pos.z
+    }
+  }
+
+  getWorldPosition():ARPosition{
+    const pos = this.android.getWorldPosition();
+    return {
+      x: pos.x,
+      y: pos.y,
+      z: pos.z
+    }
+  }
+
   setPosition(pos: ARPosition): void {
     this.android.setLocalPosition(
         new (<any>com.google.ar.sceneform).math.Vector3(
@@ -154,6 +173,31 @@ export abstract class ARCommonNode implements IARCommonNode {
             )
         )
     );
+  }
+
+
+  lookAtWorldPosition(worldPos: ARPosition): void {
+    var direction = (<any>com.google.ar.sceneform).math.Vector3.subtract(new (<any>com.google.ar.sceneform).math.Vector3(
+            worldPos.x,
+            worldPos.y,
+            worldPos.z
+        ), this.android.getWorldPosition());
+    this.android.setLookDirection(direction, (<any>com.google.ar.sceneform).math.Vector3.up());
+  }
+
+  lookAtPosition(localPos: ARPosition): void {
+
+    var direction = (<any>com.google.ar.sceneform).math.Vector3.subtract(
+      this.android.localToWorldPoint(new (<any>com.google.ar.sceneform).math.Vector3(
+            localPos.x,
+            localPos.y,
+            localPos.z
+        )), this.android.getWorldPosition());
+    this.android.setLookDirection(direction, (<any>com.google.ar.sceneform).math.Vector3.up());
+  }
+  
+  lookAtNode(node: ARCommonNode):void{
+    this.lookAtWorldPosition(node.getWorldPosition())
   }
 
   scaleBy(by: number | ARScale): void {
