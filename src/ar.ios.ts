@@ -216,9 +216,9 @@ export class AR extends ARBase {
   }
 
 
-  public getCameraPosition():ARPosition{
-    var p = this.sceneView.defaultCameraController.pointOfView.worldPosition;
-     return {x:p.x, y:p.y, z:p.z}
+  public getCameraPosition(): ARPosition {
+    const p = this.sceneView.defaultCameraController.pointOfView.worldPosition;
+    return {x: p.x, y: p.y, z: p.z};
   }
 
   private initAR() {

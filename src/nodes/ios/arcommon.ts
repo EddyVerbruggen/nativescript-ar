@@ -61,22 +61,22 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
-  getPosition():ARPosition{
-    const pos=this.ios.position;
+  getPosition(): ARPosition {
+    const pos = this.ios.position;
     return {
       x: pos.x,
       y: pos.y,
       z: pos.z
-    }
+    };
   }
 
-  getWorldPosition():ARPosition{
-    const pos=this.ios.worldPosition;
+  getWorldPosition(): ARPosition {
+    const pos = this.ios.worldPosition;
     return {
       x: pos.x,
       y: pos.y,
       z: pos.z
-    }
+    };
   }
 
   setPosition(pos: ARPosition): void {
@@ -116,19 +116,18 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
-
   lookAtWorldPosition(worldPos: ARPosition): void {
-    this.ios.lookAt(worldPos); //,  {x:0, y:1, z:0},  {x:0, y:0, z:1}
+    this.ios.lookAt(worldPos); // ,  {x:0, y:1, z:0},  {x:0, y:0, z:1}
   }
+
   lookAtPosition(localPos: ARPosition): void {
     const worldPos = this.ios.convertPositionToNode(localPos, null);
     this.lookAtWorldPosition(worldPos);
   }
-  lookAtNode(node: ARCommonNode):void{
-    this.lookAtWorldPosition(node.getWorldPosition())
+
+  lookAtNode(node: ARCommonNode): void {
+    this.lookAtWorldPosition(node.getWorldPosition());
   }
-
-
 
   scaleBy(by: number | ARScale): void {
     this.ios.scale = {
@@ -170,7 +169,6 @@ export abstract class ARCommonNode implements IARCommonNode {
   setVisible(visible: boolean): void {
     this.ios.hidden = !visible;
   }
-
 
 
   allowDragging(): boolean {

@@ -121,12 +121,11 @@ export class ARMaterialFactory {
 
             } else {
               addTexture(gltf, material.emission, index);
-
-              gltf.materials[0]["emissiveFactor"]=[
+              gltf.materials[0]["emissiveFactor"] = [
                 1.0,
                 1.0,
                 1.0
-              ],
+              ];
               gltf.materials[0]["emissiveTexture"] = {
                 "index": index
               };

@@ -275,14 +275,14 @@
                       view: this.page.getViewById("controlPanel"),
                       // 0.35 for Android
                       scale: 0.5 // TODO (in the plugin code).. prolly do something with screen density
-                    }).then(view=>{
-                        setInterval(()=>{
-                          try{
-                            view.lookAtWorldPosition(ar.getCameraPosition());
-                          }catch(e){
-                            console.error(e);
-                          }
-                        }, 100);
+                    }).then(view => {
+                      setInterval(() => {
+                        try {
+                          view.lookAtWorldPosition(ar.getCameraPosition());
+                        } catch (e) {
+                          console.error(e);
+                        }
+                      }, 100);
                     });
                   }
                 } else {
