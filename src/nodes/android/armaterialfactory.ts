@@ -69,11 +69,14 @@ export class ARMaterialFactory {
 
             } else {
               addTexture(gltf, material.diffuse, index);
+
               addPbrMetallic(gltf, {
                 "baseColorTexture": {
                   "index": index
                 }
               });
+
+
               gltf.materials[0]["extensions"] = {
                 "KHR_materials_pbrSpecularGlossiness": {
                   "diffuseTexture": {
@@ -81,6 +84,8 @@ export class ARMaterialFactory {
                   }
                 }
               };
+
+
               index++;
             }
           }
@@ -107,6 +112,24 @@ export class ARMaterialFactory {
                   "index": index
                 }
               });
+              index++;
+            }
+          }
+
+          if (material.emission) {
+            if (material.emission.constructor.name === "Color") {
+
+            } else {
+              addTexture(gltf, material.emission, index);
+
+              gltf.materials[0]["emissiveFactor"]=[
+                1.0,
+                1.0,
+                1.0
+              ],
+              gltf.materials[0]["emissiveTexture"] = {
+                "index": index
+              };
               index++;
             }
           }
