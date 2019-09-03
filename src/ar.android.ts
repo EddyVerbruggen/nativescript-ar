@@ -58,9 +58,9 @@ const addImage = (options: ARAddImageOptions, parentNode: com.google.ar.scenefor
 const addPlane = (options: ARAddPlaneOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARPlane> => {
   return new Promise((resolve, reject) => {
     ARPlane.create(options, _fragment)
-        .then((model: ARModel) => {
-          model.android.setParent(parentNode);
-          resolve(model);
+        .then((plane: ARPlane) => {
+          plane.android.setParent(parentNode);
+          resolve(plane);
         }).catch(reject);
   });
 };
@@ -89,7 +89,12 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
   return new Promise((resolve, reject) => {
     ARSphere.create(options, _fragment)
         .then((sphere: ARSphere) => {
+          // TODO testing this: https://github.com/EddyVerbruggen/nativescript-ar/issues/41#issuecomment-527308848
+          //  .. but this code assumes the parent is the 'inner' sphere here, which is probably correct in most cases.
           sphere.android.setParent(parentNode);
+          if (parentNode && parentNode.getRenderable()) {
+            parentNode.getRenderable().setRenderPriority(Math.max(0, sphere.android.getRenderable().getRenderPriority() - 1));
+          }
           resolve(sphere);
         }).catch(reject);
   });

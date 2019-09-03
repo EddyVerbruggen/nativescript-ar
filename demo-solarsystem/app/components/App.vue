@@ -44,7 +44,6 @@
   const SUN_TO_EARTH_METERS = 1.0;
   const EARTH_TO_MOON_METERS = 0.15;
 
-  // TODO for materials, see that iOS Swift demo as well..
   const materialPrefix = isIOS ? "Orbitals.scnassets/" : "";
   const solarSystemDefinition = {
     name: "Sun",
@@ -54,7 +53,7 @@
     scale: 0.5,
     materials: [{
       diffuse: materialPrefix + "Sol_Opaque_Mat_baseColor.png",
-      // emission: materialPrefix + "Sol_Transparent_Mat_emissive.png"
+      // emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
     }],
     tilt: 0,
     children: [{
@@ -235,7 +234,6 @@
             z: solarSystemObject.tilt
           }
         }).then(orbitNode => {
-          console.log("orbitNode added: " + orbitNode);
 
           this.orbitals.push({
             node: orbitNode,
@@ -304,7 +302,7 @@
                 ar.addSphere({
                   position: {x: -.0001, y: 0, z: 0},
                   parentNode: o,
-                  radius: radius + 0.015, // TODO for Android this needs to be much more
+                  radius: radius + (isIOS ? 0.015 : 0.05), // TODO this platform difference is not so nice
                   materials: [{
                     diffuse: materialPrefix + "Earth_Clouds_mat_baseColor.png"
                   }],
