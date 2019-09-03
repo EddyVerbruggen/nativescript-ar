@@ -61,7 +61,16 @@ export class ARUIView extends ARCommonNode {
       const planeNode = SCNNode.nodeWithGeometry(materialPlane);
       planeViewController.loadView();
 
-      super(options, planeNode);
+
+      const node=SCNNode.node();
+      planeNode.eulerAngles = {
+        x: 0,
+        y: Math.PI,
+        z: 0
+      };
+      node.addChildNode(planeNode);
+
+      super(options, node);
 
     } catch (e) {
       console.error(e);
