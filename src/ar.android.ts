@@ -1,7 +1,7 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode, ARPosition } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
 import { ARImage } from "./nodes/android/arimage";
@@ -176,6 +176,13 @@ export class AR extends ARBase {
     // } else {
     this.initAR();
     // }
+  }
+
+
+  public getCameraPosition():ARPosition{
+    let p = Array.create("float", 3);
+    _fragment.getArSceneView().getArFrame().getCamera().getPose().getTranslation(p, 0);
+    return {x:p[0], y:p[1], z:p[2]};
   }
 
   private initAR() {
