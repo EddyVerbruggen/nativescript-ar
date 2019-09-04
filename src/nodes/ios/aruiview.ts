@@ -23,7 +23,7 @@ export class ARUIView extends ARCommonNode {
       }
 
       const view = options.view;
-      const stackLayout = new StackLayout();
+      //const stackLayout = new StackLayout();
 
       if (view.parent) {
         //(<LayoutBase>view.parent).removeChild(view);
@@ -31,8 +31,7 @@ export class ARUIView extends ARCommonNode {
         (<any>view).parent=null;
       }
 
-
-      stackLayout.addChild(view);
+      //stackLayout.addChild(view);
 
       if (view instanceof View && (!view.ios)) {
         view._setupUI({});
@@ -59,7 +58,7 @@ export class ARUIView extends ARCommonNode {
 
       materialPlane.cornerRadius = options.chamferRadius || 0;
 
-      const planeViewController = (<ArPlaneViewController>ArPlaneViewController.alloc()).initWithViewAndPlane(stackLayout, materialPlane);
+      const planeViewController = (<ArPlaneViewController>ArPlaneViewController.alloc()).initWithViewAndPlane(view, materialPlane);
 
       const planeNode = SCNNode.nodeWithGeometry(materialPlane);
       planeViewController.loadView();
