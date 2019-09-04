@@ -28,7 +28,7 @@ export class ARUIView extends ARCommonNode {
       if (view.parent) {
         //(<LayoutBase>view.parent).removeChild(view);
         view.ios.removeFromSuperview();
-        view.parent=null;
+        (<any>view).parent=null;
       }
 
 
