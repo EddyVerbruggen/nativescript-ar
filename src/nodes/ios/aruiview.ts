@@ -26,8 +26,11 @@ export class ARUIView extends ARCommonNode {
       const stackLayout = new StackLayout();
 
       if (view.parent) {
-        (<LayoutBase>view.parent).removeChild(view);
+        //(<LayoutBase>view.parent).removeChild(view);
+        view.ios.removeFromSuperview();
+        view.parent=null;
       }
+
 
       stackLayout.addChild(view);
 
@@ -111,7 +114,7 @@ class ArPlaneViewController extends UIViewController {
 
       this.materialPlane.firstMaterial.diffuse.contents = this.view;
       this.materialPlane.firstMaterial.doubleSided = true;
-      this.childView.requestLayout();
+      //this.childView.requestLayout();
 
     } catch (e) {
       console.error(e);
