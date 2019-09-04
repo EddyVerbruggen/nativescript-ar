@@ -23,24 +23,20 @@ export class ARUIView extends ARCommonNode {
       }
 
       const view = options.view;
-      //const stackLayout = new StackLayout();
 
       if (view.parent) {
-        //(<LayoutBase>view.parent).removeChild(view);
         view.ios.removeFromSuperview();
-        (<any>view).parent=null;
+        (<any>view).parent = null;
       }
-
-      //stackLayout.addChild(view);
 
       if (view instanceof View && (!view.ios)) {
         view._setupUI({});
         view.loadView(view);
-        // view.layout(0,0, 300, 50);
       }
+
       const nativeView = view.ios || view;
 
-      view.measure(0,0)
+      view.measure(0, 0);
       if (!options.dimensions) {
         options.dimensions = {
           x: view.getMeasuredWidth() / pixelsPerMeter, y: view.getMeasuredHeight() / pixelsPerMeter
@@ -55,8 +51,8 @@ export class ARUIView extends ARCommonNode {
       const materialPlane = SCNPlane.planeWithWidthHeight(dimensions.x, dimensions.y);
 
       nativeView.layer.anchorPoint = CGPointMake(dimensions.x / 2, 0);
-      const adjustY=0.04;
-      nativeView.transform = CGAffineTransformMakeScale(1 / dimensions.x, 1 / (dimensions.y-adjustY));
+      const adjustY = 0.04;
+      nativeView.transform = CGAffineTransformMakeScale(1 / dimensions.x, 1 / (dimensions.y - adjustY));
 
       materialPlane.cornerRadius = options.chamferRadius || 0;
 
@@ -66,11 +62,11 @@ export class ARUIView extends ARCommonNode {
       planeViewController.loadView();
 
 
-      const node=SCNNode.node();
+      const node = SCNNode.node();
       planeNode.position = {
-        x:0,
-        y:(dimensions.y-adjustY)/2,
-        z:0
+        x: 0,
+        y: (dimensions.y - adjustY) / 2,
+        z: 0
       };
       planeNode.eulerAngles = {
         x: 0,
@@ -125,7 +121,6 @@ class ArPlaneViewController extends UIViewController {
 
       this.materialPlane.firstMaterial.diffuse.contents = this.view;
       this.materialPlane.firstMaterial.doubleSided = true;
-      //this.childView.requestLayout();
 
     } catch (e) {
       console.error(e);
