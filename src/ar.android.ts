@@ -164,6 +164,9 @@ class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragmen
     super.getPlaneDiscoveryController().setInstructionView(null);
     return frameLayout;
   }
+
+  // TODO for recording support we could consider passing it here
+  // getAdditionalPermissions(): native.Array<string>;
 }
 
 export class AR extends ARBase {
@@ -171,16 +174,7 @@ export class AR extends ARBase {
 
   initNativeView(): void {
     super.initNativeView();
-
-    // the SceneForm fragment sometimes fails to request camera permission, so we do it ourselves
-    // const permission = android.Manifest.permission.CAMERA;
-    // if (!this.wasPermissionGranted(permission)) {
-    //   setTimeout(() => {
-    //     this._requestPermission(permission, this.initAR);
-    //   }, 2000);
-    // } else {
     this.initAR();
-    // }
   }
 
   public getCameraPosition(): ARPosition {
@@ -270,6 +264,8 @@ export class AR extends ARBase {
       }
     }
 
+    const hasCameraPermission = this.wasPermissionGranted(android.Manifest.permission.CAMERA);
+
     setTimeout(() => {
       const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
       supportFragmentManager.beginTransaction().add(this.nativeView.getId(), _fragment).commit();
@@ -325,9 +321,8 @@ export class AR extends ARBase {
             }
           }));
       */
-    }, 0);
+    }, hasCameraPermission ? 0 : 1000); // needs a little timeout, otherwise the permission popup may not be shown
   }
-
 
   private fireArLoadedEvent(attemptsLeft: number): void {
     if (attemptsLeft-- <= 0) {
