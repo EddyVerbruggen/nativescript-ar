@@ -23,13 +23,15 @@ export class ARUIView extends ARCommonNode {
       }
 
       const view = options.view;
-      const stackLayout = new StackLayout();
+      //const stackLayout = new StackLayout();
 
       if (view.parent) {
-        (<LayoutBase>view.parent).removeChild(view);
+        //(<LayoutBase>view.parent).removeChild(view);
+        view.ios.removeFromSuperview();
+        (<any>view).parent=null;
       }
 
-      stackLayout.addChild(view);
+      //stackLayout.addChild(view);
 
       if (view instanceof View && (!view.ios)) {
         view._setupUI({});
@@ -56,12 +58,21 @@ export class ARUIView extends ARCommonNode {
 
       materialPlane.cornerRadius = options.chamferRadius || 0;
 
-      const planeViewController = (<ArPlaneViewController>ArPlaneViewController.alloc()).initWithViewAndPlane(stackLayout, materialPlane);
+      const planeViewController = (<ArPlaneViewController>ArPlaneViewController.alloc()).initWithViewAndPlane(view, materialPlane);
 
       const planeNode = SCNNode.nodeWithGeometry(materialPlane);
       planeViewController.loadView();
 
-      super(options, planeNode);
+
+      const node=SCNNode.node();
+      planeNode.eulerAngles = {
+        x: 0,
+        y: Math.PI,
+        z: 0
+      };
+      node.addChildNode(planeNode);
+
+      super(options, node);
 
     } catch (e) {
       console.error(e);
@@ -102,7 +113,7 @@ class ArPlaneViewController extends UIViewController {
 
       this.materialPlane.firstMaterial.diffuse.contents = this.view;
       this.materialPlane.firstMaterial.doubleSided = true;
-      this.childView.requestLayout();
+      //this.childView.requestLayout();
 
     } catch (e) {
       console.error(e);

@@ -177,21 +177,22 @@ export abstract class ARCommonNode implements IARCommonNode {
 
 
   lookAtWorldPosition(worldPos: ARPosition): void {
-    const direction = (<any>com.google.ar.sceneform).math.Vector3.subtract(new (<any>com.google.ar.sceneform).math.Vector3(
+    const direction = (<any>com.google.ar.sceneform).math.Vector3.subtract(this.android.getWorldPosition(), new (<any>com.google.ar.sceneform).math.Vector3(
         worldPos.x,
         worldPos.y,
         worldPos.z
-    ), this.android.getWorldPosition());
+    ));
     this.android.setLookDirection(direction, (<any>com.google.ar.sceneform).math.Vector3.up());
   }
 
   lookAtPosition(localPos: ARPosition): void {
     const direction = (<any>com.google.ar.sceneform).math.Vector3.subtract(
+        this.android.getWorldPosition(),
         this.android.localToWorldPoint(new (<any>com.google.ar.sceneform).math.Vector3(
             localPos.x,
             localPos.y,
             localPos.z
-        )), this.android.getWorldPosition());
+        )));
     this.android.setLookDirection(direction, (<any>com.google.ar.sceneform).math.Vector3.up());
   }
 

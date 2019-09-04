@@ -276,7 +276,10 @@
                     }).then(view => {
                       setInterval(() => {
                         try {
-                          view.lookAtWorldPosition(ar.getCameraPosition());
+                          let p=view.getWorldPosition();
+                          let c=ar.getCameraPosition();
+                          c.y=p.y;
+                          view.lookAtWorldPosition(c);
                         } catch (e) {
                           console.error(e);
                         }
