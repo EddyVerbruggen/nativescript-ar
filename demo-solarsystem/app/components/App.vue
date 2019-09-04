@@ -49,7 +49,6 @@
     name: "Sun",
     distance: 0,
     orbitSpeed: 0,
-    model: "Sol.sfb",
     scale: 0.5,
     materials: [{
       diffuse: materialPrefix + "Sol_Opaque_Mat_baseColor.png",
@@ -60,7 +59,6 @@
       name: "Mercury",
       distance: 0.4,
       orbitSpeed: 47,
-      model: "Mercury.sfb",
       materials: [{
         diffuse: materialPrefix + "Mercury_Mat_baseColor.png",
         normal: materialPrefix + "Mercury_Mat_normal.png",
@@ -72,7 +70,6 @@
       name: "Venus",
       distance: 0.7,
       orbitSpeed: 35,
-      model: "Venus.sfb",
       materials: [{
         diffuse: materialPrefix + "Venus_Atmosphere_Mat_baseColor.png",
         roughness: materialPrefix + "Venus_Atmosphere_Mat_occlusionRoughnessMetallic.png"
@@ -83,7 +80,6 @@
       name: "Earth",
       distance: SUN_TO_EARTH_METERS,
       orbitSpeed: 29,
-      model: "Earth.sfb",
       scale: 0.05 * SCALE_FACTOR,
       tilt: 23.4,
       materials: [{
@@ -95,7 +91,6 @@
         name: "Moon",
         distance: EARTH_TO_MOON_METERS,
         orbitSpeed: 3,
-        model: "Luna.sfb",
         scale: 0.018 * SCALE_FACTOR,
         tilt: 6.68,
         materials: [{
@@ -108,7 +103,6 @@
       name: "Mars",
       distance: 1.5,
       orbitSpeed: 24,
-      model: "Mars.sfb",
       materials: [{
         diffuse: materialPrefix + "Mercury_Mat_baseColor.png",
         normal: materialPrefix + "Mercury_Mat_normal.png"
@@ -119,7 +113,6 @@
       name: "Jupiter",
       distance: 2.2,
       orbitSpeed: 13,
-      model: "Jupiter.sfb",
       materials: [{
         diffuse: materialPrefix + "Jupiter_Mat_baseColor.png"
       }],
@@ -129,7 +122,6 @@
       name: "Saturn",
       distance: 3.5,
       orbitSpeed: 9,
-      model: "Saturn.sfb",
       materials: [{
         diffuse: materialPrefix + "SaturnPlanet_Opaque_Mat_baseColor.png"
       }],
@@ -139,7 +131,6 @@
       name: "Uranus",
       distance: 5.2,
       orbitSpeed: 7,
-      model: "Uranus.sfb",
       materials: [{
         diffuse: materialPrefix + "UranusGlobe_Mat_baseColor.png"
       }],
@@ -149,7 +140,6 @@
       name: "Neptune",
       distance: 6.1,
       orbitSpeed: 5,
-      model: "Neptune.sfb",
       materials: [{
         diffuse: materialPrefix + "NeptuneGlobe_Mat_baseColor.png"
       }],
@@ -165,6 +155,7 @@
       return {
         msg: 'Hello World!',
         arLabel: 'Look for a surface and tap it..',
+        solarSystemLoaded: false,
         orbitalName: undefined,
         orbitSpeed: 1,
         rotationSpeed: 1,
@@ -210,6 +201,12 @@
       },
 
       loadSolarSystem(arPlaneTappedEventData) {
+        // we only need one solar system in our lives, right?
+        if (this.solarSystemLoaded) {
+          return;
+        }
+        this.solarSystemLoaded = true;
+
         const ar: AR = arPlaneTappedEventData.object;
 
         ar.addNode({
@@ -276,9 +273,9 @@
                     }).then(view => {
                       setInterval(() => {
                         try {
-                          let p=view.getWorldPosition();
-                          let c=ar.getCameraPosition();
-                          c.y=p.y;
+                          let p = view.getWorldPosition();
+                          let c = ar.getCameraPosition();
+                          c.y = p.y;
                           view.lookAtWorldPosition(c);
                         } catch (e) {
                           console.error(e);
@@ -297,13 +294,12 @@
                 }
               }
             }).then(o => {
-              console.log("sphere added: " + o);
-
+              // adding planet-specific tweaks here, just for fun/show :)
               if (solarSystemObject.name === "Earth") {
                 console.log("Adding clouds to Earth");
-                let cloudDegreesPerSecond = 10;
+                let cloudDegreesPerSecond = 12;
                 ar.addSphere({
-                  position: {x: -.0001, y: 0, z: 0},
+                  // position: {x: -.0001, y: 0, z: 0},
                   parentNode: o,
                   radius: radius + (isIOS ? 0.015 : 0.05), // TODO this platform difference is not so nice
                   materials: [{
@@ -321,73 +317,26 @@
                     earthClouds.rotateBy({x: 0, y: cloudDegreesPerSecond / fps, z: 0});
                   }, 1000 / fps);
                 }).catch(console.error);
+
+              } else if (solarSystemObject.name === "Saturn") {
+                console.log("Adding a ring to Saturn");
+                ar.addBox({
+                  parentNode: o,
+                  dimensions: {
+                    x: 1.2,
+                    y: 0,
+                    z: 1.2
+                  },
+                  materials: [{
+                    diffuse: materialPrefix + "saturn_loop.png",
+                    transparency: 0.7
+                  }]
+                }).catch(console.error);
               }
 
             }).catch(e => {
               console.error("error adding sphere: " + e);
             });
-
-            // adding a few planet-specific tweaks here, just for fun/show :)
-            if (solarSystemObject.name === "Sun") {
-              /*
-              console.log("Adding halo to the sun");
-              ar.addPlane({
-                parentNode: objectNode,
-                dimensions: .5,
-                materials: [{
-                  diffuse: materialPrefix + "sun-halo.png",
-                  lightingModel: "CONSTANT",
-                  transparency: .5
-                }],
-              });
-              */
-
-            } else if (solarSystemObject.name === "Saturn") {
-              console.log("Adding rings to Saturn");
-              ar.addBox({
-                dimensions: {
-                  x: 0.55,
-                  y: 0.0,
-                  z: 0.55
-                },
-                rotation: {
-                  x: 20,
-                  y: 30,
-                  z: 1
-                },
-                parentNode: objectNode,
-                materials: [{
-                  diffuse: materialPrefix + "saturn_loop.png"
-                }],
-              });
-
-            }
-            /*
-                          ar.addModel({
-                          parentNode: objectNode,
-                          scale: solarSystemObject.scale,
-                          name: solarSystemObject.model,
-                          onTap: () => {
-                            console.log("Tapped " + solarSystemObject.model);
-                            this.arLabel = solarSystemObject.model + " tapped";
-                            if (solarSystemObject.model === "Sol.sfb") {
-                              if (!this.hasControlPanel) {
-                                this.hasControlPanel = true;
-                                ar.addUIView({
-                                  position: {x: 0, y: .22, z: 0},
-                                  parentNode: objectNode,
-                                  view: this.page.getViewById("controlPanel"),
-                                  scale: 0.35
-                                });
-                              }
-                            }
-                          }
-                        }).then(o => {
-                          console.log("model added: " + o);
-                        }).catch(e => {
-                          console.error("error adding model: " + e);
-                        });
-            */
 
             if (solarSystemObject.children) {
               solarSystemObject.children.forEach(child => {
