@@ -6,13 +6,13 @@
       <!-- because this controlPanel layout is "below" the AR node (z-index-wise) it's not shown to the user -->
       <StackLayout id="controlPanel" class="control-panel">
         <Label text="Orbit Speed:" horizontalAlignment="center"></Label>
-        <Slider v-model="orbitSpeed" width="100%" minValue="-10" maxValue="10" horizontalAlignment="center"></Slider>
+        <Slider v-model="orbitSpeed" width="100%" minValue="-20" maxValue="20" horizontalAlignment="center"></Slider>
         <Label text="Rotation Speed:" horizontalAlignment="center"></Label>
-        <Slider v-model="rotationSpeed" width="100%" minValue="-10" maxValue="10" horizontalAlignment="center"></Slider>
+        <Slider v-model="rotationSpeed" width="100%" minValue="-20" maxValue="20" horizontalAlignment="center"></Slider>
       </StackLayout>
 
       <!-- same comment as above -->
-      <StackLayout id="orbitalName" class="orbital-name">
+      <StackLayout id="orbitalName" class="orbital-name" horizontalAlignment="center" verticalAlignment="center">
         <Label :text="orbitalName" horizontalAlignment="center" verticalAlignment="center"></Label>
       </StackLayout>
 
@@ -82,7 +82,7 @@
     }, {
       name: "Earth",
       distance: SUN_TO_EARTH_METERS,
-      orbitSpeed: 1,
+      orbitSpeed: 29,
       model: "Earth.sfb",
       scale: 0.05 * SCALE_FACTOR,
       tilt: 23.4,
@@ -416,10 +416,10 @@
   }
 
   .control-panel {
-    width: 280;
-    height: 240;
+    width: 300;
+    height: 270;
     padding: 24;
-    opacity: 0.8;
+    /*opacity: 0.8;*/
     font-size: 24;
     color: white;
     border-radius: 10;
@@ -427,12 +427,12 @@
   }
 
   .control-panel Label {
-    margin-bottom: 20;
+    padding: 16;
   }
 
   .orbital-name {
-    width: 180;
-    height: 44;
+    width: 240;
+    height: 60;
     background-color: cornflowerblue;
     opacity: 0.5;
   }
@@ -440,6 +440,7 @@
   .orbital-name Label {
     font-size: 24;
     color: white;
+    padding: 8;
   }
 
   .cover {
