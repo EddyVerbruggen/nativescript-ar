@@ -40,9 +40,10 @@ export class ARUIView extends ARCommonNode {
       }
       const nativeView = view.ios || view;
 
+      view.measure(0,0)
       if (!options.dimensions) {
         options.dimensions = {
-          x: nativeView.bounds.size.width / pixelsPerMeter, y: nativeView.bounds.size.height / pixelsPerMeter
+          x: view.getMeasuredWidth() / pixelsPerMeter, y: view.getMeasuredHeight() / pixelsPerMeter
         };
       }
 
@@ -54,7 +55,8 @@ export class ARUIView extends ARCommonNode {
       const materialPlane = SCNPlane.planeWithWidthHeight(dimensions.x, dimensions.y);
 
       nativeView.layer.anchorPoint = CGPointMake(dimensions.x / 2, 0);
-      nativeView.transform = CGAffineTransformMakeScale(1 / dimensions.x, 1 / dimensions.y);
+      const adjustY=0.04;
+      nativeView.transform = CGAffineTransformMakeScale(1 / dimensions.x, 1 / (dimensions.y-adjustY));
 
       materialPlane.cornerRadius = options.chamferRadius || 0;
 
@@ -65,7 +67,17 @@ export class ARUIView extends ARCommonNode {
 
 
       const node=SCNNode.node();
+      planeNode.position = {
+        x:0,
+        y:(dimensions.y-adjustY)/2,
+        z:0
+      };
       planeNode.eulerAngles = {
+        x: 0,
+        y: Math.PI,
+        z: 0
+      };
+      node.eulerAngles = {
         x: 0,
         y: Math.PI,
         z: 0
