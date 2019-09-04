@@ -80,6 +80,12 @@ const addBox = (options: ARAddBoxOptions, parentNode: com.google.ar.sceneform.No
     ARBox.create(options, _fragment)
         .then((box: ARBox) => {
           box.android.setParent(parentNode);
+          // TODO testing this: https://github.com/EddyVerbruggen/nativescript-ar/issues/41#issuecomment-527308848
+          //  .. but this code assumes the parent is the 'inner' box here, which is probably correct in most cases.
+          //  .. Also see addSphere
+          if (parentNode && parentNode.getRenderable()) {
+            parentNode.getRenderable().setRenderPriority(Math.max(0, box.android.getRenderable().getRenderPriority() - 1));
+          }
           resolve(box);
         }).catch(reject);
   });
@@ -89,9 +95,10 @@ const addSphere = (options: ARAddSphereOptions, parentNode: com.google.ar.scenef
   return new Promise((resolve, reject) => {
     ARSphere.create(options, _fragment)
         .then((sphere: ARSphere) => {
+          sphere.android.setParent(parentNode);
           // TODO testing this: https://github.com/EddyVerbruggen/nativescript-ar/issues/41#issuecomment-527308848
           //  .. but this code assumes the parent is the 'inner' sphere here, which is probably correct in most cases.
-          sphere.android.setParent(parentNode);
+          //  .. Also see addBox
           if (parentNode && parentNode.getRenderable()) {
             parentNode.getRenderable().setRenderPriority(Math.max(0, sphere.android.getRenderable().getRenderPriority() - 1));
           }
@@ -264,9 +271,7 @@ export class AR extends ARBase {
       }
     }
 
-    const hasCameraPermission = this.wasPermissionGranted(android.Manifest.permission.CAMERA);
-
-    setTimeout(() => {
+    const onCamPermissionGranted = () => {
       const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
       supportFragmentManager.beginTransaction().add(this.nativeView.getId(), _fragment).commit();
 
@@ -293,35 +298,14 @@ export class AR extends ARBase {
 
       // don't fire the event now, because that's too early.. but there doesn't seem to be an event we can listen to, so using our own impl here
       this.fireArLoadedEvent(1000);
+    };
 
-
-      // TODO below is a bunch of experiments that need to be transformed in decent code (but they mostly work)
-
-      // const context = application.android.context;
-      // const resourcestmp = context.getResources();
-      // const ident = resourcestmp.getIdentifier("andy", "raw", context.getPackageName());
-
-      /* this model-loading approach also works
-      let earthRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
-      const earthStage =
-          com.google.ar.sceneform.rendering.ModelRenderable.builder()
-              .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("Earth.sfb"))
-              .build();
-
-      java.util.concurrent.CompletableFuture
-          .allOf([earthStage])
-          .handle(new java.util.function.BiFunction({
-            apply: (notUsed, throwable) => {
-              console.log(">> handled! throwable: " + throwable);
-              try {
-                earthRenderable = earthStage.get();
-              } catch (e) {
-                console.log(e);
-              }
-            }
-          }));
-      */
-    }, hasCameraPermission ? 0 : 1000); // needs a little timeout, otherwise the permission popup may not be shown
+    const cameraPermission = android.Manifest.permission.CAMERA;
+    if (this.wasPermissionGranted(cameraPermission)) {
+      setTimeout(() => onCamPermissionGranted(), 0);
+    } else {
+      this._requestPermission(cameraPermission, () => onCamPermissionGranted());
+    }
   }
 
   private fireArLoadedEvent(attemptsLeft: number): void {

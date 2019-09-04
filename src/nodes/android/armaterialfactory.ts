@@ -21,10 +21,8 @@ export class ARMaterialFactory {
 
     } else {
 
-      return ARMaterialFactory.applyARMaterial(node, <ARMaterial>material).catch((err) => {
-        console.log(err);
-        console.log("Error");
-      });
+      return ARMaterialFactory.applyARMaterial(node, <ARMaterial>material)
+          .catch(err => console.log("Error applying material: " + err));
     }
   }
 
