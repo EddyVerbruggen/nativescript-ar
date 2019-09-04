@@ -1,4 +1,4 @@
-import * as application from 'tns-core-modules/application';
+import * as application from "tns-core-modules/application";
 import { fromNativeSource, ImageSource } from "tns-core-modules/image-source";
 import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
@@ -22,9 +22,9 @@ const ARState = {
   shapes: new Map<string, ARCommonNode>(),
 };
 
-const addUIView = (options: ARUIViewOptions, parentNode: SCNNode): Promise<ARUIView> => {
+const addUIView = (options: ARUIViewOptions, parentNode: SCNNode, sceneView: ARSCNView): Promise<ARUIView> => {
   return new Promise((resolve, reject) => {
-    const view = ARUIView.create(options);
+    const view = ARUIView.create(options, sceneView);
     ARState.shapes.set(view.id, view);
     parentNode.addChildNode(view.ios);
     resolve(view);
@@ -150,7 +150,6 @@ export class AR extends ARBase {
     }
   }
 
-
   public setDebugLevel(to: ARDebugLevel): void {
     if (!this.sceneView) {
       return;
@@ -178,6 +177,12 @@ export class AR extends ARBase {
 
   public startRecordingVideo(): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      if (!this.recorder) {
+        this.recorder = RecordAR.alloc().initWithARSceneKit(this.sceneView);
+        // commented, because it allegedly screws things up, but let's try: this.recorder.prepare(this.configuration)
+        // this.recorder.prepare(new ARWorldTrackingConfiguration());
+      }
+
       if (this.recorder.status === RecordARStatus.ReadyToRecord) {
         this.recorder.record();
         resolve();
@@ -320,12 +325,6 @@ export class AR extends ARBase {
     this.sceneView.antialiasingMode = SCNAntialiasingMode.Multisampling4X;
 
     setTimeout(() => {
-      // TODO only do this when recording is actually requested!
-      // this.recorder = RecordAR.alloc().initWithARSceneKit(this.sceneView);
-
-      // commented, because it allegedly screws things up, but let's try: his.recorder.prepare(this.configuration)
-      // this.recorder.prepare(new ARWorldTrackingConfiguration());
-
       this.nativeView.addSubview(this.sceneView);
 
       const eventData: ARLoadedEventData = {
@@ -574,7 +573,7 @@ export class AR extends ARBase {
 
 
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
-    return addUIView(options, this.resolveParentNode(options));
+    return addUIView(options, this.resolveParentNode(options), this.sceneView);
   }
 
   addNode(options: ARAddOptions): Promise<ARCommonNode> {

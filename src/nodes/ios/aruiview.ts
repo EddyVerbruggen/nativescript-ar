@@ -1,19 +1,18 @@
+import { screen } from "tns-core-modules/platform";
 import { View } from "tns-core-modules/ui/core/view";
 import { Label } from "tns-core-modules/ui/label";
-import { LayoutBase } from "tns-core-modules/ui/layouts/layout-base";
-import { StackLayout } from "tns-core-modules/ui/layouts/stack-layout";
 import { ARDimensions2D, ARUIViewOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
-const pixelsPerMeter = 500;
+const pixelsPerMeter = 200 * screen.mainScreen.scale;
 
 export class ARUIView extends ARCommonNode {
 
-  static create(options: ARUIViewOptions): ARUIView {
-    return new ARUIView(options);
+  static create(options: ARUIViewOptions, sceneView: ARSCNView): ARUIView {
+    return new ARUIView(options, sceneView);
   }
 
-  constructor(options: ARUIViewOptions) {
+  constructor(options: ARUIViewOptions, sceneView: ARSCNView) {
     try {
       // TODO remove
       if (!options.view) {
@@ -43,12 +42,17 @@ export class ARUIView extends ARCommonNode {
         };
       }
 
+      // the NativeScript View x/y ratio is different than the camera ratio, so compensate for the difference, otherwise the view is vertically compressed
+      const cameraRatio = Math.max(sceneView.session.currentFrame.camera.imageResolution.height, sceneView.session.currentFrame.camera.imageResolution.width) / Math.min(sceneView.session.currentFrame.camera.imageResolution.height, sceneView.session.currentFrame.camera.imageResolution.width);
+      const screenRatio = Math.max(screen.mainScreen.heightPixels, screen.mainScreen.widthPixels) / Math.min(screen.mainScreen.heightPixels, screen.mainScreen.widthPixels);
+      const yStretchCompensation = (cameraRatio + screenRatio) / 2;
+
       const dimensions: ARDimensions2D = <ARDimensions2D>(typeof options.dimensions !== "number" ? options.dimensions : {
         x: options.dimensions,
-        y: options.dimensions,
+        y: options.dimensions * yStretchCompensation,
       });
 
-      const materialPlane = SCNPlane.planeWithWidthHeight(dimensions.x, dimensions.y);
+      const materialPlane = SCNPlane.planeWithWidthHeight(dimensions.x, dimensions.y * yStretchCompensation);
 
       nativeView.layer.anchorPoint = CGPointMake(dimensions.x / 2, 0);
       const adjustY = 0.04;
