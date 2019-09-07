@@ -1,7 +1,7 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode, ARPosition } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode, ARPosition, ARRotation, ARTrackingImageDetectedEventData, ARImageTrackingActions } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
 import { ARImage } from "./nodes/android/arimage";
@@ -13,6 +13,8 @@ import { ARUIView } from "./nodes/android/aruiview";
 import { ARVideo } from "./nodes/android/arvideo";
 import { FragmentScreenGrab } from "./screengrab-android";
 import { VideoRecorder } from "./videorecorder.android";
+
+import {TNSArFragmentForImageDetection} from "./imagefragment.android";
 
 declare const com, android, global, java: any;
 
@@ -176,6 +178,31 @@ class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragmen
   // getAdditionalPermissions(): native.Array<string>;
 }
 
+class ARImageTrackingActionsImpl implements ARImageTrackingActions {
+
+  anchor:com.google.ar.sceneform.AnchorNode;
+
+  constructor(anchor) {
+    this.anchor = anchor;
+  }
+
+  playVideo(nativeUrl: NSURL, loop?: boolean): void {
+    
+  }
+
+  stopVideoLoop(): void {
+    
+  }
+
+  addBox(options: ARAddBoxOptions): Promise<ARBox> {
+    return addBox(options, this.anchor);
+  }
+
+  addModel(options: ARAddModelOptions): Promise<ARModel> {
+    return addModel(options, this.anchor);
+  }
+}
+
 export class AR extends ARBase {
   private faceNodeMap = new Map();
 
@@ -266,8 +293,86 @@ export class AR extends ARBase {
       }, 0);
 
     } else {
-      _fragment = new com.google.ar.sceneform.ux.ArFragment();
+      
       if (this.trackingMode === ARTrackingMode.IMAGE) {
+        _fragment = new TNSArFragmentForImageDetection();
+
+        
+
+         _fragment.getImageDetectionSceneView().then(sceneView=>{
+
+          const scene = sceneView.getScene();
+          const augmentedImages = [];
+
+          scene.addOnUpdateListener(new com.google.ar.sceneform.Scene.OnUpdateListener({
+            onUpdate: frameTime => {
+              const frame = sceneView.getArFrame();
+              // If there is no frame, just return.
+              if (frame == null) {
+                return;
+              }
+
+
+              const updatedAugmentedImages =
+              frame.getUpdatedTrackables(com.google.ar.core.AugmentedImage.class).toArray();
+
+              for (let i = 0; i < updatedAugmentedImages.length; i++) {
+              
+                let augmentedImage= updatedAugmentedImages[i];
+              
+                const state=augmentedImage.getTrackingState();
+                if(state==com.google.ar.core.TrackingState.PAUSED) {
+                 
+                   console.log("Found image");
+
+                  }
+                 if(state==com.google.ar.core.TrackingState.TRACKING){
+
+                  
+                    // Have to switch to UI Thread to update View.
+                    //fitToScanView.setVisibility(View.GONE);
+
+                    // Create a new anchor for newly found images.
+                    if (augmentedImages.indexOf(augmentedImage.getName())===-1) {
+                      const node = new com.google.ar.sceneform.AnchorNode(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
+                   
+                      node.setAnchor(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
+                      console.log(augmentedImages);
+
+
+                      augmentedImages.push(augmentedImage.getName());
+                      scene.addChild(node);
+
+                      const eventData: ARTrackingImageDetectedEventData = {
+                        eventName: ARBase.trackingImageDetectedEvent,
+                        object: this,
+                        position: {
+                          x: augmentedImage.getCenterPose().tx(),
+                          y: augmentedImage.getCenterPose().ty(),
+                          z: augmentedImage.getCenterPose().tz()
+                        },
+                        imageName: augmentedImage.getName(),
+                        imageTrackingActions: new ARImageTrackingActionsImpl(node)
+                      };
+                      this.notify(eventData);
+                    }
+                  }
+
+                   if(state==com.google.ar.core.TrackingState.STOPPED){
+
+                     let i=augmentedImages.indexOf(augmentedImage.getName());
+                     augmentedImages.splice(i,1);
+                }
+              }
+
+
+            }
+          }));
+        });
+
+
+      }else{
+        _fragment = new com.google.ar.sceneform.ux.ArFragment();
       }
     }
 
