@@ -301,6 +301,11 @@ export class AR extends ARBase {
 
          _fragment.getImageDetectionSceneView().then(sceneView=>{
 
+
+          if (this.trackingImagesBundle) {
+            _fragment.addImagesInFolder(this.trackingImagesBundle)
+          }
+
           const scene = sceneView.getScene();
           const augmentedImages = [];
 
@@ -315,7 +320,6 @@ export class AR extends ARBase {
 
               const updatedAugmentedImages =
               frame.getUpdatedTrackables(com.google.ar.core.AugmentedImage.class).toArray();
-
               for (let i = 0; i < updatedAugmentedImages.length; i++) {
               
                 let augmentedImage= updatedAugmentedImages[i];
@@ -337,8 +341,6 @@ export class AR extends ARBase {
                       const node = new com.google.ar.sceneform.AnchorNode(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
                    
                       node.setAnchor(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
-                      console.log(augmentedImages);
-
 
                       augmentedImages.push(augmentedImage.getName());
                       scene.addChild(node);
@@ -368,7 +370,7 @@ export class AR extends ARBase {
 
             }
           }));
-        });
+        }).catch(console.log);
 
 
       }else{
