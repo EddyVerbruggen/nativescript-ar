@@ -14,7 +14,7 @@ import { ARVideo } from "./nodes/android/arvideo";
 import { FragmentScreenGrab } from "./screengrab-android";
 import { VideoRecorder } from "./videorecorder.android";
 
-import {TNSArFragmentForImageDetection} from "./imagefragment.android";
+import { TNSArFragmentForImageDetection } from "./imagefragment.android";
 
 declare const com, android, global, java: any;
 
@@ -180,18 +180,18 @@ class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragmen
 
 class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 
-  anchor:com.google.ar.sceneform.AnchorNode;
+  anchor: com.google.ar.sceneform.AnchorNode;
 
   constructor(anchor) {
     this.anchor = anchor;
   }
 
   playVideo(nativeUrl: NSURL, loop?: boolean): void {
-    
+
   }
 
   stopVideoLoop(): void {
-    
+
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARBox> {
@@ -293,13 +293,12 @@ export class AR extends ARBase {
       }, 0);
 
     } else {
-      
+
       if (this.trackingMode === ARTrackingMode.IMAGE) {
         _fragment = new TNSArFragmentForImageDetection();
 
-        
 
-         _fragment.getImageDetectionSceneView().then(sceneView=>{
+        _fragment.getImageDetectionSceneView().then(sceneView => {
 
           const scene = sceneView.getScene();
           const augmentedImages = [];
@@ -314,64 +313,55 @@ export class AR extends ARBase {
 
 
               const updatedAugmentedImages =
-              frame.getUpdatedTrackables(com.google.ar.core.AugmentedImage.class).toArray();
+                  frame.getUpdatedTrackables(com.google.ar.core.AugmentedImage.class).toArray();
 
               for (let i = 0; i < updatedAugmentedImages.length; i++) {
-              
-                let augmentedImage= updatedAugmentedImages[i];
-              
-                const state=augmentedImage.getTrackingState();
-                if(state==com.google.ar.core.TrackingState.PAUSED) {
-                 
-                   console.log("Found image");
 
-                  }
-                 if(state==com.google.ar.core.TrackingState.TRACKING){
+                let augmentedImage = updatedAugmentedImages[i];
 
-                  
-                    // Have to switch to UI Thread to update View.
-                    //fitToScanView.setVisibility(View.GONE);
+                const state = augmentedImage.getTrackingState();
+                if (state === com.google.ar.core.TrackingState.PAUSED) {
+                  console.log("Found image");
 
-                    // Create a new anchor for newly found images.
-                    if (augmentedImages.indexOf(augmentedImage.getName())===-1) {
-                      const node = new com.google.ar.sceneform.AnchorNode(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
-                   
-                      node.setAnchor(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
-                      console.log(augmentedImages);
+                } else if (state === com.google.ar.core.TrackingState.TRACKING) {
+                  // Have to switch to UI Thread to update View.
+                  // fitToScanView.setVisibility(View.GONE);
+
+                  // Create a new anchor for newly found images.
+                  if (augmentedImages.indexOf(augmentedImage.getName()) === -1) {
+                    const node = new com.google.ar.sceneform.AnchorNode(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
+
+                    node.setAnchor(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
+                    console.log(augmentedImages);
 
 
-                      augmentedImages.push(augmentedImage.getName());
-                      scene.addChild(node);
+                    augmentedImages.push(augmentedImage.getName());
+                    scene.addChild(node);
 
-                      const eventData: ARTrackingImageDetectedEventData = {
-                        eventName: ARBase.trackingImageDetectedEvent,
-                        object: this,
-                        position: {
-                          x: augmentedImage.getCenterPose().tx(),
-                          y: augmentedImage.getCenterPose().ty(),
-                          z: augmentedImage.getCenterPose().tz()
-                        },
-                        imageName: augmentedImage.getName(),
-                        imageTrackingActions: new ARImageTrackingActionsImpl(node)
-                      };
-                      this.notify(eventData);
-                    }
+                    const eventData: ARTrackingImageDetectedEventData = {
+                      eventName: ARBase.trackingImageDetectedEvent,
+                      object: this,
+                      position: {
+                        x: augmentedImage.getCenterPose().tx(),
+                        y: augmentedImage.getCenterPose().ty(),
+                        z: augmentedImage.getCenterPose().tz()
+                      },
+                      imageName: augmentedImage.getName(),
+                      imageTrackingActions: new ARImageTrackingActionsImpl(node)
+                    };
+                    this.notify(eventData);
                   }
 
-                   if(state==com.google.ar.core.TrackingState.STOPPED){
-
-                     let i=augmentedImages.indexOf(augmentedImage.getName());
-                     augmentedImages.splice(i,1);
+                } else if (state === com.google.ar.core.TrackingState.STOPPED) {
+                  const i = augmentedImages.indexOf(augmentedImage.getName());
+                  augmentedImages.splice(i, 1);
                 }
               }
-
-
             }
           }));
         });
 
-
-      }else{
+      } else {
         _fragment = new com.google.ar.sceneform.ux.ArFragment();
       }
     }

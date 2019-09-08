@@ -1,11 +1,9 @@
 import * as utils from "tns-core-modules/utils/utils";
 
-
 export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.ArFragment {
 
-
-  augmentedImageDatabase:any;
-  arSceneViewPrimises=[];
+  augmentedImageDatabase: any;
+  arSceneViewPrimises = [];
 
   constructor() {
     super();
@@ -19,16 +17,15 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     return config;
   }
 
-  public getImageDetectionSceneView():Promise<any>{
-  	return new Promise((resolve, reject)=>{
-  		const arSceneView=super.getArSceneView();
-  		if(arSceneView){
-  			resolve(arSceneView);
-  			return;
-  		}
-  		this.arSceneViewPrimises.push(resolve);
-
-  	})
+  public getImageDetectionSceneView(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const arSceneView = super.getArSceneView();
+      if (arSceneView) {
+        resolve(arSceneView);
+        return;
+      }
+      this.arSceneViewPrimises.push(resolve);
+    });
   }
 
   onCreateView(inflater, container, savedInstanceState) {
@@ -36,44 +33,37 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     super.getPlaneDiscoveryController().hide();
     super.getPlaneDiscoveryController().setInstructionView(null);
     super.getArSceneView().getPlaneRenderer().setEnabled(false);
-    this.arSceneViewPrimises.forEach(resolve=>{
-    	resolve(super.getArSceneView());
-    })
+    this.arSceneViewPrimises.forEach(resolve => {
+      resolve(super.getArSceneView());
+    });
     return frameLayout;
   }
 
-  setupAugmentedImageDatabase(config,  session){
-    
-    
-
+  setupAugmentedImageDatabase(config, session) {
     this.augmentedImageDatabase = new (<any>com.google.ar).core.AugmentedImageDatabase(session);
-    this.addImage('tnsgranite-diffuse.png');
+    // TODO get rid of this PoC code ;)
+    this.addImage("tnsgranite-diffuse.png");
 
     config.setAugmentedImageDatabase(this.augmentedImageDatabase);
     return true;
   }
 
+  public addImage(name: string): void {
+    const context = utils.ad.getApplicationContext();
+    const assetManager = context.getAssets();
+    let augmentedImageBitmap = null;
 
-  public addImage(name:string): void{
+    try {
+      let is = assetManager.open(name);
+      augmentedImageBitmap = android.graphics.BitmapFactory.decodeStream(is);
+    } catch (e) {
+      console.log(e);
+    }
 
-  	const context=utils.ad.getApplicationContext();
+    if (augmentedImageBitmap == null) {
+      return;
+    }
 
-    const assetManager =context.getAssets();
-
-      let augmentedImageBitmap=null;
-
-       try {
-        let is = assetManager.open(name)
-        augmentedImageBitmap= android.graphics.BitmapFactory.decodeStream(is);
-      } catch (e) {
-        console.log(e);
-      }
-
-      if (augmentedImageBitmap == null) {
-        return;
-      }
-
-      this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
+    this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
   }
-
 }
