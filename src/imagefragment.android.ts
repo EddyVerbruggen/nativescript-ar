@@ -1,6 +1,5 @@
 import * as utils from "tns-core-modules/utils/utils";
 
-
 export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.ArFragment {
 
 
@@ -26,16 +25,15 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     return config;
   }
 
-  public getImageDetectionSceneView():Promise<any>{
-  	return new Promise((resolve, reject)=>{
-  		const arSceneView=super.getArSceneView();
-  		if(arSceneView){
-  			resolve(arSceneView);
-  			return;
-  		}
-  		this.arSceneViewPrimises.push(resolve);
-
-  	})
+  public getImageDetectionSceneView(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const arSceneView = super.getArSceneView();
+      if (arSceneView) {
+        resolve(arSceneView);
+        return;
+      }
+      this.arSceneViewPrimises.push(resolve);
+    });
   }
 
   onCreateView(inflater, container, savedInstanceState) {
@@ -43,22 +41,16 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     super.getPlaneDiscoveryController().hide();
     super.getPlaneDiscoveryController().setInstructionView(null);
     super.getArSceneView().getPlaneRenderer().setEnabled(false);
-    
     return frameLayout;
   }
 
-  setupAugmentedImageDatabase(config,  session){
-    
-    
-
+  setupAugmentedImageDatabase(config, session) {
     this.augmentedImageDatabase = new (<any>com.google.ar).core.AugmentedImageDatabase(session);
-    // this.addImage('tnsgranite-diffuse.png');
-
-    //this.addImagesInFolder('AR Resources');
 
     config.setAugmentedImageDatabase(this.augmentedImageDatabase);
     return true;
   }
+
 
   public addImagesInFolder(name:string){
 
@@ -102,31 +94,30 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       //remove path and ext
       name=asset.split('/').pop().split('.').slice(0,-1).join('.');
     }
-    
-  	const context=utils.ad.getApplicationContext();
 
-    const assetManager =context.getAssets();
+    const context = utils.ad.getApplicationContext();
+    const assetManager = context.getAssets();
+    let augmentedImageBitmap = null;
 
-      let augmentedImageBitmap=null;
 
-       try {
-        let is = assetManager.open(asset)
-        augmentedImageBitmap= android.graphics.BitmapFactory.decodeStream(is);
-      } catch (e) {
-        console.log(e);
-      }
+    try {
+      let is = assetManager.open(asset)
+      augmentedImageBitmap= android.graphics.BitmapFactory.decodeStream(is);
+    } catch (e) {
+      console.log(e);
+    }
 
-      if (augmentedImageBitmap == null) {
-        console.log('error loading '+asset);
-        return;
-      }
-      console.log("track image: "+asset+": "+name);
-      const index=this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
-      if(index==-1){
-        console.error('Failed to add image probably: '+asset);
-      }
+    if (augmentedImageBitmap == null) {
+      console.log('error loading '+asset);
+      return;
+    }
+    console.log("track image: "+asset+": "+name);
+    const index=this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
+    if(index==-1){
+      console.error('Failed to add image: '+asset);
+    }      
 
-      this.config.setAugmentedImageDatabase(this.augmentedImageDatabase);
+    this.config.setAugmentedImageDatabase(this.augmentedImageDatabase);
+
   }
-
 }

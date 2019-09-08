@@ -332,6 +332,34 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
         });
       }
     }).then(node => console.log("box added to image, id: " + node.id));
+  }else if(args.imageName === "tnsgranite-diffuse"){
+        console.log("Adding box");
+        args.imageTrackingActions.addBox({
+          position: {
+            x: 0
+            y: 0,
+            z: 0
+          },
+          dimensions: 0.05
+        })
+
+        args.imageTrackingActions.addBox({
+          position: {
+            x: 0
+            y: 0,
+            z: 0.01
+          },
+          dimensions: 0.05
+        })
+
+        args.imageTrackingActions.addBox({
+          position: {
+            x: 0
+            y: 0,
+            z: 0.02
+          },
+          dimensions: 0.05
+        })
   }
 }
 
@@ -346,23 +374,23 @@ export function planeDetected(args: ARPlaneDetectedEventData): void {
 export function planeTapped(args: ARPlaneTappedEventData): void {
   console.log("Plane tapped @ x coordinate: " + args.position.x);
 
-  ar.addVideo({
-    position: {
-      x: args.position.x,
-      y: args.position.y + 1, // want to drop the box from a meter high (when mass > 0)? add +1
-      z: args.position.z
-    },
-    // you can use either a local or remote video, but beware: sometimes sample-videos.com is down or your device has slow Internet
-    video: isIOS ? "art.scnassets/celebration.mp4" : "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4",
-    onTap: (interaction: ARNodeInteraction) => {
-      const node = <ARVideoNode>interaction.node;
-      if (node.isPlaying()) {
-        node.pause();
-      } else {
-        node.play();
-      }
-    }
-  }).catch(console.error);
+  // ar.addVideo({
+  //   position: {
+  //     x: args.position.x,
+  //     y: args.position.y + 1, // want to drop the box from a meter high (when mass > 0)? add +1
+  //     z: args.position.z
+  //   },
+  //   // you can use either a local or remote video, but beware: sometimes sample-videos.com is down or your device has slow Internet
+  //   video: isIOS ? "art.scnassets/celebration.mp4" : "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4",
+  //   onTap: (interaction: ARNodeInteraction) => {
+  //     const node = <ARVideoNode>interaction.node;
+  //     if (node.isPlaying()) {
+  //       node.pause();
+  //     } else {
+  //       node.play();
+  //     }
+  //   }
+  // }).catch(console.error);
 
   ar.addImage({
     position: {
@@ -374,12 +402,10 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 
   }).catch(console.error);
 
-
-  args.object.addModel({
-    name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+   ar.addNode({
     position: {
       x: args.position.x + 0.2,
-      y: args.position.y + 0.5,
+      y: args.position.y ,
       z: args.position.z
     },
     rotation: {
@@ -401,11 +427,28 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
         x: 10,
         y: 10,
         z: 10
-      });
-      // interaction.node.scaleBy(-0.01);
+      })
     },
-    onLongPress: (interaction: ARNodeInteraction) => console.log("model longpressed: " + interaction.node.id)
+    mass: 20
+  }).then(node=>{
+
+  return ar.addModel({
+   parentNode:node,
+    name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+    position: {
+      x: 0,
+      y: .5, //assuming the height is 1m
+      z: 0
+    }
+  }).then(car=>{
+
+      setInterval(()=>{
+        node.setScale(0.1+.05*Math.sin((new Date()).getTime()/1000));
+      }, 1000/60)
+    })
+
   }).catch(console.error);
+
 
   const boxDimensions = 0.09;
   const boxMaterialPrefix = isIOS ? "Assets.scnassets/Materials/tnsgranite/" : "";
@@ -499,7 +542,11 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       position: {x: 0, y: .4, z: 0},
       parentNode: earthNode,
       view: page.getViewById("uselessToggleView")
-    });
+    }).then(view=>{
+      setInterval(()=>{
+        view.setScale(1+0.5*Math.sin((new Date()).getTime()/1000));
+      }, 1000/60)
+    })
 
   }).catch(console.error);
 
