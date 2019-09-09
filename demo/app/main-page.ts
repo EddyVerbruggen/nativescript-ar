@@ -44,6 +44,19 @@ export function arLoaded(args: ARLoadedEventData): void {
   console.log(">> arLoaded, ar: " + ar);
   model.ar = ar;
 
+  
+  try{
+    ar.trackImage({
+      image:"https://raw.githubusercontent.com/EddyVerbruggen/nativescript-ar/master/demo/app/App_Resources/Android/src/main/assets/tnsgranite-diffuse.png",
+      onDetectedImage:(args)=>{
+        console.log("Detected Image Handler: tnsgranite-diffuse");
+      }
+    });
+  }catch(e){
+    console.error(e);
+  }
+
+
   // add some stuff to the scene
   /*
 setTimeout(() => {
@@ -62,7 +75,6 @@ setTimeout(() => {
     scale: 0.5,
     onTap: node => console.log("model tapped: " + node)
   });
-
     args.object.addBox({
       position: {
         x: -0.2,
@@ -87,7 +99,6 @@ setTimeout(() => {
       rotatingEnabled: true
       // onPan: node => console.log("box panned: " + node.id),
     }).then(node => console.log("box added: " + node.id));
-
     args.object.addSphere({
       position: {
         x: 0.4,
@@ -102,7 +113,6 @@ setTimeout(() => {
       rotatingEnabled: true
       // onPan: node => console.log("box panned: " + node.id),
     }).then(node => console.log("sphere added: " + node.id));
-
     args.object.addText({
       text: "NativeScript",
       position: {
@@ -121,7 +131,6 @@ setTimeout(() => {
       onTap: node => console.log("text tapped: " + node.id),
       // onPan: node => console.log("text panned: " + node.id),
     }).then(node => console.log("text added: " + node.id));
-
     args.object.addText({
       text: "is COOL",
       position: {
@@ -139,7 +148,6 @@ setTimeout(() => {
       },
       onTap: node => console.log("text tapped: " + node.id),
     }).then(node => console.log("text added: " + node.id));
-
     args.object.addTube({
       position: {
         x: 0.3,

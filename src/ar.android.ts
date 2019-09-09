@@ -1,7 +1,9 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode, ARPosition, ARRotation, ARTrackingImageDetectedEventData, ARImageTrackingActions } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, 
+  ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, 
+  ARTrackingMode, ARUIViewOptions, ARVideoNode, ARPosition, ARRotation, ARTrackingImageDetectedEventData, ARImageTrackingOptions, ARImageTrackingActions } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
 import { ARImage } from "./nodes/android/arimage";
@@ -300,6 +302,11 @@ export class AR extends ARBase {
 
         _fragment.getImageDetectionSceneView().then(sceneView => {
 
+
+          if (this.trackingImagesBundle) {
+            _fragment.addImagesInFolder(this.trackingImagesBundle)
+          }
+
           const scene = sceneView.getScene();
           const augmentedImages = [];
 
@@ -315,9 +322,12 @@ export class AR extends ARBase {
               const updatedAugmentedImages =
                   frame.getUpdatedTrackables(com.google.ar.core.AugmentedImage.class).toArray();
 
+
               for (let i = 0; i < updatedAugmentedImages.length; i++) {
 
+
                 let augmentedImage = updatedAugmentedImages[i];
+
 
                 const state = augmentedImage.getTrackingState();
                 if (state === com.google.ar.core.TrackingState.PAUSED) {
@@ -359,7 +369,7 @@ export class AR extends ARBase {
               }
             }
           }));
-        });
+        }).catch(console.log);
 
       } else {
         _fragment = new com.google.ar.sceneform.ux.ArFragment();
@@ -562,6 +572,24 @@ export class AR extends ARBase {
 
   addUIView(options: ARUIViewOptions): Promise<ARCommonNode> {
     return addUIView(options, resolveParentNode(options));
+  }
+
+  trackImage(options: ARImageTrackingOptions): void {
+    if(!(_fragment instanceof TNSArFragmentForImageDetection)){
+      throw "Only supported in trackingMode: IMAGE";
+    }
+
+    _fragment.addImage(options.image);
+      if(!options.onDetectedImage){
+        return;
+      }
+      this.on(ARBase.trackingImageDetectedEvent, (args:ARTrackingImageDetectedEventData)=>{
+        
+        if(args.imageName===options.image.split('/').pop().split('.').slice(0,-1).join('.')){
+          options.onDetectedImage(args);
+        }
+    });
+
   }
 
   private wasPermissionGranted(permission: string): boolean {

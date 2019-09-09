@@ -1,6 +1,11 @@
 import * as application from "tns-core-modules/application";
 import { fromNativeSource, ImageSource } from "tns-core-modules/image-source";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { AR as 
+  ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, 
+  ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, 
+  ARImageTrackingActions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, 
+  ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARImageTrackingOptions, ARTrackingImageDetectedEventData, 
+  ARTrackingMode, ARUIViewOptions, ARVideoNode, ARRotation } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARGroup } from "./nodes/ios/argroup";
 import { ARImage } from "./nodes/ios/arimage";
@@ -224,6 +229,11 @@ export class AR extends ARBase {
   public getCameraPosition(): ARPosition {
     const p = this.sceneView.defaultCameraController.pointOfView.worldPosition;
     return {x: p.x, y: p.y, z: p.z};
+  }
+
+  public getCameraRotation(): ARRotation {
+    const r = this.sceneView.defaultCameraController.pointOfView.eulerAngles;
+    return {x: r.x, y: r.y, z: r.z};
   }
 
   private initAR() {
@@ -610,6 +620,42 @@ export class AR extends ARBase {
 
   addTube(options: ARAddTubeOptions): Promise<ARCommonNode> {
     return addTube(options, this.resolveParentNode(options));
+  }
+
+  trackImage(options: ARImageTrackingOptions): void {
+    if(!(this.configuration instanceof ARImageTrackingConfiguration)){
+      throw "Only supported in trackingMode: IMAGE";
+    }
+
+    const set=NSMutableSet.setWithSet(this.configuration.trackingImages);
+    const name=options.image.split('/').pop().split('.').slice(0,-1).join('.');
+
+    let img;
+
+    if(options.image.indexOf('://')>0){
+      img = UIImage.imageWithData(NSData.alloc().initWithContentsOfURL(NSURL.URLWithString(options.image)));
+    }else{
+      img=UIImage.imageNamed(options.image);
+    }
+
+    const refImage=ARReferenceImage.alloc().initWithCGImageOrientationPhysicalWidth(img.CGImage, 1, 1);
+    refImage.name=name
+    set.addObject(refImage);
+
+
+    this.configuration.maximumNumberOfTrackedImages = Math.min(set.count, 10);
+    this.configuration.trackingImages=set;
+    this.sceneView.session.runWithConfigurationOptions(this.configuration, ARSessionRunOptions.ResetTracking | ARSessionRunOptions.RemoveExistingAnchors);
+
+    if(!options.onDetectedImage){
+      return;
+    }
+    this.on(ARBase.trackingImageDetectedEvent, (args:ARTrackingImageDetectedEventData)=>{
+      if(args.imageName===name){
+        options.onDetectedImage(args);
+      }
+    });
+
   }
 
   public reset(): void {
