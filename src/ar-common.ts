@@ -264,6 +264,11 @@ export interface ARFaceTrackingActions {
   addText(options: ARAddTextOptions): Promise<ARCommonNode>;
 }
 
+export interface ARImageTrackingOptions{
+  image:string;
+  onDetectedImage?:(args:ARTrackingImageDetectedEventData)=>void;
+}
+
 export interface ARImageTrackingActions {
   playVideo(nativeUrl: any /* iOS: NSURL */, loop?: boolean): void;
 

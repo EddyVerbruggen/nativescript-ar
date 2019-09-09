@@ -1,7 +1,9 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode, ARPosition, ARRotation, ARTrackingImageDetectedEventData, ARImageTrackingActions } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, 
+  ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARLoadedEventData, ARPlaneTappedEventData, 
+  ARTrackingMode, ARUIViewOptions, ARVideoNode, ARPosition, ARRotation, ARTrackingImageDetectedEventData, ARImageTrackingOptions, ARImageTrackingActions } from "./ar-common";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
 import { ARImage } from "./nodes/android/arimage";
@@ -570,6 +572,24 @@ export class AR extends ARBase {
 
   addUIView(options: ARUIViewOptions): Promise<ARCommonNode> {
     return addUIView(options, resolveParentNode(options));
+  }
+
+  trackImage(options: ARImageTrackingOptions): void {
+    if(!(_fragment instanceof TNSArFragmentForImageDetection)){
+      throw "Only supported in trackingMode: IMAGE";
+    }
+
+    _fragment.addImage(options.image);
+      if(!options.onDetectedImage){
+        return;
+      }
+      this.on(ARBase.trackingImageDetectedEvent, (args:ARTrackingImageDetectedEventData)=>{
+        
+        if(args.imageName===options.image.split('/').pop().split('.').slice(0,-1).join('.')){
+          options.onDetectedImage(args);
+        }
+    });
+
   }
 
   private wasPermissionGranted(permission: string): boolean {
