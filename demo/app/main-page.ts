@@ -44,6 +44,19 @@ export function arLoaded(args: ARLoadedEventData): void {
   console.log(">> arLoaded, ar: " + ar);
   model.ar = ar;
 
+  
+  try{
+    ar.trackImage({
+      image:"https://raw.githubusercontent.com/EddyVerbruggen/nativescript-ar/master/demo/app/App_Resources/Android/src/main/assets/tnsgranite-diffuse.png",
+      onDetectedImage:(args)=>{
+        console.log("Detected Image Handler: tnsgranite-diffuse");
+      }
+    });
+  }catch(e){
+    console.error(e);
+  }
+
+
   // add some stuff to the scene
   /*
 setTimeout(() => {

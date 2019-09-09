@@ -629,10 +629,15 @@ export class AR extends ARBase {
 
     const set=NSMutableSet.setWithSet(this.configuration.trackingImages);
     const name=options.image.split('/').pop().split('.').slice(0,-1).join('.');
-    const img=UIImage.imageNamed(options.image);
 
-    console.log(img.size.width+"x"+img.size.height);
-  
+    let img;
+
+    if(options.image.indexOf('://')>0){
+      img = UIImage.imageWithData(NSData.alloc().initWithContentsOfURL(NSURL.URLWithString(options.image)));
+    }else{
+      img=UIImage.imageNamed(options.image);
+    }
+
     const refImage=ARReferenceImage.alloc().initWithCGImageOrientationPhysicalWidth(img.CGImage, 1, 1);
     refImage.name=name
     set.addObject(refImage);

@@ -1,5 +1,5 @@
 import * as utils from "tns-core-modules/utils/utils";
-
+import { fromFileOrResource, fromUrl, ImageSource } from "tns-core-modules/image-source";
 export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.ArFragment {
 
 
@@ -54,7 +54,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
   public addImagesInFolder(name:string){
 
-    console.log("Add folder: "+name);
+    //console.log("Add folder: "+name);
 
     const context=utils.ad.getApplicationContext();
     const assetManager =context.getAssets();
@@ -65,7 +65,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       list=assetManager.list(name);
     }
 
-    console.log(list.length+": "+name);
+    //console.log(list.length+": "+name);
     let path;
     let file;
     for(let i=0;i<list.length;i++){
@@ -87,6 +87,21 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     }
 
   }
+  private addBitmap(augmentedImageBitmap, name:string){
+
+    if (augmentedImageBitmap == null) {
+      console.log('error loading asset: '+name);
+      return;
+    }
+    const index=this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
+    if(index==-1){
+      console.error('Failed to add asset: '+name);
+    }      
+
+    this.config.setAugmentedImageDatabase(this.augmentedImageDatabase);
+
+
+  }
   public addImage(asset:string, name?:string): void{
 
 
@@ -97,27 +112,36 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
     const context = utils.ad.getApplicationContext();
     const assetManager = context.getAssets();
-    let augmentedImageBitmap = null;
+    
 
-
-    try {
-      let is = assetManager.open(asset)
-      augmentedImageBitmap= android.graphics.BitmapFactory.decodeStream(is);
-    } catch (e) {
-      console.log(e);
-    }
-
-    if (augmentedImageBitmap == null) {
-      console.log('error loading '+asset);
+    if (asset.indexOf("://") >= 0) {
+      fromUrl(asset).then((image)=>{
+        this.addBitmap(image.android, name);
+      }).catch(console.error);
       return;
     }
-    console.log("track image: "+asset+": "+name);
-    const index=this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
-    if(index==-1){
-      console.error('Failed to add image: '+asset);
-    }      
 
-    this.config.setAugmentedImageDatabase(this.augmentedImageDatabase);
+    let image = null;
+
+    try{
+          
+      let is = assetManager.open(asset)
+      image= android.graphics.BitmapFactory.decodeStream(is);
+      this.addBitmap(image, name);
+      return;
+   
+    }catch(e){
+
+    }
+
+    try{
+      image = fromFileOrResource(asset);
+      this.addBitmap(image.android, name);
+      return;
+    }catch(e){
+
+    }
+    
 
   }
 }
