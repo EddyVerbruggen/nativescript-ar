@@ -228,6 +228,7 @@ export class AR extends ARBase {
     const q1 = Array.create("float", 4);
     _fragment.getArSceneView().getArFrame().getCamera().getPose().getRotationQuaternion(q1, 0);
     
+    // arcore axis is mapped here, but could be done by replacing q.x with q.z, q.y with q.x, and q.z with q.y below
     const q = {
       x: q1[2],
       y: q1[0],

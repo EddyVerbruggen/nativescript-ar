@@ -232,8 +232,9 @@ export class AR extends ARBase {
   }
 
   public getCameraRotation(): ARRotation {
-    const r = this.sceneView.defaultCameraController.pointOfView.eulerAngles;
-    return {x: r.x, y: r.y, z: r.z};
+    const rot = this.sceneView.defaultCameraController.pointOfView.eulerAngles;
+    const toDeg=(rad)=>{ return ((rad * (180.0 / Math.PI))+360)%360; };
+    return {x:toDeg(rot.x), y:toDeg(rot.y), z:toDeg(rot.z)};
   }
 
   private initAR() {
