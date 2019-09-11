@@ -77,6 +77,21 @@ Here are a few nice resources for `.dae` models:
 - [Turbosquid.com, free](https://www.turbosquid.com/Search/Index.cfm?keyword=&search_type=free&media_typeid=2&file_type=194&=true&sort_column=A8&sort_order=desc)
 - [Turbosquid.com, all](https://www.turbosquid.com/Search/Index.cfm?keyword=&media_typeid=2&file_type=194&=true&sort_column=A8&sort_order=desc)
 
+> 💡 TIP: You can convert iOS Collada `.dae` files to an Android-compatible format:
+
+Download [COLLADA2GLTF](https://github.com/KhronosGroup/COLLADA2GLTF), then run these commands from the folder you installed it to:
+
+```
+# glb format (the '-b' option here stands for 'binary'):
+COLLADA2GLTF-bin <path-to>/your-collada-file.dae output.glb -b
+```
+
+Alternatively, convert from `.dae` to `.gltf` (although I was less successful using these):
+
+```
+COLLADA2GLTF-bin <path-to>/your-collada-file.dae output.glb
+```
+
 ```typescript
 import { ARNodeInteraction } from "nativescript-ar";
 
