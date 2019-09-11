@@ -231,6 +231,7 @@ export interface ARPlaneDetectedEventData extends AREventData {
 
 export interface ARTrackingImageDetectedEventData extends AREventData {
   position: ARPosition;
+  size: ARSize;
   imageName: string;
   imageTrackingActions: ARImageTrackingActions;
 }
@@ -264,19 +265,23 @@ export interface ARFaceTrackingActions {
   addText(options: ARAddTextOptions): Promise<ARCommonNode>;
 }
 
-export interface ARImageTrackingOptions{
-  image:string;
-  onDetectedImage?:(args:ARTrackingImageDetectedEventData)=>void;
+export interface ARImageTrackingOptions {
+  image: string;
+  onDetectedImage?: (args: ARTrackingImageDetectedEventData) => void;
 }
 
 export interface ARImageTrackingActions {
-  playVideo(nativeUrl: any /* iOS: NSURL */, loop?: boolean): void;
+  playVideo(nativeUrl: string, loop?: boolean): void;
 
   stopVideoLoop(): void;
 
   addBox(options: ARAddBoxOptions): Promise<ARCommonNode>;
 
   addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
+
+  addImage(options: ARAddImageOptions): Promise<ARCommonNode>;
+
+  addUIView(options: ARUIViewOptions): Promise<ARCommonNode>;
 }
 
 export class ARDimensions {
@@ -298,6 +303,16 @@ export class ARDimensions2D {
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
+  }
+}
+
+export class ARSize {
+  width: number;
+  height: number;
+
+  constructor(width: number, height: number) {
+    this.width = width;
+    this.height = height;
   }
 }
 
@@ -347,6 +362,8 @@ export abstract class AR extends ContentView {
   abstract addPlane(options: ARAddOptions): Promise<ARCommonNode>;
 
   abstract addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
+
+  abstract trackImage(options: ARImageTrackingOptions): void;
 
   abstract addVideo(options: ARAddVideoOptions): Promise<ARVideoNode>;
 

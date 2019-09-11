@@ -1,9 +1,14 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
+import { registerElement } from "nativescript-angular";
 import { NativeScriptModule } from "nativescript-angular/nativescript.module";
 import { NativeScriptUISideDrawerModule } from "nativescript-ui-sidedrawer/angular";
+import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
+import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+
+registerElement("AR", () => require("nativescript-ar").AR);
 
 @NgModule({
     bootstrap: [
@@ -16,6 +21,10 @@ import { AppComponent } from "./app.component";
     ],
     declarations: [
         AppComponent
+    ],
+    providers: [
+        PokemonDataService,
+        PokemonFavoritesService
     ],
     schemas: [
         NO_ERRORS_SCHEMA

@@ -17,7 +17,7 @@ export abstract class ARCommonNode implements IARCommonNode {
   public static createNode(options: ARAddOptions, fragment) {
     if ((options.draggingEnabled || options.rotatingEnabled)) {
       const node = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
-      node.select();
+      // node.select();
       return node;
     }
 

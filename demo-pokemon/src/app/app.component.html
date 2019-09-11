@@ -10,7 +10,7 @@ https://docs.nativescript.org/angular/ui/professional-ui-components/ng-SideDrawe
             <Label class="sidedrawer-header-brand" text="User Name"></Label>
             <Label class="footnote" text="username@mail.com"></Label>
         </StackLayout>
-    
+
         <ScrollView row="1" class="sidedrawer-content">
             <StackLayout>
                 <GridLayout columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/home')" (tap)="onNavItemTap('/home')">
@@ -20,25 +20,20 @@ https://docs.nativescript.org/angular/ui/professional-ui-components/ng-SideDrawe
 
                 <GridLayout columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/browse')" (tap)="onNavItemTap('/browse')">
                     <Label col="0" text="&#xf1ea;" class="fa"></Label>
-                    <Label col="1" text="Browse" class="p-r-10"></Label>
+                    <Label col="1" text="Augment Card" class="p-r-10"></Label>
                 </GridLayout>
 
                 <GridLayout columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/search')" (tap)="onNavItemTap('/search')">
                     <Label col="0" text="&#xf002;" class="fa"></Label>
-                    <Label col="1" text="Search" class="p-r-10"></Label>
+                    <Label col="1" text="Search by Card" class="p-r-10"></Label>
                 </GridLayout>
 
-                <GridLayout columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/featured')" (tap)="onNavItemTap('/featured')">
-                    <Label col="0" text="&#xf005;" class="fa"></Label>
-                    <Label col="1" text="Featured" class="p-r-10"></Label>
-                </GridLayout>
-    
-                <StackLayout class="hr-light"></StackLayout>
+                <!--StackLayout class="hr-light"></StackLayout>
 
                 <GridLayout columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/settings')" (tap)="onNavItemTap('/settings')">
                     <Label col="0" text="&#xf013;" class="fa"></Label>
                     <Label col="1" text="Settings" class="p-r-10"></Label>
-                </GridLayout>
+                </GridLayout-->
             </StackLayout>
         </ScrollView>
     </GridLayout>

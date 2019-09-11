@@ -40,6 +40,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
     let nativeUrl;
     let videoPlayer;
 
+    // TODO use this for remote videos on imagetracking as well
     if (typeof video === "string") {
 
       if (video.indexOf("://") >= 0) {

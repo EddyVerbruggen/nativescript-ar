@@ -38,9 +38,12 @@ export abstract class ARCommonNode implements IARCommonNode {
     // generate a unique name, used for later reference
     node.name = this.id = (JSON.stringify(options.position) + "_" + new Date().getTime());
 
-    node.physicsBody = SCNPhysicsBody.bodyWithTypeShape(SCNPhysicsBodyType.Dynamic, null);
-    node.physicsBody.mass = options.mass || 0;
-    node.physicsBody.categoryBitMask = 1; // CollisionCategoryCube
+    // note that certain models stop working when using image tracking when these lines are enabled, so only applying when 'mass' was requested (which makes sense anyway IMO)
+    if (options.mass) {
+      node.physicsBody = SCNPhysicsBody.bodyWithTypeShape(SCNPhysicsBodyType.Dynamic, null);
+      node.physicsBody.mass = options.mass || 0;
+      node.physicsBody.categoryBitMask = 1; // CollisionCategoryCube
+    }
 
     if (options.scale) {
       node.scale = <ARPosition>(options.scale instanceof ARScale || (<any>options.scale).x ? options.scale : {
