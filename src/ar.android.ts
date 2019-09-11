@@ -225,43 +225,41 @@ export class AR extends ARBase {
     // modified from:
     // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Source_Code_2
     // note that the xyz describes a different axis definition than arcore
-
-    var arSceneView = ar.getFragment().getArSceneView();
-    var pose = arSceneView.getArFrame().getCamera().getPose();
-    var q1 = Array.create("float", 4);
-    pose.getRotationQuaternion(q1, 0);
-    var q = {
+    const q1 = Array.create("float", 4);
+    _fragment.getArSceneView().getArFrame().getCamera().getPose().getRotationQuaternion(q1, 0);
+    
+    const q = {
       x: q1[2],
       y: q1[0],
       z: q1[1],
       w: q1[3]
     };
 
-    var rot={
+    const rot={
       z:0, 
       x:0, 
       y:0
     }
 
     // roll (x-axis rotation)
-    var sinr_cosp = +2.0 * (q.w * q.x + q.y * q.z);
-    var cosr_cosp = +1.0 - 2.0 * (q.x * q.x + q.y * q.y);
+    const sinr_cosp = +2.0 * (q.w * q.x + q.y * q.z);
+    const cosr_cosp = +1.0 - 2.0 * (q.x * q.x + q.y * q.y);
     rot.z = -(Math.atan2(sinr_cosp, cosr_cosp)+Math.PI/2);
 
     // pitch (y-axis rotation)
-    var sinp = +2.0 * (q.w * q.y - q.z * q.x);
+    const sinp = +2.0 * (q.w * q.y - q.z * q.x);
     if (Math.abs(sinp) >= 1){
-        rot.x = -(sinp/Math.abs(sinp))*(M_PI / 2); // use 90 degrees if out of range
+        rot.x = -(sinp/Math.abs(sinp))*(Math.PI / 2); // use 90 degrees if out of range
     }else{
         rot.x = -Math.asin(sinp);
     }
 
     // yaw (z-axis rotation)
-    var siny_cosp = +2.0 * (q.w * q.z + q.x * q.y);
-    var cosy_cosp = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
+    const siny_cosp = +2.0 * (q.w * q.z + q.x * q.y);
+    const cosy_cosp = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
     rot.y = Math.atan2(siny_cosp, cosy_cosp)+Math.PI;
 
-    var toDeg=(rad)=>{ ((rad * (180.0 / Math.PI))+360)%360; };
+    const toDeg=(rad)=>{ return ((rad * (180.0 / Math.PI))+360)%360; };
 
     return {x:toDeg(rot.x), y:toDeg(rot.y), z:toDeg(rot.z)};
   }
