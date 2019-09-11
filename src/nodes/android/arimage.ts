@@ -9,7 +9,7 @@ export class ARImage extends ARCommonNode {
     if (typeof options.image === "string") {
 
       if (options.image.indexOf("://") >= 0) {
-        return fromUrl(options.image).then(function (image) {
+        return fromUrl(options.image).then(image => {
           options.image = image;
           return ARImage.create(options, fragment);
         });
@@ -30,8 +30,6 @@ export class ARImage extends ARCommonNode {
           .build()
           .thenAccept(new (<any>java.util).function.Consumer({
             accept: renderable => {
-              console.log(">> accepted2, renderable: " + renderable);
-
               /**
                * pin bottom of view with node, this causes view to expand upward
                * com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.BOTTOM

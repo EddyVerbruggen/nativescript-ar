@@ -1,11 +1,6 @@
 import * as application from "tns-core-modules/application";
 import { fromNativeSource, ImageSource } from "tns-core-modules/image-source";
-import { AR as 
-  ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, 
-  ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, 
-  ARImageTrackingActions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, 
-  ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARImageTrackingOptions, ARTrackingImageDetectedEventData, 
-  ARTrackingMode, ARUIViewOptions, ARVideoNode, ARRotation } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARRotation, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARGroup } from "./nodes/ios/argroup";
 import { ARImage } from "./nodes/ios/arimage";
@@ -21,6 +16,7 @@ import { ARVideo } from "./nodes/ios/arvideo";
 export { ARDebugLevel, ARTrackingMode };
 
 declare const ARImageAnchor: any;
+const main_queue = dispatch_get_current_queue();
 
 const ARState = {
   planes: new Map<string, ARPlane>(),
@@ -623,39 +619,39 @@ export class AR extends ARBase {
   }
 
   trackImage(options: ARImageTrackingOptions): void {
-    if(!(this.configuration instanceof ARImageTrackingConfiguration)){
+    if (!(this.configuration instanceof ARImageTrackingConfiguration)) {
       throw "Only supported in trackingMode: IMAGE";
     }
 
-    const set=NSMutableSet.setWithSet(this.configuration.trackingImages);
-    const name=options.image.split('/').pop().split('.').slice(0,-1).join('.');
+    const set = NSMutableSet.setWithSet(this.configuration.trackingImages);
+    const name = options.image.split('/').pop().split('.').slice(0, -1).join('.');
 
     let img;
 
-    if(options.image.indexOf('://')>0){
+    if (options.image.indexOf('://') > 0) {
       img = UIImage.imageWithData(NSData.alloc().initWithContentsOfURL(NSURL.URLWithString(options.image)));
-    }else{
-      img=UIImage.imageNamed(options.image);
+    } else {
+      img = UIImage.imageNamed(options.image);
     }
 
-    const refImage=ARReferenceImage.alloc().initWithCGImageOrientationPhysicalWidth(img.CGImage, 1, 1);
-    refImage.name=name
+    const refImage = ARReferenceImage.alloc().initWithCGImageOrientationPhysicalWidth(img.CGImage, 1, 1);
+    refImage.name = name;
     set.addObject(refImage);
 
 
     this.configuration.maximumNumberOfTrackedImages = Math.min(set.count, 10);
-    this.configuration.trackingImages=set;
+    this.configuration.trackingImages = set;
     this.sceneView.session.runWithConfigurationOptions(this.configuration, ARSessionRunOptions.ResetTracking | ARSessionRunOptions.RemoveExistingAnchors);
 
-    if(!options.onDetectedImage){
+    if (!options.onDetectedImage) {
       return;
     }
-    this.on(ARBase.trackingImageDetectedEvent, (args:ARTrackingImageDetectedEventData)=>{
-      if(args.imageName===name){
+
+    this.on(ARBase.trackingImageDetectedEvent, (args: ARTrackingImageDetectedEventData) => {
+      if (args.imageName === name) {
         options.onDetectedImage(args);
       }
     });
-
   }
 
   public reset(): void {
@@ -972,17 +968,25 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
       z: 0
     };
 
-    // make the detected plane transparent
+    planeNode.renderingOrder = -1;
+    planeNode.opacity = 1;
+
+    // this makes the detected image transparent:
     plane.firstMaterial.diffuse.contents = UIColor.colorWithWhiteAlpha(1, 0);
+    // and this makes the detected image opaque
+    // plane.firstMaterial.colorBufferWriteMask = SCNColorMask.Alpha;
 
     const eventData: ARTrackingImageDetectedEventData = {
       eventName: ARBase.trackingImageDetectedEvent,
       object: owner,
       position: planeNode.position,
+      size: imageAnchor.referenceImage.physicalSize,
       imageName: imageAnchor.referenceImage.name,
-      imageTrackingActions: new ARImageTrackingActionsImpl(plane, planeNode)
+      imageTrackingActions: new ARImageTrackingActionsImpl(plane, planeNode, owner.sceneView)
     };
-    owner.notify(eventData);
+
+    // run this on the main thread, otherwise updating the UI from the "imageTrackingActions" callback will error
+    dispatch_async(main_queue, () => owner.notify(eventData));
 
     // Add plane node to parent
     node.addChildNode(planeNode);
@@ -993,11 +997,11 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
 class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   AVPlayerItemDidPlayToEndTimeNotificationObserver: any;
 
-  constructor(public plane: SCNPlane, public planeNode: SCNNode) {
+  constructor(public plane: SCNPlane, public planeNode: SCNNode, private sceneView: ARSCNView) {
   }
 
-  playVideo(nativeUrl: NSURL, loop?: boolean): void {
-    const videoPlayer = AVPlayer.playerWithURL(nativeUrl);
+  playVideo(nativeUrl: string, loop?: boolean): void {
+    const videoPlayer = AVPlayer.playerWithURL(NSURL.URLWithString(nativeUrl));
     this.plane.firstMaterial.diffuse.contents = videoPlayer;
 
     if (loop === true) {
@@ -1031,6 +1035,14 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 
   addModel(options: ARAddModelOptions): Promise<ARModel> {
     return addModel(options, this.planeNode);
+  }
+
+  addImage(options: ARAddImageOptions): Promise<ARImage> {
+    return addImage(options, this.planeNode);
+  }
+
+  addUIView(options: ARUIViewOptions): Promise<ARUIView> {
+    return addUIView(options, this.planeNode, this.sceneView);
   }
 }
 

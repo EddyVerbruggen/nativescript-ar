@@ -1,0 +1,31 @@
+.pokemon-sprite {
+  height: 240;
+  width: 240;
+}
+
+.pokemon-type {
+  padding: 4 8;
+  border-radius: 4;
+  background-color: steelblue;
+  color: white;
+  margin: 0 10;
+}
+
+.pokemon-sprite-animation {
+  opacity: 0;
+  animation-name: scale-in;
+  animation-duration: 0.6s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9, 0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+}

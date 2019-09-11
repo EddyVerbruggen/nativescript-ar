@@ -1,21 +1,42 @@
-<ActionBar class="action-bar">
-    <!-- 
-    Use the NavigationButton as a side-drawer button in Android
-    because ActionItems are shown on the right side of the ActionBar
-    -->
-    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
-    <!-- 
-    Use the ActionItem for IOS with position set to left. Using the
-    NavigationButton as a side-drawer button in iOS is not possible,
-    because its function is to always navigate back in the application.
-    -->
-    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
-        ios.position="left">
-    </ActionItem>
-    <Label class="action-bar-title" text="Search"></Label>
+<ActionBar class="action-bar" backgroundColor="green">
+  <NavigationButton text="" android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"></NavigationButton>
+  <Label class="action-bar-title" text="Search by Card"></Label>
+  <ActionItem ios.position="right" (tap)="toggleAR()">
+    <GridLayout>
+      <!-- open AR button label -->
+      <Label class="action-item-fa-label" text="AR" *ngIf="!arScannerActivated"></Label>
+      <!-- open AR button -->
+      <Label class="action-item-fa fa" text="&#xf10b;" *ngIf="!arScannerActivated"></Label>
+      <!-- close AR button -->
+      <Label class="action-item-fa fa" style="font-size: 30" text="&#xf057;" *ngIf="arScannerActivated"></Label>
+    </GridLayout>
+  </ActionItem>
 </ActionBar>
 
-<GridLayout class="page page-content">
-    <Label class="page-icon fa" text="&#xf002;"></Label>
-    <Label class="page-placeholder" text="<!-- Page content goes here -->"></Label>
+<GridLayout rows="*" class="page page-content">
+  <ListView class="list-group" [items]="pokemonList">
+    <ng-template nsTemplateKey="default" let-item="item">
+      <FlexboxLayout flexDirection="row" class="list-group-item" style="padding-right: 0">
+        <Img [src]="item.sprite" class="pokemon-sprite thumb img-circle" (tap)="itemTapped(item.name)"/>
+        <Label [text]="item.name" class="pokemon-name" verticalAlignment="center" android:style="margin-top: 10" style="width: 67%" (tap)="itemTapped(item.name)"></Label>
+        <Img height="30" [src]="'~/app/images/favorite-' + (item.favorite ? 'on' : 'off') + '.png'" horizontalAlignment="right" verticalAlignment="center" (tap)="toggleFavorite(item)"/>
+      </FlexboxLayout>
+    </ng-template>
+  </ListView>
+
+  <GridLayout class="ar-scanner-cover" *ngIf="arScannerActivated">
+  </GridLayout>
+
+  <GridLayout #arPoweredScanner rows="auto, *" class="ar-scanner-frame">
+    <Label [text]="scanHint" class="c-white p-5" horizontalAlignment="center" verticalAlignment="center"></Label>
+    <AR
+        *ngIf="arScannerActivated"
+        row="1"
+        height="100%"
+        width="100%"
+        trackingMode="IMAGE"
+        trackingImagesBundle="PokemonResources"
+        (trackingImageDetected)="trackingImageDetected($event)">
+    </AR>
+  </GridLayout>
 </GridLayout>

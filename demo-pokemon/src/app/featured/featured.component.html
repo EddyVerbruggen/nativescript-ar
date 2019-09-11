@@ -1,21 +1,18 @@
 <ActionBar class="action-bar">
-    <!-- 
-    Use the NavigationButton as a side-drawer button in Android
-    because ActionItems are shown on the right side of the ActionBar
-    -->
-    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
-    <!-- 
-    Use the ActionItem for IOS with position set to left. Using the
-    NavigationButton as a side-drawer button in iOS is not possible,
-    because its function is to always navigate back in the application.
-    -->
-    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
-        ios.position="left">
-    </ActionItem>
-    <Label class="action-bar-title" text="Featured"></Label>
+  <NavigationButton text="" android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"></NavigationButton>
+  <Label class="action-bar-title" [text]="pokemon?.name" horizontalAlignment="center"></Label>
 </ActionBar>
 
-<GridLayout class="page page-content">
-    <Label class="page-icon fa" text="&#xf005;"></Label>
-    <Label class="page-placeholder" text="<!-- Page content goes here -->"></Label>
-</GridLayout>
+<FlexboxLayout justifyContent="center">
+  <StackLayout verticalAlignment="middle">
+    <Img class="pokemon-sprite pokemon-sprite-animation" [src]="pokemon?.sprite"/>
+    <!--Repeater [items]="pokemon.types">
+      <Repeater.itemsLayout>
+        <FlexboxLayout class="container"></FlexboxLayout>
+      </Repeater.itemsLayout>
+      <Repeater.itemTemplate>
+        <Label class="pokemon-type" textWrap="true" text="{{ $value }}"/>
+      </Repeater.itemTemplate>
+    </Repeater-->
+  </StackLayout>
+</FlexboxLayout>

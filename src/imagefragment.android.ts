@@ -1,11 +1,11 @@
 import * as utils from "tns-core-modules/utils/utils";
-import { fromFileOrResource, fromUrl, ImageSource } from "tns-core-modules/image-source";
+import { fromFileOrResource, fromUrl } from "tns-core-modules/image-source";
+
 export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.ArFragment {
 
-
-  augmentedImageDatabase:any;
-  config:any;
-  arSceneViewPrimises=[];
+  augmentedImageDatabase: any;
+  config: any;
+  arSceneViewPromises = [];
 
   constructor() {
     super();
@@ -15,12 +15,16 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
   getSessionConfiguration(session) {
     const config = new (<any>com.google.ar).core.Config(session);
-    this.config=config;
+    this.config = config;
+
+    // TODO we may need this for other fragment configs as well
+    config.setFocusMode((<any>com.google.ar).core.Config.FocusMode.AUTO);
+
     this.setupAugmentedImageDatabase(config, session);
 
-    this.arSceneViewPrimises.forEach(resolve=>{
+    this.arSceneViewPromises.forEach(resolve => {
       resolve(super.getArSceneView());
-    })
+    });
 
     return config;
   }
@@ -32,7 +36,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
         resolve(arSceneView);
         return;
       }
-      this.arSceneViewPrimises.push(resolve);
+      this.arSceneViewPromises.push(resolve);
     });
   }
 
@@ -51,71 +55,63 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     return true;
   }
 
+  public addImagesInFolder(name: string) {
+    console.log("Add folder: " + name);
 
-  public addImagesInFolder(name:string){
+    const context = utils.ad.getApplicationContext();
+    const assetManager = context.getAssets();
+    let list = assetManager.list(name);
 
-    //console.log("Add folder: "+name);
-
-    const context=utils.ad.getApplicationContext();
-    const assetManager =context.getAssets();
-    let list=assetManager.list(name);
- 
-    if(list.length==0){
-      name=name+'.arresourcegroup';
-      list=assetManager.list(name);
+    if (list.length === 0) {
+      name = name + '.arresourcegroup';
+      list = assetManager.list(name);
     }
 
-    //console.log(list.length+": "+name);
+    console.log(list.length + ": " + name);
     let path;
     let file;
-    for(let i=0;i<list.length;i++){
-      file=list[i];
-      path=name+"/"+file;
+    for (let i = 0; i < list.length; i++) {
+      file = list[i];
+      path = name + "/" + file;
 
-      if(path.indexOf('.jpg')>0||path.indexOf('.png')>0){
+      if (path.indexOf('.jpg') > 0 || path.indexOf('.png') > 0) {
         this.addImage(path);
-        //return;
-      }else{
+      } else {
 
-        let length=assetManager.list(path).length;
-         //console.log(path+": "+length);
-          if(length){
-            this.addImagesInFolder(path);
-          }
-         //console.log(list[i]);
+        let length = assetManager.list(path).length;
+        console.log(path + ": " + length);
+        if (length) {
+          this.addImagesInFolder(path);
+        }
       }
     }
 
   }
-  private addBitmap(augmentedImageBitmap, name:string){
 
+  private addBitmap(augmentedImageBitmap, name: string) {
+    console.log("augmentedImageBitmap: " + augmentedImageBitmap);
     if (augmentedImageBitmap == null) {
-      console.log('error loading asset: '+name);
+      console.log('error loading asset: ' + name);
       return;
     }
-    const index=this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
-    if(index==-1){
-      console.error('Failed to add asset: '+name);
-    }      
-
+    const index = this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
+    if (index === -1) {
+      console.error('Failed to add asset: ' + name);
+    }
     this.config.setAugmentedImageDatabase(this.augmentedImageDatabase);
-
-
   }
-  public addImage(asset:string, name?:string): void{
 
-
-    if(!name){
-      //remove path and ext
-      name=asset.split('/').pop().split('.').slice(0,-1).join('.');
+  public addImage(asset: string, name?: string): void {
+    if (!name) {
+      // remove path and ext
+      name = asset.split('/').pop().split('.').slice(0, -1).join('.');
     }
 
     const context = utils.ad.getApplicationContext();
     const assetManager = context.getAssets();
-    
 
     if (asset.indexOf("://") >= 0) {
-      fromUrl(asset).then((image)=>{
+      fromUrl(asset).then((image) => {
         this.addBitmap(image.android, name);
       }).catch(console.error);
       return;
@@ -123,25 +119,19 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
     let image = null;
 
-    try{
-          
-      let is = assetManager.open(asset)
-      image= android.graphics.BitmapFactory.decodeStream(is);
+    try {
+      let is = assetManager.open(asset);
+      image = android.graphics.BitmapFactory.decodeStream(is);
       this.addBitmap(image, name);
       return;
-   
-    }catch(e){
-
+    } catch (e) {
     }
 
-    try{
+    try {
       image = fromFileOrResource(asset);
       this.addBitmap(image.android, name);
       return;
-    }catch(e){
-
+    } catch (e) {
     }
-    
-
   }
 }

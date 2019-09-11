@@ -27,6 +27,22 @@ ActionBar .action-bar-title {
     horizontal-align: center;
 }
 
+ActionBar .action-item-fa {
+    font-size: 40;
+    padding: 5 0 5 10;
+}
+
+ActionBar .action-item-fa-label {
+    font-size: 8;
+    horizontal-align: right;
+    margin-right: 3;
+}
+
+// AR
+.cover {
+    background-color: #fff;
+}
+
  // Drawer navigation custom styles
 $sidedrawer-header-image-size: 60;
 $sidedrawer-header-image-offset-top: 20;

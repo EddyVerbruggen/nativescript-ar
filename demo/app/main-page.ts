@@ -44,15 +44,14 @@ export function arLoaded(args: ARLoadedEventData): void {
   console.log(">> arLoaded, ar: " + ar);
   model.ar = ar;
 
-  
-  try{
+  try {
     ar.trackImage({
-      image:"https://raw.githubusercontent.com/EddyVerbruggen/nativescript-ar/master/demo/app/App_Resources/Android/src/main/assets/tnsgranite-diffuse.png",
-      onDetectedImage:(args)=>{
-        console.log("Detected Image Handler: tnsgranite-diffuse");
+      image: "https://raw.githubusercontent.com/EddyVerbruggen/nativescript-ar/master/demo/app/App_Resources/Android/src/main/assets/tnsgranite-diffuse.png",
+      onDetectedImage: (args) => {
+        console.log("Detected Image Handler: " + args.imageName);
       }
     });
-  }catch(e){
+  } catch (e) {
     console.error(e);
   }
 
@@ -323,7 +322,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
       }],
       onTap: (interaction: ARNodeInteraction) => {
         console.log("box tapped: " + interaction.node.id + " at " + interaction.touchPosition);
-        // let's rotate the box 5 degrees to the right
+        // let's rotate the box 5 degrees clockwise
         interaction.node.rotateBy({
           x: 0,
           y: 0,
@@ -332,7 +331,7 @@ export function trackingImageDetected(args: ARTrackingImageDetectedEventData): v
       },
       onLongPress: (interaction: ARNodeInteraction) => {
         console.log("box longpressed: " + interaction.node.id + " at " + interaction.touchPosition);
-        // let's rotate the box 5 degrees to the left
+        // let's rotate the box 5 degrees counter clockwise
         interaction.node.rotateBy({
           x: 0,
           y: 0,
