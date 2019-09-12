@@ -6,10 +6,10 @@ import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
 import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
 
 @Component({
-    selector: "Browse",
-    templateUrl: "./browse.component.html"
+    selector: "AugmentCard",
+    templateUrl: "./augment-card.component.html"
 })
-export class BrowseComponent {
+export class AugmentCardComponent {
     constructor(private pokemonDataService: PokemonDataService,
                 private pokemonFavoritesService: PokemonFavoritesService,
                 private routerExtensions: RouterExtensions) {
@@ -83,7 +83,7 @@ export class BrowseComponent {
                 },
                 position: {
                     x: isIOS ? 3.5 : 0,
-                    y: isIOS? -1.6 : 0,
+                    y: isIOS ? -1.6 : 0,
                     z: 0
                 },
                 scale: isIOS ? 1 : 0.2,

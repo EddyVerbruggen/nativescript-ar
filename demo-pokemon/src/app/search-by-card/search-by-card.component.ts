@@ -12,11 +12,11 @@ import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-se
 const DEFAULT_SCAN_HINT = "Scan a Pokémon card";
 
 @Component({
-    selector: "Search",
-    templateUrl: "./search.component.html",
-    styleUrls: ["./search.component.scss"]
+    selector: "SearchByCard",
+    templateUrl: "./search-by-card.component.html",
+    styleUrls: ["./search-by-card.component.scss"]
 })
-export class SearchComponent implements OnInit {
+export class SearchByCardComponent implements OnInit {
 
     pokemonList: Array<Pokemon> = [];
     arScannerActivated = false;

@@ -1,19 +1,19 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptCommonModule } from "nativescript-angular/common";
-
-import { BrowseRoutingModule } from "./browse-routing.module";
-import { BrowseComponent } from "./browse.component";
+import { AugmentCardRoutingModule } from "~/app/augment-card/augment-card-routing.module";
+import { AugmentCardComponent } from "./augment-card.component";
 
 @NgModule({
     imports: [
         NativeScriptCommonModule,
-        BrowseRoutingModule
+        AugmentCardRoutingModule
     ],
     declarations: [
-        BrowseComponent
+        AugmentCardComponent
     ],
     schemas: [
         NO_ERRORS_SCHEMA
     ]
 })
-export class BrowseModule { }
+export class AugmentCardModule {
+}
