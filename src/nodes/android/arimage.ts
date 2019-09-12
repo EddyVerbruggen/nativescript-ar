@@ -47,7 +47,7 @@ export class ARImage extends ARCommonNode {
                * pin bottom of view with node, this causes view to expand upward
                * com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.BOTTOM
                */
-              renderable.setVerticalAlignment(com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.BOTTOM);
+              renderable.setVerticalAlignment(com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.CENTER);
               const node = ARCommonNode.createNode(options, fragment);
               node.setRenderable(renderable);
               resolve(new ARImage(options, node));
