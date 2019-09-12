@@ -98,11 +98,13 @@
           normal: materialPrefix + "Luna_Mat_normal.png",
           roughness: materialPrefix + "Luna_Mat_occlusionRoughnessMetallic.png"
         }],
-        life: {
-          name: "Snorlax", // TODO make sure this is on the dark side of the moon
-          position: {x: -.36, y: 0, z: 0},
-          scale: 0.0005
-        }
+        life: [{
+          // Snorlax is on the dark side of the moon - that's why we've never seen him!
+          name: "Snorlax",
+          position: {x: .27, y: 0, z: 0},
+          rotation: {x: 0, y: 0, z: -90},
+          scale: 0.001
+        }]
       }]
     }, {
       name: "Mars",
@@ -112,13 +114,34 @@
         diffuse: materialPrefix + "Mars_mat_baseColor.png",
         normal: materialPrefix + "Mars_mat_normal.png"
       }],
-      scale: 0.1265 * SCALE_FACTOR,
+      scale: 0.0265 * SCALE_FACTOR,
       tilt: 25.19,
-      life: {
-        name: "Caterpie",
-        position: {x: -.4, y: 0, z: 0.3},
-        scale: 0.005
-      }
+      // Elon's mission is foobar as the place is crawling with nasty creatures!
+      life: [
+        {
+          name: "Caterpie",
+          position: {x: -.3, y: 0, z: 0},
+          rotation: {x: 0, y: 90, z: 0},
+          scale: 0.005
+        },
+        {
+          name: "Caterpie",
+          position: {x: .3, y: 0, z: 0},
+          rotation: {x: 0, y: 90, z: 0},
+          scale: 0.003
+        },
+        {
+          name: "Caterpie",
+          position: {x: 0, y: .3, z: 0},
+          rotation: {x: 0, y: 90, z: 90},
+          scale: 0.004
+        },
+        {
+          name: "Caterpie",
+          position: {x: 0, y: 0, z: .3},
+          rotation: {x: 0, y: 90, z: 90},
+          scale: 0.006
+        }]
     }, {
       name: "Jupiter",
       distance: 2.2,
@@ -167,8 +190,8 @@
         arLabel: 'Look for a surface and tap it..',
         solarSystemLoaded: false,
         orbitalName: undefined,
-        orbitSpeed: 1,
-        rotationSpeed: 1,
+        orbitSpeed: -5,
+        rotationSpeed: -15,
         hasControlPanel: false,
         page: undefined,
         ar: undefined,
@@ -305,17 +328,20 @@
             }).then(parentNode => {
               // add some life to the planet ;)
               if (solarSystemObject.life) {
-                const name = isIOS
-                    ? `PokemonModels.scnassets/${solarSystemObject.life.name}/${solarSystemObject.life.name}.dae`
-                    : `${solarSystemObject.life.name}.glb`;
-                ar.addModel({
-                  name,
-                  parentNode,
-                  position: solarSystemObject.life.position,
-                  scale: solarSystemObject.life.scale
-                })
-                    .then(() => console.log("Life added: " + solarSystemObject.life.name))
-                    .catch(err => console.log("Error adding life: " + err))
+                solarSystemObject.life.forEach(life => {
+                  const name = isIOS
+                      ? `PokemonModels.scnassets/${life.name}/${life.name}.dae`
+                      : `${life.name}.glb`;
+                  ar.addModel({
+                    name,
+                    parentNode,
+                    position: life.position,
+                    rotation: life.rotation,
+                    scale: life.scale
+                  })
+                      .then(() => console.log("Life added: " + life.name))
+                      .catch(err => console.log("Error adding life: " + err))
+                });
               }
 
               // adding planet-specific tweaks here, just for fun/show :)
