@@ -1,7 +1,7 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneTappedEventData, ARPosition, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneTappedEventData, ARPosition, ARRotation, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { TNSArFragmentForImageDetection } from "./imagefragment.android";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
@@ -180,9 +180,11 @@ class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragmen
 class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 
   anchor: com.google.ar.sceneform.AnchorNode;
+  planeNode:com.google.ar.sceneform.Node;
 
-  constructor(anchor) {
+  constructor(anchor, planeNode) {
     this.anchor = anchor;
+    this.planeNode = planeNode;
   }
 
   playVideo(url: string, loop?: boolean): void {
@@ -195,19 +197,19 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARBox> {
-    return addBox(options, this.anchor);
+    return addBox(options, this.planeNode);
   }
 
   addModel(options: ARAddModelOptions): Promise<ARModel> {
-    return addModel(options, this.anchor);
+    return addModel(options, this.planeNode);
   }
 
   addImage(options: ARAddImageOptions): Promise<ARImage> {
-    return addImage(options, this.anchor);
+    return addImage(options, this.planeNode);
   }
 
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
-    return addUIView(options, this.anchor);
+    return addUIView(options, this.planeNode);
   }
 }
 
@@ -384,10 +386,23 @@ export class AR extends ARBase {
                 } else if (state === com.google.ar.core.TrackingState.TRACKING) {
                   // Create a new anchor for newly found images.
                   if (augmentedImages.indexOf(augmentedImage.getName()) === -1) {
-                    const node = new com.google.ar.sceneform.AnchorNode(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
+                    const anchor = new com.google.ar.sceneform.AnchorNode(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
 
                     augmentedImages.push(augmentedImage.getName());
-                    scene.addChild(node);
+                    scene.addChild(anchor);
+                  
+                    const planeNode=new com.google.ar.sceneform.Node();
+                    anchor.addChild(planeNode);
+                    
+                    planeNode.setLocalRotation(new (<any>com.google.ar.sceneform).math.Quaternion(
+                        new (<any>com.google.ar.sceneform).math.Vector3(
+                            -90, 
+                            0,
+                            0
+                        )
+                    ));
+
+                    planeNode.setLocalScale(new (<any>com.google.ar.sceneform).math.Vector3(0.025, 0.025, 0.025));
 
                     const eventData: ARTrackingImageDetectedEventData = {
                       eventName: ARBase.trackingImageDetectedEvent,
@@ -399,7 +414,7 @@ export class AR extends ARBase {
                         z: augmentedImage.getCenterPose().tz()
                       },
                       imageName: augmentedImage.getName(),
-                      imageTrackingActions: new ARImageTrackingActionsImpl(node)
+                      imageTrackingActions: new ARImageTrackingActionsImpl(anchor, planeNode)
                     };
                     this.notify(eventData);
                   }

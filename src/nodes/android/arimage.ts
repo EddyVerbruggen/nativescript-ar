@@ -3,6 +3,8 @@ import * as utils from "tns-core-modules/utils/utils";
 import { ARAddImageOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
+const pixelsPerMeter = 500;
+
 export class ARImage extends ARCommonNode {
 
   static create(options: ARAddImageOptions, fragment): Promise<ARImage> {
@@ -25,11 +27,22 @@ export class ARImage extends ARCommonNode {
       const imageView = new android.widget.ImageView(context);
       imageView.setImageBitmap(image);
 
+
+      
+
       com.google.ar.sceneform.rendering.ViewRenderable.builder()
           .setView(context, imageView)
           .build()
           .thenAccept(new (<any>java.util).function.Consumer({
             accept: renderable => {
+
+
+              if(options.dimensions){
+                renderable.setSizer(new com.google.ar.sceneform.rendering.FixedWidthViewSizer(options.dimensions.x));
+              }else{
+                renderable.setSizer(new com.google.ar.sceneform.rendering.DpToMetersViewSizer(pixelsPerMeter));
+              }
+
               /**
                * pin bottom of view with node, this causes view to expand upward
                * com.google.ar.sceneform.rendering.ViewRenderable.VerticalAlignment.BOTTOM
