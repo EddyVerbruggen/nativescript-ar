@@ -4,6 +4,20 @@ import { ARCommonNode } from "./arcommon";
 
 let pixelsPerMeter = 500;
 
+const alignCenter= (node): void => {
+  node.setLocalPosition(new (<any>com.google.ar.sceneform).math.Vector3(
+    0,
+    - node.getLocalScale().y/2,
+    0));
+};
+
+const alignBottom= (node): void => {
+  node.setLocalPosition(new (<any>com.google.ar.sceneform).math.Vector3(
+    0,
+    0,
+    0));
+};
+
 export class ARVideo extends ARCommonNode implements ARVideoNode {
   private mediaPlayer: android.media.MediaPlayer;
 
@@ -37,6 +51,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
           1);
 
       videoNode.setLocalScale(size);
+      alignCenter(videoNode);
 
       const texture = new com.google.ar.sceneform.rendering.ExternalTexture();
       const mediaPlayer = ARVideo.getPlayer(options);
@@ -88,6 +103,8 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
                   height / pixelsPerMeter,
                   1));
             }
+
+             alignCenter(videoNode);
 
             console.log([height, width]);
 

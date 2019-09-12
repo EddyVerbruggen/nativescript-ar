@@ -179,21 +179,36 @@ class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragmen
 
 class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 
-  anchor: com.google.ar.sceneform.AnchorNode;
+  anchor: any; //com.google.ar.core.AugmentedImage;
   planeNode:com.google.ar.sceneform.Node;
+  video:ARVideoNode
 
   constructor(anchor, planeNode) {
     this.anchor = anchor;
     this.planeNode = planeNode;
+    this.video;
   }
 
   playVideo(url: string, loop?: boolean): void {
-    // TODO
+    
+     addVideo({
+      dimensions:{
+        x:this.anchor.getExtentX(), 
+        y:this.anchor.getExtentZ()
+      },
+      position:{x:0, y:0, z:0},
+      scale:1/this.planeNode.getLocalScale().x,
+      video: url,
+      loop:loop
+    }, this.planeNode).then(video=>this.video=video).catch(console.error);
+  
+
   }
 
   stopVideoLoop(): void {
-    // TODO
-    return null;
+    if(this.video){
+      this.video.pause();
+    }
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARBox> {
@@ -421,7 +436,7 @@ export class AR extends ARBase {
                         z: augmentedImage.getCenterPose().tz()
                       },
                       imageName: augmentedImage.getName(),
-                      imageTrackingActions: new ARImageTrackingActionsImpl(anchor, planeNode)
+                      imageTrackingActions: new ARImageTrackingActionsImpl(augmentedImage, planeNode)
                     };
                     this.notify(eventData);
                   }
