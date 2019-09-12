@@ -5,6 +5,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
   augmentedImageDatabase: any;
   config: any;
+  session: any;
   arSceneViewPromises = [];
 
   constructor() {
@@ -16,7 +17,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
   getSessionConfiguration(session) {
     const config = new (<any>com.google.ar).core.Config(session);
     this.config = config;
-
+    this.session = session;
     // TODO we may need this for other fragment configs as well
     config.setFocusMode((<any>com.google.ar).core.Config.FocusMode.AUTO);
 
@@ -99,39 +100,48 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       console.error('Failed to add asset: ' + name);
     }
     this.config.setAugmentedImageDatabase(this.augmentedImageDatabase);
+    this.session.configure(this.config);
   }
 
   public addImage(asset: string, name?: string): void {
-    if (!name) {
-      // remove path and ext
-      name = asset.split('/').pop().split('.').slice(0, -1).join('.');
-    }
 
-    const context = utils.ad.getApplicationContext();
-    const assetManager = context.getAssets();
+    android.os.AsyncTask.execute(new java.lang.Runnable({
 
-    if (asset.indexOf("://") >= 0) {
-      fromUrl(asset).then((image) => {
-        this.addBitmap(image.android, name);
-      }).catch(console.error);
-      return;
-    }
+      run: () => {
 
-    let image = null;
+        if (!name) {
+          // remove path and ext
+          name = asset.split('/').pop().split('.').slice(0, -1).join('.');
+        }
 
-    try {
-      let is = assetManager.open(asset);
-      image = android.graphics.BitmapFactory.decodeStream(is);
-      this.addBitmap(image, name);
-      return;
-    } catch (e) {
-    }
+        const context = utils.ad.getApplicationContext();
+        const assetManager = context.getAssets();
 
-    try {
-      image = fromFileOrResource(asset);
-      this.addBitmap(image.android, name);
-      return;
-    } catch (e) {
-    }
+        if (asset.indexOf("://") >= 0) {
+          fromUrl(asset).then((image) => {
+            this.addBitmap(image.android, name);
+          }).catch(console.error);
+          return;
+        }
+
+        let image = null;
+
+        try {
+          let is = assetManager.open(asset);
+          image = android.graphics.BitmapFactory.decodeStream(is);
+          this.addBitmap(image, name);
+          return;
+        } catch (e) {}
+
+        try {
+          image = fromFileOrResource(asset);
+          this.addBitmap(image.android, name);
+          return;
+        } catch (e) {
+        }
+
+      }
+    }));
+
   }
 }
