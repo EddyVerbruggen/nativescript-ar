@@ -396,7 +396,7 @@ export class AR extends ARBase {
                     
                     planeNode.setLocalRotation(new (<any>com.google.ar.sceneform).math.Quaternion(
                         new (<any>com.google.ar.sceneform).math.Vector3(
-                            -90, 
+                            -90, //sceneform orients tracked images in x-z plane 
                             0,
                             0
                         )
@@ -405,7 +405,11 @@ export class AR extends ARBase {
 
                     //TODO calculate actual proper scale factor. for ios, tracking images have a defined width - I 
                     // believe the scale factor is measured-width/defined-width in ios...
-                    planeNode.setLocalScale(new (<any>com.google.ar.sceneform).math.Vector3(0.025, 0.025, 0.025));
+                    const definedWidth=4;
+                    const measuredWidth=augmentedImage.getExtentX();
+                    const scale=measuredWidth/definedWidth;
+                    console.log("scale: "+scale);
+                    planeNode.setLocalScale(new (<any>com.google.ar.sceneform).math.Vector3(scale, scale, scale));
 
                     const eventData: ARTrackingImageDetectedEventData = {
                       eventName: ARBase.trackingImageDetectedEvent,
