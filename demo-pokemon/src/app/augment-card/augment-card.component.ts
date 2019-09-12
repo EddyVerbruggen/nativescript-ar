@@ -20,6 +20,8 @@ export class AugmentCardComponent {
     }
 
     async trackingImageDetected(args: ARTrackingImageDetectedEventData) {
+        // some images are named 'Eevee2.jpg', so let's just remove the number ;)
+        args.imageName = args.imageName.replace("2", "");
 
         const pokemon = await this.pokemonDataService.getPokemonList()
             .then(pokemonList => {
@@ -43,12 +45,12 @@ export class AugmentCardComponent {
             let interval: number;
 
             const name = isIOS
-                ? 'PokemonModels.scnassets/' + pokemon.model.ios.name
-                : pokemon.model.android.name;
+                ? `PokemonModels.scnassets/${pokemon.model.name}/${pokemon.model.name}.dae`
+                : `${pokemon.model.name}.glb`;
 
             args.imageTrackingActions.addModel({
                 name,
-                scale: isIOS ? pokemon.model.ios.scale : pokemon.model.android.scale,
+                scale: pokemon.model.scale,
                 position: {
                     x: 0,
                     y: isIOS ? 2 : 0.1, // TODO currently Android rotation is off; setting y actually applies z (so toward the camera instead of upwards)

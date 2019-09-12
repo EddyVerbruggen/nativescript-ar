@@ -3,6 +3,10 @@
     "name": "bulbasaur",
     "number": 1,
     "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+    "model": {
+      "name": "Bulbasaur",
+      "scale": 0.1
+    },
     "types": [
       "poison",
       "grass"
@@ -79,6 +83,10 @@
     "name": "caterpie",
     "number": 10,
     "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png",
+    "model": {
+      "name": "Caterpie",
+      "scale": 0.1
+    },
     "types": [
       "bug"
     ]
@@ -208,6 +216,10 @@
     "name": "pikachu",
     "number": 25,
     "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+    "model": {
+      "name": "Pikachu",
+      "scale": 0.1
+    },
     "types": [
       "electric"
     ]
@@ -216,6 +228,10 @@
     "name": "raichu",
     "number": 26,
     "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/26.png",
+    "model": {
+      "name": "Raichu",
+      "scale": 0.1
+    },
     "types": [
       "electric"
     ]
@@ -429,6 +445,10 @@
     "name": "dugtrio",
     "number": 51,
     "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/51.png",
+    "model": {
+      "name": "Dugtrio",
+      "scale": 0.1
+    },
     "types": [
       "ground"
     ]
@@ -1118,14 +1138,8 @@
     "number": 133,
     "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png",
     "model": {
-      "ios": {
-        "name": "Eevee/Eevee.dae",
-        "scale": 0.14
-      },
-      "android": {
-        "name": "Eevee.glb",
-        "scale": 0.14
-      }
+      "name": "Eevee",
+      "scale": 0.14
     },
     "types": [
       "normal"
@@ -1213,7 +1227,7 @@
     "number": 143,
     "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/143.png",
     "model": {
-      "name": "Snorlax/Snorlax.dae",
+      "name": "Snorlax",
       "scale": 0.02
     },
     "types": [

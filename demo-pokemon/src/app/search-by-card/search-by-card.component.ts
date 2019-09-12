@@ -65,6 +65,9 @@ export class SearchByCardComponent implements OnInit {
     async trackingImageDetected(args: ARTrackingImageDetectedEventData) {
         console.log(`Image found: ${args.imageName}`);
 
+        // some images are named 'Eevee2.jpg', so let's just remove the number ;)
+        args.imageName = args.imageName.replace("2", "");
+
         const pokemon = await this.pokemonDataService.getPokemonList()
             .then(pokemonList => {
                 const filtered = pokemonList.filter(p => p.name === args.imageName);
@@ -75,7 +78,7 @@ export class SearchByCardComponent implements OnInit {
             return;
         }
 
-        this.scanHint = `Pokémon found: ${args.imageName}`;
+        this.scanHint = `👉 ${args.imageName} 👈`;
 
         // this works, but it's quite useless
         args.imageTrackingActions.addImage({

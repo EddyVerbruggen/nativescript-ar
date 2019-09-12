@@ -20,7 +20,7 @@ export class PokemonSearchResultComponent implements OnDestroy {
             .queryParams
             .subscribe(params => {
                 pokemonDataService.getPokemonList()
-                    .then(pokemonList => this.pokemon = pokemonList.filter(p => p.name === params["pokemonName"])[0])
+                    .then(pokemonList => this.pokemon = pokemonList.filter(p => p.name === params["pokemonName"])[0]);
             });
     }
 
