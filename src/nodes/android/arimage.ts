@@ -27,19 +27,15 @@ export class ARImage extends ARCommonNode {
       const imageView = new android.widget.ImageView(context);
       imageView.setImageBitmap(image);
 
-
-      
-
       com.google.ar.sceneform.rendering.ViewRenderable.builder()
           .setView(context, imageView)
           .build()
           .thenAccept(new (<any>java.util).function.Consumer({
             accept: renderable => {
 
-
-              if(options.dimensions){
+              if (options.dimensions) {
                 renderable.setSizer(new com.google.ar.sceneform.rendering.FixedWidthViewSizer(options.dimensions.x));
-              }else{
+              } else {
                 renderable.setSizer(new com.google.ar.sceneform.rendering.DpToMetersViewSizer(pixelsPerMeter));
               }
 
@@ -54,7 +50,7 @@ export class ARImage extends ARCommonNode {
             }
           }))
           .exceptionally(new (<any>java.util).function.Function({
-              apply: error => reject(error)
+            apply: error => reject(error)
           }));
     });
   }

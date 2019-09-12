@@ -23,6 +23,10 @@ But to help add behavior to the AR experience, here are the properties and event
 #### trackingImagesBundle
 <img src="images/imagetracking-resources.png" width="688px"/>
 
+Note that especially on Android detection is a bit picky.
+The most important thing is to make sure the image you're trying to recognise in the real world
+is flat and at least about 15 x 15 centimers tall.
+
 ## Events
 |event|event data|description
 |---|---|---

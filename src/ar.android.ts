@@ -179,9 +179,9 @@ class TNSArFragmentForFaceDetection extends com.google.ar.sceneform.ux.ArFragmen
 
 class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 
-  anchor: any; //com.google.ar.core.AugmentedImage;
-  planeNode:com.google.ar.sceneform.Node;
-  video:ARVideoNode
+  anchor: any; // com.google.ar.core.AugmentedImage;
+  planeNode: com.google.ar.sceneform.Node;
+  video: ARVideoNode;
 
   constructor(anchor, planeNode) {
     this.anchor = anchor;
@@ -190,23 +190,20 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   }
 
   playVideo(url: string, loop?: boolean): void {
-    
-     addVideo({
-      dimensions:{
-        x:this.anchor.getExtentX(), 
-        y:this.anchor.getExtentZ()
+    addVideo({
+      dimensions: {
+        x: this.anchor.getExtentX(),
+        y: this.anchor.getExtentZ()
       },
-      position:{x:0, y:0, z:0},
-      scale:1/this.planeNode.getLocalScale().x,
+      position: {x: 0, y: 0, z: 0},
+      scale: 1 / this.planeNode.getLocalScale().x,
       video: url,
-      loop:loop
-    }, this.planeNode).then(video=>this.video=video).catch(console.error);
-  
-
+      loop: loop
+    }, this.planeNode).then(video => this.video = video).catch(console.error);
   }
 
   stopVideoLoop(): void {
-    if(this.video){
+    if (this.video) {
       this.video.pause();
     }
   }
@@ -250,7 +247,7 @@ export class AR extends ARBase {
     // note that the xyz describes a different axis definition than arcore
     const q1 = Array.create("float", 4);
     _fragment.getArSceneView().getArFrame().getCamera().getPose().getRotationQuaternion(q1, 0);
-    
+
     // arcore axis is mapped here, but could be done by replacing q.x with q.z, q.y with q.x, and q.z with q.y below
     const q = {
       x: q1[2],
@@ -259,33 +256,35 @@ export class AR extends ARBase {
       w: q1[3]
     };
 
-    const rot={
-      z:0, 
-      x:0, 
-      y:0
-    }
+    const rot = {
+      z: 0,
+      x: 0,
+      y: 0
+    };
 
     // roll (x-axis rotation)
     const sinr_cosp = +2.0 * (q.w * q.x + q.y * q.z);
     const cosr_cosp = +1.0 - 2.0 * (q.x * q.x + q.y * q.y);
-    rot.z = -(Math.atan2(sinr_cosp, cosr_cosp)+Math.PI/2);
+    rot.z = -(Math.atan2(sinr_cosp, cosr_cosp) + Math.PI / 2);
 
     // pitch (y-axis rotation)
     const sinp = +2.0 * (q.w * q.y - q.z * q.x);
-    if (Math.abs(sinp) >= 1){
-        rot.x = -(sinp/Math.abs(sinp))*(Math.PI / 2); // use 90 degrees if out of range
-    }else{
-        rot.x = -Math.asin(sinp);
+    if (Math.abs(sinp) >= 1) {
+      rot.x = -(sinp / Math.abs(sinp)) * (Math.PI / 2); // use 90 degrees if out of range
+    } else {
+      rot.x = -Math.asin(sinp);
     }
 
     // yaw (z-axis rotation)
     const siny_cosp = +2.0 * (q.w * q.z + q.x * q.y);
-    const cosy_cosp = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
-    rot.y = Math.atan2(siny_cosp, cosy_cosp)+Math.PI;
+    const cosy_cosp = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);
+    rot.y = Math.atan2(siny_cosp, cosy_cosp) + Math.PI;
 
-    const toDeg=(rad)=>{ return ((rad * (180.0 / Math.PI))+360)%360; };
+    const toDeg = (rad) => {
+      return ((rad * (180.0 / Math.PI)) + 360) % 360;
+    };
 
-    return {x:toDeg(rot.x), y:toDeg(rot.y), z:toDeg(rot.z)};
+    return {x: toDeg(rot.x), y: toDeg(rot.y), z: toDeg(rot.z)};
   }
 
   private initAR() {
@@ -368,9 +367,7 @@ export class AR extends ARBase {
       if (this.trackingMode === ARTrackingMode.IMAGE) {
         _fragment = new TNSArFragmentForImageDetection();
 
-
         _fragment.getImageDetectionSceneView().then(sceneView => {
-
 
           if (this.trackingImagesBundle) {
             _fragment.addImagesInFolder(this.trackingImagesBundle);
@@ -405,25 +402,25 @@ export class AR extends ARBase {
 
                     augmentedImages.push(augmentedImage.getName());
                     scene.addChild(anchor);
-                  
-                    const planeNode=new com.google.ar.sceneform.Node();
+
+                    const planeNode = new com.google.ar.sceneform.Node();
                     anchor.addChild(planeNode);
-                    
+
                     planeNode.setLocalRotation(new (<any>com.google.ar.sceneform).math.Quaternion(
                         new (<any>com.google.ar.sceneform).math.Vector3(
-                            -90, //sceneform orients tracked images in x-z plane 
+                            -90, // sceneform orients tracked images in x-z plane
                             0,
                             0
                         )
                     ));
 
 
-                    //TODO calculate actual proper scale factor. for ios, tracking images have a defined width - I 
-                    // believe the scale factor is measured-width/defined-width in ios...
-                    const definedWidth=4;
-                    const measuredWidth=augmentedImage.getExtentX();
-                    const scale=measuredWidth/definedWidth;
-                    console.log("scale: "+scale);
+                    // TODO calculate actual proper scale factor. for ios, tracking images have a defined width - I
+                    //  believe the scale factor is measured-width/defined-width in ios...
+                    const definedWidth = 4;
+                    const measuredWidth = augmentedImage.getExtentX();
+                    const scale = measuredWidth / definedWidth;
+                    console.log("scale: " + scale);
                     planeNode.setLocalScale(new (<any>com.google.ar.sceneform).math.Vector3(scale, scale, scale));
 
                     const eventData: ARTrackingImageDetectedEventData = {
@@ -588,7 +585,6 @@ export class AR extends ARBase {
       }
 
       record();
-
       resolve(true);
     });
   }

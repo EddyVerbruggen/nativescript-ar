@@ -29,9 +29,8 @@ export class AugmentCardComponent {
                 return filtered.length > 0 ? filtered[0] : null;
             });
 
-        console.log(">> tracking image for pokemon: " + pokemon);
+        console.log("Tracking image for pokemon: " + pokemon);
 
-        // note that this is not implemented currently on Android
         args.imageTrackingActions.playVideo("https://pokemonletsgo.pokemon.com/assets/video/go-park-video.mp4", true);
 
         // we could use this to stop looping the video after 5 seconds
@@ -50,10 +49,10 @@ export class AugmentCardComponent {
 
             args.imageTrackingActions.addModel({
                 name,
-                scale: pokemon.model.scale,
+                scale: pokemon.model.scale * (isIOS ? 1 : 16),
                 position: {
                     x: 0,
-                    y: isIOS ? 2 : 0.1, // TODO currently Android rotation is off; setting y actually applies z (so toward the camera instead of upwards)
+                    y: isIOS ? 0.035 : 0.1,
                     z: 0
                 },
                 onTap: nodeInteraction => {
@@ -80,15 +79,15 @@ export class AugmentCardComponent {
             args.imageTrackingActions.addImage({
                 image: `~/app/images/favorite-${pokemon.favorite ? 'on' : 'off'}.png`,
                 dimensions: {
-                    x: isIOS ? 3 : 0.01,
-                    y: isIOS ? 3 : 0.01
+                    x: 0.03,
+                    y: 0.03
                 },
                 position: {
-                    x: isIOS ? 3.5 : 0,
-                    y: isIOS ? -1.6 : 0,
-                    z: 0
+                    x: 0.045,
+                    y: -0.016,
+                    z: 0.003
                 },
-                scale: isIOS ? 1 : 0.2,
+                scale: isIOS ? 1 : 0.2, // TODO can we remove this? Not needed on iOS..
                 onTap: toggleFavorite
             }).then(node => favNode = node);
         };
@@ -97,13 +96,13 @@ export class AugmentCardComponent {
             args.imageTrackingActions.addImage({
                 image: pokemon.sprite,
                 dimensions: {
-                    x: isIOS ? 2.5 : 1,
-                    y: isIOS ? 2.5 : 1
+                    x: 0.025,
+                    y: 0.025
                 },
                 position: {
-                    x: isIOS ? 3.5 : 0,
-                    y: isIOS ? -1.6 : 0,
-                    z: isIOS ? 0.07 : 0
+                    x: 0.046,
+                    y: -0.016,
+                    z: 0.005
                 },
                 scale: isIOS ? 1 : 0.2,
                 onTap: toggleFavorite

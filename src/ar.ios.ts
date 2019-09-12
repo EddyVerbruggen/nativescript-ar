@@ -221,7 +221,6 @@ export class AR extends ARBase {
     });
   }
 
-
   public getCameraPosition(): ARPosition {
     const p = this.sceneView.defaultCameraController.pointOfView.worldPosition;
     return {x: p.x, y: p.y, z: p.z};
@@ -229,8 +228,10 @@ export class AR extends ARBase {
 
   public getCameraRotation(): ARRotation {
     const rot = this.sceneView.defaultCameraController.pointOfView.eulerAngles;
-    const toDeg=(rad)=>{ return ((rad * (180.0 / Math.PI))+360)%360; };
-    return {x:toDeg(rot.x), y:toDeg(rot.y), z:toDeg(rot.z)};
+    const toDeg = (rad) => {
+      return ((rad * (180.0 / Math.PI)) + 360) % 360;
+    };
+    return {x: toDeg(rot.x), y: toDeg(rot.y), z: toDeg(rot.z)};
   }
 
   private initAR() {
@@ -263,13 +264,10 @@ export class AR extends ARBase {
         console.log("############### Face tracking is not supported on this device. A device running 12+ is required, with a front-facing TrueDepth camera.");
         return;
       }
-
       this.configuration = ARFaceTrackingConfiguration.new();
 
     } else {
-      const worldTrackingConfig = ARWorldTrackingConfiguration.new();
-      worldTrackingConfig.detectionImages = ARReferenceImage.referenceImagesInGroupNamedBundle("AR Resources", null);
-      this.configuration = worldTrackingConfig;
+      this.configuration = ARWorldTrackingConfiguration.new();
     }
 
     this.configuration.lightEstimationEnabled = true;

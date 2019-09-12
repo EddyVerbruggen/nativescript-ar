@@ -4,18 +4,18 @@ import { ARCommonNode } from "./arcommon";
 
 let pixelsPerMeter = 500;
 
-const alignCenter= (node): void => {
+const alignCenter = (node): void => {
   node.setLocalPosition(new (<any>com.google.ar.sceneform).math.Vector3(
-    0,
-    - node.getLocalScale().y/2,
-    0));
+      0,
+      -node.getLocalScale().y / 2,
+      0));
 };
 
-const alignBottom= (node): void => {
+const alignBottom = (node): void => {
   node.setLocalPosition(new (<any>com.google.ar.sceneform).math.Vector3(
-    0,
-    0,
-    0));
+      0,
+      0,
+      0));
 };
 
 export class ARVideo extends ARCommonNode implements ARVideoNode {
@@ -104,7 +104,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
                   1));
             }
 
-             alignCenter(videoNode);
+            alignCenter(videoNode);
 
             console.log([height, width]);
 
@@ -147,7 +147,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
             }
           }))
           .exceptionally(new (<any>java.util).function.Function({
-              apply: error => reject(error)
+            apply: error => reject(error)
           }));
     });
   }

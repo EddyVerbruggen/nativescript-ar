@@ -83,12 +83,17 @@ export class SearchByCardComponent implements OnInit {
         // this works, but it's quite useless
         args.imageTrackingActions.addImage({
             image: `~/app/images/ScanPlaceholder.png`,
+            dimensions: {
+              x: 0.052,
+              y: 0.034
+            },
             position: {
                 x: 0,
                 y: 0,
-                z: 0.03
+                z: 0.001
             },
-            scale: isIOS ? 3.45 : 0.7 // TODO this is currently device-dependent
+            scale: 1
+            // scale: isIOS ? 0.044 : 5 // TODO this is currently device-dependent
         });
 
         // added a few delays for smoother transitions

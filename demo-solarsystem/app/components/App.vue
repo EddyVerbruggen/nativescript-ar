@@ -49,10 +49,10 @@
     name: "Sun",
     distance: 0,
     orbitSpeed: 0,
-    scale: 0.5,
+    scale: 0.7,
     materials: [{
       diffuse: materialPrefix + "Sol_Opaque_Mat_baseColor.png",
-      // emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
+      emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
     }],
     tilt: 0,
     children: [{
@@ -98,17 +98,27 @@
           normal: materialPrefix + "Luna_Mat_normal.png",
           roughness: materialPrefix + "Luna_Mat_occlusionRoughnessMetallic.png"
         }],
+        life: {
+          name: "Snorlax", // TODO make sure this is on the dark side of the moon
+          position: {x: -.36, y: 0, z: 0},
+          scale: 0.0005
+        }
       }]
     }, {
       name: "Mars",
       distance: 1.5,
       orbitSpeed: 24,
       materials: [{
-        diffuse: materialPrefix + "Mercury_Mat_baseColor.png",
-        normal: materialPrefix + "Mercury_Mat_normal.png"
+        diffuse: materialPrefix + "Mars_mat_baseColor.png",
+        normal: materialPrefix + "Mars_mat_normal.png"
       }],
-      scale: 0.0265 * SCALE_FACTOR,
-      tilt: 25.19
+      scale: 0.1265 * SCALE_FACTOR,
+      tilt: 25.19,
+      life: {
+        name: "Caterpie",
+        position: {x: -.4, y: 0, z: 0.3},
+        scale: 0.005
+      }
     }, {
       name: "Jupiter",
       distance: 2.2,
@@ -212,7 +222,7 @@
         ar.addNode({
           position: {
             x: arPlaneTappedEventData.position.x,
-            y: arPlaneTappedEventData.position.y + 0.5, // a bit above where we tapped
+            y: arPlaneTappedEventData.position.y + 0.5, // half a meter above the plane we tapped
             z: arPlaneTappedEventData.position.z
           }
         }).then(solarSystemNode => {
@@ -268,8 +278,7 @@
                       // dimensions:{x:1, y:0.8}, //ios might need this
                       parentNode: objectNode,
                       view: this.page.getViewById("controlPanel"),
-                      // 0.35 for Android
-                      scale: 0.5 // TODO (in the plugin code).. prolly do something with screen density
+                      scale: 0.4
                     }).then(view => {
                       setInterval(() => {
                         try {
@@ -284,29 +293,44 @@
                     });
                   }
                 } else {
-                  this.orbitalName = solarSystemObject.name;
-                  ar.addUIView({
-                    position: {x: 0, y: .1, z: 0},
-                    parentNode: objectNode,
-                    view: this.page.getViewById("orbitalName"),
-                    scale: 0.35 // TODO see above
-                  });
+                  // this.orbitalName = solarSystemObject.name;
+                  // ar.addUIView({
+                  //   position: {x: 0, y: .1, z: 0},
+                  //   parentNode: objectNode,
+                  //   view: this.page.getViewById("orbitalName"),
+                  //   scale: 0.35 // TODO see above
+                  // });
                 }
               }
-            }).then(o => {
+            }).then(parentNode => {
+              // add some life to the planet ;)
+              if (solarSystemObject.life) {
+                const name = isIOS
+                    ? `PokemonModels.scnassets/${solarSystemObject.life.name}/${solarSystemObject.life.name}.dae`
+                    : `${solarSystemObject.life.name}.glb`;
+                ar.addModel({
+                  name,
+                  parentNode,
+                  position: solarSystemObject.life.position,
+                  scale: solarSystemObject.life.scale
+                })
+                    .then(() => console.log("Life added: " + solarSystemObject.life.name))
+                    .catch(err => console.log("Error adding life: " + err))
+              }
+
               // adding planet-specific tweaks here, just for fun/show :)
               if (solarSystemObject.name === "Earth") {
                 console.log("Adding clouds to Earth");
                 let cloudDegreesPerSecond = 12;
                 ar.addSphere({
-                  // position: {x: -.0001, y: 0, z: 0},
-                  parentNode: o,
+                  position: {x: -.0001, y: 0, z: 0},
+                  parentNode,
                   radius: radius + (isIOS ? 0.015 : 0.05), // TODO this platform difference is not so nice
                   materials: [{
                     diffuse: materialPrefix + "Earth_Clouds_mat_baseColor.png"
                   }],
                   onTap: () => {
-                    console.log(">> tap: " + solarSystemObject.name);
+                    console.log(">> tap earth clouds");
                     this.arLabel = solarSystemObject.name + " tapped, reversing clouds ☁ 🔁";
                     this.orbitalName = solarSystemObject.name;
                     // GodMode: reverse the clouds!
@@ -321,7 +345,7 @@
               } else if (solarSystemObject.name === "Saturn") {
                 console.log("Adding a ring to Saturn");
                 ar.addBox({
-                  parentNode: o,
+                  parentNode,
                   dimensions: {
                     x: 1.2,
                     y: 0,

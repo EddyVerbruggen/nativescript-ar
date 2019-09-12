@@ -7,6 +7,7 @@ const routes: Routes = [
     {path: "home", loadChildren: "~/app/home/home.module#HomeModule"},
     {path: "augment-card", loadChildren: "~/app/augment-card/augment-card.module#AugmentCardModule"},
     {path: "search-by-card", loadChildren: "~/app/search-by-card/search-by-card.module#SearchByCardModule"},
+    {path: "pile-em-up", loadChildren: "~/app/pile-em-up/pile-em-up.module#PileEmUpModule"},
     {path: "settings", loadChildren: "~/app/settings/settings.module#SettingsModule"}
 ];
 

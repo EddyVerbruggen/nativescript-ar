@@ -1,0 +1,15 @@
+<ActionBar class="action-bar">
+    <NavigationButton text="" android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"></NavigationButton>
+    <Label class="action-bar-title" text="Pile 'em Up!"></Label>
+</ActionBar>
+
+<GridLayout class="page page-content" columns="*" rows="*">
+    <AR
+        trackingMode="WORLD"
+        debugLevel="FEATURE_POINTS"
+        detectPlanes="true"
+        planeOpacity="0.25"
+        (planeDetected)="planeDetected($event)"
+        (planeTapped)="planeTapped($event)">
+    </AR>
+</GridLayout>

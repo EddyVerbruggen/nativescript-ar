@@ -3,18 +3,16 @@
   <Label class="action-bar-title" [text]="pokemon?.name" horizontalAlignment="center"></Label>
 </ActionBar>
 
-<!-- TODO show types and card image -->
-
 <FlexboxLayout justifyContent="center">
-  <StackLayout verticalAlignment="middle">
+  <StackLayout>
+
+    <StackLayout orientation="horizontal" horizontalAlignment="center" class="m-t-30">
+      <Label [text]="type" *ngFor="let type of pokemon?.types" class="pokemon-type"></Label>
+    </StackLayout>
+
     <Img class="pokemon-sprite pokemon-sprite-animation" [src]="pokemon?.sprite"/>
-    <!--Repeater [items]="pokemon.types">
-      <Repeater.itemsLayout>
-        <FlexboxLayout class="container"></FlexboxLayout>
-      </Repeater.itemsLayout>
-      <Repeater.itemTemplate>
-        <Label class="pokemon-type" textWrap="true" text="{{ $value }}"/>
-      </Repeater.itemTemplate>
-    </Repeater-->
+
+    <Img class="pokemon-card pokemon-card-animation" [src]="'~/app/images/pokemon-cards/' + pokemon?.name + '.jpg'"/>
+
   </StackLayout>
 </FlexboxLayout>

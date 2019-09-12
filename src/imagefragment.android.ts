@@ -18,8 +18,9 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     const config = new (<any>com.google.ar).core.Config(session);
     this.config = config;
     this.session = session;
-    // TODO we may need this for other fragment configs as well
+
     config.setFocusMode((<any>com.google.ar).core.Config.FocusMode.AUTO);
+    config.setUpdateMode((<any>com.google.ar).core.Config.UpdateMode.LATEST_CAMERA_IMAGE);
 
     this.setupAugmentedImageDatabase(config, session);
 
