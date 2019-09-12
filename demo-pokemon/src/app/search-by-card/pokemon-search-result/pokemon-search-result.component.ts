@@ -5,11 +5,11 @@ import { Pokemon } from "~/app/pokemon-data/pokemon";
 import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
 
 @Component({
-    selector: "Featured",
-    templateUrl: "./featured.component.html",
-    styleUrls: ["./featured.component.scss"]
+    selector: "PokemonSearchResult",
+    templateUrl: "./pokemon-search-result.component.html",
+    styleUrls: ["./pokemon-search-result.component.scss"]
 })
-export class FeaturedComponent implements OnDestroy {
+export class PokemonSearchResultComponent implements OnDestroy {
     private queryParamsSubscription: any;
     pokemon: Pokemon;
 

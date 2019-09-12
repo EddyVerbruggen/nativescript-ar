@@ -59,7 +59,6 @@ export class SearchByCardComponent implements OnInit {
     }
 
     itemTapped(pokemonName: string): void {
-        console.log("item tapped: " + pokemonName);
         this.goToDetailPage(pokemonName);
     }
 
@@ -104,7 +103,7 @@ export class SearchByCardComponent implements OnInit {
     }
 
     private goToDetailPage(forPokemon: string): void {
-        this.routerExtensions.navigate(["/search/pokemon"], {
+        this.routerExtensions.navigate(["search-by-card/pokemon-search-result"], {
             animated: true,
             clearHistory: false,
             queryParams: {

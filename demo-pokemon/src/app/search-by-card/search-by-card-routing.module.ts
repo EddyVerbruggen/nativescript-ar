@@ -1,13 +1,12 @@
 import { NgModule } from "@angular/core";
 import { Routes } from "@angular/router";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
-import { FeaturedComponent } from "~/app/featured/featured.component";
-
+import { PokemonSearchResultComponent } from "~/app/search-by-card/pokemon-search-result/pokemon-search-result.component";
 import { SearchByCardComponent } from "./search-by-card.component";
 
 const routes: Routes = [
     {path: "", component: SearchByCardComponent},
-    {path: "pokemon", component: FeaturedComponent}
+    {path: "pokemon-search-result", component: PokemonSearchResultComponent}
 ];
 
 @NgModule({
