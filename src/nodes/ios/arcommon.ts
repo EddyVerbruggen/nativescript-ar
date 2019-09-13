@@ -56,6 +56,14 @@ export abstract class ARCommonNode implements IARCommonNode {
     this.ios = node;
   }
 
+  moveTo(to: ARPosition): void {
+    this.ios.position = {
+      x: to.x !== undefined ? to.x : this.ios.position.x,
+      y: to.y !== undefined ? to.y : this.ios.position.y,
+      z: to.z !== undefined ? to.z : this.ios.position.z,
+    };
+  }
+
   moveBy(by: ARPosition): void {
     this.ios.position = {
       x: this.ios.position.x + by.x,
