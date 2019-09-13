@@ -3,6 +3,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.11.0'
-    implementation 'com.google.ar.sceneform:assets:1.11.0'
+    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.12.0'
+    implementation 'com.google.ar.sceneform:assets:1.12.0'
 }

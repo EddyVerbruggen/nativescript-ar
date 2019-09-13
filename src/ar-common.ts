@@ -78,7 +78,9 @@ export interface ARCommonNode extends ARNode {
   draggingEnabled?: boolean;
   rotatingEnabled?: boolean;
 
-  moveBy?(to: ARPosition): void;
+  moveTo?(to: ARPosition): void;
+
+  moveBy?(by: ARPosition): void;
 
   rotateBy?(by: ARRotation): void;
 

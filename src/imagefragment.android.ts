@@ -7,7 +7,6 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
   config: any;
   session: any;
   arSceneViewPromises = [];
-  defaultWidth=1;
 
   constructor() {
     super();
@@ -63,7 +62,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     console.log("Add folder: " + name);
 
 
-    let width=imageWidthMeters||1;
+    let width=imageWidthMeters||-1;
 
     const context = utils.ad.getApplicationContext();
     const assetManager = context.getAssets();
@@ -78,6 +77,19 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     let path;
     let file;
 
+    
+
+    for (let i = 0; i < list.length; i++) {
+      file = list[i];
+      path = name + "/" + file;
+
+      if(path.indexOf('.imgdb') > 0){
+
+          this.loadImgDatabase(path);
+          return;
+      }
+    }
+
     for (let i = 0; i < list.length; i++) {
       file = list[i];
       path = name + "/" + file;
@@ -88,17 +100,6 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
         }catch(e){
           console.error(e);
         }
-      }
-    }
-
-    for (let i = 0; i < list.length; i++) {
-      file = list[i];
-      path = name + "/" + file;
-
-      if(path.indexOf('.imgdb') > 0){
-
-          this.loadImgDatabase(path);
-          return;
       }
     }
 
@@ -196,7 +197,13 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       console.log('error loading asset: ' + name);
       return;
     }
-    const index = this.augmentedImageDatabase.addImage(name, augmentedImageBitmap, imageWidthMeters);
+    let index=-1
+    if(imageWidthMeters>0){
+      index = this.augmentedImageDatabase.addImage(name, augmentedImageBitmap, imageWidthMeters);
+    }else{
+      //this will take a while to detect
+      index = this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
+    }
     if (index === -1) {
       console.error('Failed to add asset: ' + name);
     }
@@ -210,7 +217,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
       run: () => {
 
-        let width=imageWidthMeters||1;
+        let width=imageWidthMeters||-1;
 
         if (!name) {
           // remove path and ext
