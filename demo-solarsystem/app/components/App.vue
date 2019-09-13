@@ -52,7 +52,7 @@
     scale: 0.7,
     materials: [{
       diffuse: materialPrefix + "Sol_Opaque_Mat_baseColor.png",
-      emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
+      // emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
     }],
     tilt: 0,
     children: [{
@@ -103,7 +103,7 @@
           name: "Snorlax",
           position: {x: .27, y: 0, z: 0},
           rotation: {x: 0, y: 0, z: -90},
-          scale: 0.001
+          scale: 0.001 * (isIOS ? 1 : 100)
         }]
       }]
     }, {
@@ -122,35 +122,48 @@
           name: "Caterpie",
           position: {x: -.3, y: 0, z: 0},
           rotation: {x: 0, y: 90, z: 0},
-          scale: 0.005
+          scale: 0.005 * (isIOS ? 1 : 50)
         },
         {
           name: "Caterpie",
           position: {x: .3, y: 0, z: 0},
           rotation: {x: 0, y: 90, z: 0},
-          scale: 0.003
+          scale: 0.003 * (isIOS ? 1 : 50)
         },
         {
           name: "Caterpie",
           position: {x: 0, y: .3, z: 0},
           rotation: {x: 0, y: 90, z: 90},
-          scale: 0.004
+          scale: 0.004 * (isIOS ? 1 : 50)
         },
         {
           name: "Caterpie",
           position: {x: 0, y: 0, z: .3},
           rotation: {x: 0, y: 90, z: 90},
-          scale: 0.006
+          scale: 0.006 * (isIOS ? 1 : 50)
         }]
     }, {
       name: "Jupiter",
       distance: 2.2,
-      orbitSpeed: 13,
+      orbitSpeed: 30,
       materials: [{
         diffuse: materialPrefix + "Jupiter_Mat_baseColor.png"
       }],
       scale: 0.16 * SCALE_FACTOR,
-      tilt: 3.13
+      tilt: 3.13,
+      life: [
+        {
+          name: "Spider",
+          position: {x: 0.263, y: 0, z: 0},
+          rotation: {x: 0, y: 0, z: -90},
+          scale: 0.0005 * (isIOS ? 1 : 2000)
+        }, {
+          name: "WalkingBoy",
+          position: {x: 0, y: 0.263, z: 0},
+          rotation: {x: 0, y: 90, z: 0},
+          scale: 0.001 * (isIOS ? 1 : 70)
+        }
+      ]
     }, {
       name: "Saturn",
       distance: 3.5,
@@ -327,6 +340,7 @@
               }
             }).then(parentNode => {
               // add some life to the planet ;)
+              console.log("Added.. has life? " + solarSystemObject.life);
               if (solarSystemObject.life) {
                 solarSystemObject.life.forEach(life => {
                   const name = isIOS
@@ -338,9 +352,22 @@
                     position: life.position,
                     rotation: life.rotation,
                     scale: life.scale
-                  })
-                      .then(() => console.log("Life added: " + life.name))
-                      .catch(err => console.log("Error adding life: " + err))
+                  }).then(addedLife => {
+                    console.log("Added life: " + addedLife);
+                    // this can be used to move the boy-model over the planet, but we also need to rotate it so his feet always touch the surface
+                    /*
+                    if (life.name === "WalkingBoy") {
+                      let walkDegreesPerSecond = 0;
+                      setInterval(() => {
+                        walkDegreesPerSecond += .1 / fps;
+                        const r = life.position.y;
+                        const newLeft = r * Math.cos(walkDegreesPerSecond);
+                        const newTop = r * Math.sin(walkDegreesPerSecond);
+                        addedLife.moveTo({x: newLeft, y: newTop, z: 0});
+                      }, 1000 / fps);
+                    }
+                    */
+                  }).catch(err => console.log("Error adding life: " + err))
                 });
               }
 

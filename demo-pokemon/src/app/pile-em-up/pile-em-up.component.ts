@@ -40,7 +40,7 @@ export class PileEmUpComponent {
                 y: 45,
                 z: 0
             },
-            scale: 0.01,
+            scale: isIOS ? 0.001 : 0.05,
             onTap: (interaction: ARNodeInteraction) => {
                 console.log("tapped model id: " + interaction.node.id);
                 console.log("tapped model position: " + interaction.node.position);

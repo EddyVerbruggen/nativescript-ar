@@ -49,10 +49,10 @@ export class AugmentCardComponent {
 
             args.imageTrackingActions.addModel({
                 name,
-                scale: pokemon.model.scale * (isIOS ? 1 : 16),
+                scale: pokemon.model.scale / (isIOS ? 50 : 1),
                 position: {
                     x: 0,
-                    y: isIOS ? 0.035 : 0.1,
+                    y: 0.035,
                     z: 0
                 },
                 onTap: nodeInteraction => {
@@ -87,7 +87,7 @@ export class AugmentCardComponent {
                     y: -0.016,
                     z: 0.003
                 },
-                scale: isIOS ? 1 : 0.2, // TODO can we remove this? Not needed on iOS..
+                scale: 1,
                 onTap: toggleFavorite
             }).then(node => favNode = node);
         };
@@ -104,7 +104,7 @@ export class AugmentCardComponent {
                     y: -0.016,
                     z: 0.005
                 },
-                scale: isIOS ? 1 : 0.2,
+                scale: 1,
                 onTap: toggleFavorite
             }).then(node => imgNode = node);
         };

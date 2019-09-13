@@ -417,7 +417,7 @@ export class AR extends ARBase {
 
                     // TODO calculate actual proper scale factor. for ios, tracking images have a defined width - I
                     //  believe the scale factor is measured-width/defined-width in ios...
-                    const definedWidth = 4;
+                    const definedWidth = 0.05;
                     const measuredWidth = augmentedImage.getExtentX();
                     const scale = measuredWidth / definedWidth;
                     console.log("scale: " + scale);
