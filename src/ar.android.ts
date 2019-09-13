@@ -417,21 +417,25 @@ export class AR extends ARBase {
 
                     // TODO calculate actual proper scale factor. for ios, tracking images have a defined width - I
                     //  believe the scale factor is measured-width/defined-width in ios...
-                    const definedWidth = 4;
-                    const measuredWidth = augmentedImage.getExtentX();
-                    const scale = measuredWidth / definedWidth;
-                    console.log("scale: " + scale);
-                    planeNode.setLocalScale(new (<any>com.google.ar.sceneform).math.Vector3(scale, scale, scale));
+                    // const definedWidth = _fragment.getAssetWidthMeters(augmentedImage)||1;
+                    // const measuredWidth = augmentedImage.getExtentX();
+                    // const scale = measuredWidth / definedWidth;
+                    // console.log("scale: " + scale+" "+measuredWidth+"/"+definedWidth );
+                    //planeNode.setLocalScale(new (<any>com.google.ar.sceneform).math.Vector3(scale, scale, scale));
 
                     const eventData: ARTrackingImageDetectedEventData = {
                       eventName: ARBase.trackingImageDetectedEvent,
                       object: this,
-                      size: undefined, // TODO
+                      size:{
+                        width:augmentedImage.getExtentX(),
+                        height:augmentedImage.getExtentY()
+                      }, 
                       position: {
                         x: augmentedImage.getCenterPose().tx(),
                         y: augmentedImage.getCenterPose().ty(),
                         z: augmentedImage.getCenterPose().tz()
                       },
+                      
                       imageName: augmentedImage.getName(),
                       imageTrackingActions: new ARImageTrackingActionsImpl(augmentedImage, planeNode)
                     };
