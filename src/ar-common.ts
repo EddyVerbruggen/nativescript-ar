@@ -269,6 +269,7 @@ export interface ARFaceTrackingActions {
 
 export interface ARImageTrackingOptions {
   image: string;
+  width?:number,
   onDetectedImage?: (args: ARTrackingImageDetectedEventData) => void;
 }
 

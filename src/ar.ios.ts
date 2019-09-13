@@ -633,7 +633,7 @@ export class AR extends ARBase {
       img = UIImage.imageNamed(options.image);
     }
 
-    const refImage = ARReferenceImage.alloc().initWithCGImageOrientationPhysicalWidth(img.CGImage, 1, 1);
+    const refImage = ARReferenceImage.alloc().initWithCGImageOrientationPhysicalWidth(img.CGImage, 1, options.width||1);
     refImage.name = name;
     set.addObject(refImage);
 
