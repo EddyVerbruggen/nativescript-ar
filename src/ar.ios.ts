@@ -623,7 +623,7 @@ export class AR extends ARBase {
     }
 
     const set = NSMutableSet.setWithSet(this.configuration.trackingImages);
-    const name = options.image.split('/').pop().split('.').slice(0, -1).join('.');
+    const name = options.name||options.image.split('/').pop().split('.').slice(0, -1).join('.');
 
     let img;
 

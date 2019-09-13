@@ -660,7 +660,8 @@ export class AR extends ARBase {
       throw "Only supported in trackingMode: IMAGE";
     }
 
-    _fragment.addImage(options.image, options.width||-1);
+    const name = options.name||options.image.split('/').pop().split('.').slice(0, -1).join('.');
+    _fragment.addImage(options.image, name, options.width||-1);
     if (!options.onDetectedImage) {
       return;
     }
