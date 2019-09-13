@@ -419,7 +419,7 @@ export class AR extends ARBase {
                       object: this,
                       size:{
                         width:augmentedImage.getExtentX(),
-                        height:augmentedImage.getExtentY()
+                        height:augmentedImage.getExtentZ()
                       }, 
                       position: {
                         x: augmentedImage.getCenterPose().tx(),
