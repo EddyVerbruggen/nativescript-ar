@@ -52,7 +52,6 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
   setupAugmentedImageDatabase(config, session) {
     this.augmentedImageDatabase = new (<any>com.google.ar).core.AugmentedImageDatabase(session);
-
     config.setAugmentedImageDatabase(this.augmentedImageDatabase);
     return true;
   }

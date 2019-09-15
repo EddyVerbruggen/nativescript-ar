@@ -65,26 +65,28 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
       }
 
       let videoMat;
-
-      ARVideo.model().then(renderable => {
+     
+      ARVideo.getModel().then(renderable => {
 
         videoMat = renderable.getMaterial();
 
         com.google.ar.sceneform.rendering.MaterialFactory.makeOpaqueWithColor(
-            utils.ad.getApplicationContext(),
-            new com.google.ar.sceneform.rendering.Color(android.graphics.Color.MAGENTA))
-            .thenAccept(new (<any>java.util).function.Consumer({
-              accept: material => {
-                renderable.setMaterial(material);
-                videoNode.setRenderable(renderable);
-                const arVideo = new ARVideo(options, node);
-                arVideo.mediaPlayer = mediaPlayer;
-                resolve(arVideo);
-              }
-            }))
-            .exceptionally(new (<any>java.util).function.Function({
-              apply: error => reject(error)
-            }));
+          utils.ad.getApplicationContext(),
+          new com.google.ar.sceneform.rendering.Color(android.graphics.Color.MAGENTA))
+          .thenAccept(new (<any>java.util).function.Consumer({
+            accept: material => {
+              renderable.setMaterial(material);
+              videoNode.setRenderable(renderable);
+              const arVideo = new ARVideo(options, node);
+              arVideo.mediaPlayer = mediaPlayer;
+              resolve(arVideo);
+            }
+          }))
+          .exceptionally(new (<any>java.util).function.Function({
+            apply: error => reject(error)
+          }));
+
+      
 
         videoMat.setExternalTexture("videoTexture", texture);
         videoMat.setBoolean("disableChromaKey", true);
@@ -136,19 +138,30 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
     });
   }
 
-  static model(): Promise<com.google.ar.sceneform.rendering.ModelRenderable> {
+  static getModel(): Promise<com.google.ar.sceneform.rendering.ModelRenderable> {    
     return new Promise<com.google.ar.sceneform.rendering.ModelRenderable>((resolve, reject) => {
+     
+     try{
+     
       com.google.ar.sceneform.rendering.ModelRenderable.builder()
-          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("VideoPlane.sfb"))
-          .build()
-          .thenAccept(new (<any>java.util).function.Consumer({
-            accept: renderable => {
-              resolve(renderable);
-            }
-          }))
-          .exceptionally(new (<any>java.util).function.Function({
-            apply: error => reject(error)
-          }));
+        .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("video_chroma.sfb"))
+        .build()
+        .thenAccept(new (<any>java.util).function.Consumer({
+          accept: renderable => {
+            resolve(renderable);
+          }
+        }))
+        .exceptionally(new (<any>java.util).function.Function({
+          apply: error => {
+            console.log("g");
+            reject(error);
+          }
+        }));
+     
+      }catch(e){
+        reject(e);
+      }
+
     });
   }
 
