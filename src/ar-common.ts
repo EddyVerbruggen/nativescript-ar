@@ -286,6 +286,8 @@ export interface ARImageTrackingActions {
   addImage(options: ARAddImageOptions): Promise<ARCommonNode>;
 
   addUIView(options: ARUIViewOptions): Promise<ARCommonNode>;
+  
+  addNode(options: ARAddOptions): Promise<ARCommonNode>;
 }
 
 export class ARDimensions {

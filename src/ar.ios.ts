@@ -1043,6 +1043,9 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
     return addUIView(options, this.planeNode, this.sceneView);
   }
+  addNode(options: ARUIViewOptions): Promise<ARCommonNode> {
+    return addNode(options, this.planeNode);
+  }
 }
 
 class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
