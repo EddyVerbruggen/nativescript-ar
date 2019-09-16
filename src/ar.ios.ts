@@ -691,7 +691,7 @@ export class AR extends ARBase {
     }
 
     const set = NSMutableSet.setWithSet(this.configuration.trackingImages);
-    const name = options.image.split('/').pop().split('.').slice(0, -1).join('.');
+    const name = options.name || options.image.split('/').pop().split('.').slice(0, -1).join('.');
 
     let img;
 
@@ -701,7 +701,7 @@ export class AR extends ARBase {
       img = UIImage.imageNamed(options.image);
     }
 
-    const refImage = ARReferenceImage.alloc().initWithCGImageOrientationPhysicalWidth(img.CGImage, 1, 1);
+    const refImage = ARReferenceImage.alloc().initWithCGImageOrientationPhysicalWidth(img.CGImage, 1, options.width || 1);
     refImage.name = name;
     set.addObject(refImage);
 
@@ -1129,6 +1129,10 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
     return addUIView(options, this.planeNode, this.sceneView);
+  }
+
+  addNode(options: ARUIViewOptions): Promise<ARCommonNode> {
+    return addNode(options, this.planeNode);
   }
 }
 
