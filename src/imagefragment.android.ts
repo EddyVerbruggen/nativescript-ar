@@ -1,5 +1,5 @@
-import * as utils from "tns-core-modules/utils/utils";
 import { fromFileOrResource, fromUrl } from "tns-core-modules/image-source";
+import * as utils from "tns-core-modules/utils/utils";
 
 export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.ArFragment {
 
@@ -61,7 +61,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     console.log("Add folder: " + name);
 
 
-    let width=imageWidthMeters||-1;
+    let width = imageWidthMeters || -1;
 
     const context = utils.ad.getApplicationContext();
     const assetManager = context.getAssets();
@@ -76,16 +76,15 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     let path;
     let file;
 
-    
 
     for (let i = 0; i < list.length; i++) {
       file = list[i];
       path = name + "/" + file;
 
-      if(path.indexOf('.imgdb') > 0){
+      if (path.indexOf('.imgdb') > 0) {
 
-          this.loadImgDatabase(path);
-          return;
+        this.loadImgDatabase(path);
+        return;
       }
     }
 
@@ -93,10 +92,10 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       file = list[i];
       path = name + "/" + file;
 
-      if(file.toLowerCase()==="contents.json"){
-        try{
-          width=this.readContentWidth(path);
-        }catch(e){
+      if (file.toLowerCase() === "contents.json") {
+        try {
+          width = this.readContentWidth(path);
+        } catch (e) {
           console.error(e);
         }
       }
@@ -107,10 +106,10 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       path = name + "/" + file;
 
       if (path.indexOf('.jpg') > 0 || path.indexOf('.png') > 0) {
-        
+
         let assetName = path.split('/').pop().split('.').slice(0, -1).join('.');
         this.addImage(path, assetName, width);
-      
+
       } else {
 
         let length = assetManager.list(path).length;
@@ -148,39 +147,37 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     const context = utils.ad.getApplicationContext();
     const assetManager = context.getAssets();
 
-    let text="";
+    let text = "";
     let bufferedReader = new java.io.BufferedReader(new java.io.InputStreamReader(assetManager.open(asset)));
- 
-    let output;// = bufferedReader.readLine();
+
+    let output; // = bufferedReader.readLine();
     while ((output = bufferedReader.readLine()) != null) {
-        text+=output
+      text += output;
     }
-     
-    const data=JSON.parse(text);
 
+    const data = JSON.parse(text);
 
+    if (data && data.properties && data.properties.width) {
+      let width = data.properties.width;
+      if (data.properties.unit) {
+        const unit = data.properties.unit;
+        // meters
 
-    if(data&&data.properties&&data.properties.width){
-      let width=data.properties.width;
-      if(data.properties.unit){
-        const unit=data.properties.unit;
-          //meters
-
-        if(unit==="centimeters"){
-          width=width/100;
+        if (unit === "centimeters") {
+          width = width / 100;
         }
-        if(unit==="feet"){
-          width=width/3.28084;
+        if (unit === "feet") {
+          width = width / 3.28084;
         }
-        if(unit==="inches"){
-          width=width/39.37008;
+        if (unit === "inches") {
+          width = width / 39.37008;
         }
-        if(unit==="yards"){
-          width=width/1.09361;
-        }      
-        
+        if (unit === "yards") {
+          width = width / 1.09361;
+        }
+
       }
-      console.log("using asset width: "+width+"m");
+      console.log("using asset width: " + width + "m");
       return width;
 
 
@@ -196,11 +193,11 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       console.log('error loading asset: ' + name);
       return;
     }
-    let index=-1
-    if(imageWidthMeters>0){
+    let index = -1;
+    if (imageWidthMeters > 0) {
       index = this.augmentedImageDatabase.addImage(name, augmentedImageBitmap, imageWidthMeters);
-    }else{
-      //this will take a while to detect
+    } else {
+      // this will take a while to detect
       index = this.augmentedImageDatabase.addImage(name, augmentedImageBitmap);
     }
     if (index === -1) {
@@ -216,7 +213,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
       run: () => {
 
-        let width=imageWidthMeters||-1;
+        let width = imageWidthMeters || -1;
 
         if (!name) {
           // remove path and ext
@@ -240,7 +237,8 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
           image = android.graphics.BitmapFactory.decodeStream(is);
           this.addBitmap(image, name, width);
           return;
-        } catch (e) {}
+        } catch (e) {
+        }
 
         try {
           image = fromFileOrResource(asset);

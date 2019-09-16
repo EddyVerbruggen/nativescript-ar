@@ -223,6 +223,7 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
     return addUIView(options, this.planeNode);
   }
+
   addNode(options: ARUIViewOptions): Promise<ARCommonNode> {
     return addNode(options, this.planeNode);
   }
@@ -416,20 +417,20 @@ export class AR extends ARBase {
                             0
                         )
                     ));
-                    
+
                     const eventData: ARTrackingImageDetectedEventData = {
                       eventName: ARBase.trackingImageDetectedEvent,
                       object: this,
-                      size:{
-                        width:augmentedImage.getExtentX(),
-                        height:augmentedImage.getExtentZ()
-                      }, 
+                      size: {
+                        width: augmentedImage.getExtentX(),
+                        height: augmentedImage.getExtentZ()
+                      },
                       position: {
                         x: augmentedImage.getCenterPose().tx(),
                         y: augmentedImage.getCenterPose().ty(),
                         z: augmentedImage.getCenterPose().tz()
                       },
-                      
+
                       imageName: augmentedImage.getName(),
                       imageTrackingActions: new ARImageTrackingActionsImpl(augmentedImage, planeNode)
                     };
@@ -652,8 +653,8 @@ export class AR extends ARBase {
       throw "Only supported in trackingMode: IMAGE";
     }
 
-    const name = options.name||options.image.split('/').pop().split('.').slice(0, -1).join('.');
-    _fragment.addImage(options.image, name, options.width||-1);
+    const name = options.name || options.image.split('/').pop().split('.').slice(0, -1).join('.');
+    _fragment.addImage(options.image, name, options.width || -1);
     if (!options.onDetectedImage) {
       return;
     }
