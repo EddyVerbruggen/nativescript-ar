@@ -269,6 +269,8 @@ export interface ARFaceTrackingActions {
 
 export interface ARImageTrackingOptions {
   image: string;
+  width?:number;
+  name?:string;
   onDetectedImage?: (args: ARTrackingImageDetectedEventData) => void;
 }
 
@@ -284,6 +286,8 @@ export interface ARImageTrackingActions {
   addImage(options: ARAddImageOptions): Promise<ARCommonNode>;
 
   addUIView(options: ARUIViewOptions): Promise<ARCommonNode>;
+  
+  addNode(options: ARAddOptions): Promise<ARCommonNode>;
 }
 
 export class ARDimensions {
