@@ -17,6 +17,7 @@ export abstract class ARCommonNode implements IARCommonNode {
   onPanHandler?: (interaction: ARNodeInteraction) => void;
   draggingEnabled: boolean;
   rotatingEnabled: boolean;
+  scalingEnabled: boolean;
 
   constructor(options: ARAddOptions, node: SCNNode) {
     this.onTapHandler = options.onTap;
@@ -24,6 +25,7 @@ export abstract class ARCommonNode implements IARCommonNode {
     // this.onPanHandler = options.onPan;
     this.draggingEnabled = options.draggingEnabled;
     this.rotatingEnabled = options.rotatingEnabled;
+    this.scalingEnabled = options.scalingEnabled;
 
     node.position = this.position = options.position;
 
@@ -188,6 +190,10 @@ export abstract class ARCommonNode implements IARCommonNode {
 
   allowRotating(): boolean {
     return this.rotatingEnabled;
+  }
+
+  allowScaling(): boolean {
+    return this.scalingEnabled;
   }
 
   remove(): void {

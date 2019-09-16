@@ -12,10 +12,10 @@ export abstract class ARCommonNode implements IARCommonNode {
   onPanHandler?: (interaction: ARNodeInteraction) => void;
   draggingEnabled: boolean;
   rotatingEnabled: boolean;
-
+  scalingEnabled: boolean;
 
   public static createNode(options: ARAddOptions, fragment) {
-    if ((options.draggingEnabled || options.rotatingEnabled)) {
+    if ((options.draggingEnabled || options.rotatingEnabled || options.scalingEnabled)) {
       const node = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
       // node.select();
       return node;
@@ -35,6 +35,7 @@ export abstract class ARCommonNode implements IARCommonNode {
     // this.onPanHandler = options.onPan;
     this.draggingEnabled = options.draggingEnabled;
     this.rotatingEnabled = options.rotatingEnabled;
+    this.scalingEnabled = options.scalingEnabled;
 
     if (options.rotation) {
       this.rotateBy(options.rotation);
@@ -260,6 +261,10 @@ export abstract class ARCommonNode implements IARCommonNode {
 
   allowRotating(): boolean {
     return this.rotatingEnabled;
+  }
+
+  allowScaling(): boolean {
+    return this.scalingEnabled;
   }
 
   remove(): void {
