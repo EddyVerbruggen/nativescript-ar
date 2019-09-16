@@ -24,8 +24,18 @@ But to help add behavior to the AR experience, here are the properties and event
 <img src="images/imagetracking-resources.png" width="688px"/>
 
 Note that especially on Android detection is a bit picky.
-The most important thing is to make sure the image you're trying to recognise in the real world
-is flat and at least about 15 x 15 centimers tall.
+The most important thing is to make sure the image you're trying to recognise in the real world is flat and at least about 15 x 15 centimeters tall.
+
+However, to help Android speed up loading the images you want to track and improve its accuracy you can create an `.imgdb file [like we did here](https://github.com/EddyVerbruggen/nativescript-ar/blob/master/demo-pokemon/App_Resources/Android/src/main/assets/PokemonResources/images.imgdb):
+
+```bash
+#build from folder
+./arcoreimg build-db --input_images_directory=../demo-pokemon/App_Resources/Android/src/main/assets/PokemonResources/ --output_db_path=../demo-pokemon/App_Resources/Android/src/main/assets/PokemonResources/
+
+#modify -imglist.txt and fix names and append '|0.05' to set width 
+#rebuild from list
+./arcoreimg build-db --input_image_list_path=../demo-pokemon/App_Resources/Android/src/main/assets/PokemonResources/-imglist.txt --output_db_path=../demo-pokemon/App_Resources/Android/src/main/assets/PokemonResources/
+```
 
 ## Events
 |event|event data|description
