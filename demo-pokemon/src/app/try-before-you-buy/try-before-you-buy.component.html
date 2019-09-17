@@ -1,15 +1,14 @@
 <ActionBar class="action-bar">
     <NavigationButton text="" android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"></NavigationButton>
-    <Label class="action-bar-title" text="Pile 'em Up!"></Label>
+    <Label class="action-bar-title" text="Try before you buy"></Label>
 </ActionBar>
 
 <GridLayout class="page page-content" columns="*" rows="*">
     <AR
         trackingMode="WORLD"
-        debugLevel="FEATURE_POINTS"
+        debugLevel="PHYSICS_SHAPES"
         detectPlanes="true"
-        planeOpacity="0.25"
-        (planeDetected)="planeDetected($event)"
+        planeOpacity=".1"
         (planeTapped)="planeTapped($event)">
     </AR>
 </GridLayout>

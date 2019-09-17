@@ -425,9 +425,11 @@ export class AR extends ARBase {
     if (!(node && node.name)) {
       return undefined;
     }
-    if (node.name[0] == '{') {
+
+    if (node.name[0] === '{') {
       return ARState.shapes.get(node.name);
     }
+
     return node.parentNode ? this.getTargetARNodeFromSCNNode(node.parentNode) : undefined;
   }
 
@@ -579,7 +581,7 @@ export class AR extends ARBase {
           x: this.targetNodeInitialScale.x * recognizer.scale,
           y: this.targetNodeInitialScale.y * recognizer.scale,
           z: this.targetNodeInitialScale.z * recognizer.scale
-        }
+        };
 
       } else if (state === UIGestureRecognizerState.Ended) {
         this.targetNodeForScaling = undefined;

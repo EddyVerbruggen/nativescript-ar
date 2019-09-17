@@ -1,15 +1,15 @@
 import { NgModule } from "@angular/core";
 import { Routes } from "@angular/router";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
-import { PileEmUpComponent } from "./pile-em-up.component";
+import { TryBeforeYouBuyComponent } from "~/app/try-before-you-buy/try-before-you-buy.component";
 
 const routes: Routes = [
-    {path: "", component: PileEmUpComponent}
+    {path: "", component: TryBeforeYouBuyComponent}
 ];
 
 @NgModule({
     imports: [NativeScriptRouterModule.forChild(routes)],
     exports: [NativeScriptRouterModule]
 })
-export class PileEmUpRoutingModule {
+export class TryBeforeYouBuyRoutingModule {
 }

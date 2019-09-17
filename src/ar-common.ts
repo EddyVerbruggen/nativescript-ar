@@ -75,7 +75,7 @@ export interface ARNodeInteraction {
 }
 
 export interface ARCommonNode extends ARNode {
-  
+
   draggingEnabled?: boolean;
   rotatingEnabled?: boolean;
   scalingEnabled?: boolean;

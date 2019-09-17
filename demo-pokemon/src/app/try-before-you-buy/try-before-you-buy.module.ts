@@ -1,19 +1,19 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptCommonModule } from "nativescript-angular/common";
-import { PileEmUpRoutingModule } from "./pile-em-up-routing.module";
-import { PileEmUpComponent } from "./pile-em-up.component";
+import { TryBeforeYouBuyRoutingModule } from "./try-before-you-buy-routing.module";
+import { TryBeforeYouBuyComponent } from "./try-before-you-buy.component";
 
 @NgModule({
     imports: [
         NativeScriptCommonModule,
-        PileEmUpRoutingModule
+        TryBeforeYouBuyRoutingModule
     ],
     declarations: [
-        PileEmUpComponent
+        TryBeforeYouBuyComponent
     ],
     schemas: [
         NO_ERRORS_SCHEMA
     ]
 })
-export class PileEmUpModule {
+export class TryBeforeYouBuyModule {
 }
