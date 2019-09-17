@@ -124,6 +124,7 @@ export class AR extends ARBase {
   private sceneLongPressHandler: SceneLongPressHandlerImpl;
   private scenePanHandler: ScenePanHandlerImpl;
   private sceneRotationHandler: SceneRotationHandlerImpl;
+  private scenePinchHandler: ScenePinchHandlerImpl;
   private recorder: RecordAR;
 
   static isSupported(): boolean {
@@ -326,6 +327,12 @@ export class AR extends ARBase {
     const rotationGestureRecognizer = UIRotationGestureRecognizer.alloc().initWithTargetAction(this.sceneRotationHandler, "rotate");
     this.sceneView.addGestureRecognizer(rotationGestureRecognizer);
 
+
+    // register a rotation handler
+    this.scenePinchHandler = ScenePinchHandlerImpl.initWithOwner(new WeakRef(this));
+    const pinchGestureRecognizer = UIPinchGestureRecognizer.alloc().initWithTargetAction(this.scenePinchHandler, "pinch");
+    this.sceneView.addGestureRecognizer(pinchGestureRecognizer);
+
     // make things look pretty
     this.sceneView.antialiasingMode = SCNAntialiasingMode.Multisampling4X;
 
@@ -405,7 +412,7 @@ export class AR extends ARBase {
     }
 
     const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-    const savedModel = ARState.shapes.get(hitResult.node.name) || ARState.shapes.get(hitResult.node.parentNode.name);
+    const savedModel = this.getTargetARNodeFromSCNNode(hitResult.node);
     if (savedModel) {
       savedModel.onLongPress({
         x: tapPoint.x,
@@ -414,9 +421,21 @@ export class AR extends ARBase {
     }
   }
 
+  private getTargetARNodeFromSCNNode(node:SCNNode):ARCommonNode{
+    if(!(node&&node.name)){
+      return undefined;
+    }
+    if(node.name[0]=='{'){
+      return ARState.shapes.get(node.name);
+    }
+    return node.parentNode?this.getTargetARNodeFromSCNNode(node.parentNode):undefined;
+  }
+
   lastPositionForPanning: CGPoint;
   targetNodeForPanning: SCNNode;
   targetNodeForRotating: SCNNode;
+  targetNodeForScaling: SCNNode;
+  targetNodeInitialScale: SCNVector3;
 
   public scenePanned(recognizer: UIPanGestureRecognizer): void {
     let state = recognizer.state;
@@ -443,7 +462,7 @@ export class AR extends ARBase {
       }
 
       const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-      const savedModel: ARCommonNode = ARState.shapes.get(hitResult.node.name);
+      const savedModel: ARCommonNode = this.getTargetARNodeFromSCNNode(hitResult.node);
       if (savedModel && savedModel.draggingEnabled && savedModel.ios) {
         this.targetNodeForPanning = savedModel.ios;
         savedModel.onPan({
@@ -494,7 +513,7 @@ export class AR extends ARBase {
       }
 
       const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-      const savedModel: ARCommonNode = ARState.shapes.get(hitResult.node.name);
+      const savedModel: ARCommonNode = this.getTargetARNodeFromSCNNode(hitResult.node);
       if (savedModel && savedModel.rotatingEnabled && savedModel.ios) {
         this.targetNodeForRotating = savedModel.ios;
       } else {
@@ -516,6 +535,55 @@ export class AR extends ARBase {
 
       } else if (state === UIGestureRecognizerState.Ended) {
         this.targetNodeForRotating = undefined;
+      }
+    }
+  }
+
+
+  public scenePinched(recognizer: UIPinchGestureRecognizer): void {
+    let state = recognizer.state;
+    if (state === UIGestureRecognizerState.Failed || state === UIGestureRecognizerState.Cancelled) {
+      return;
+    }
+
+    let position = recognizer.locationInView(this.sceneView);
+
+    if (state === UIGestureRecognizerState.Began) {
+      const hitTestResults: NSArray<SCNHitTestResult> =
+          this.sceneView.hitTestOptions(
+              position,
+              <any>{
+                SCNHitTestBoundingBoxOnlyKey: true,
+                SCNHitTestFirstFoundOnlyKey: true
+              });
+
+      if (hitTestResults.count === 0) {
+        this.targetNodeForScaling = undefined;
+        return;
+      }
+
+      const hitResult: SCNHitTestResult = hitTestResults.firstObject;
+      const savedModel: ARCommonNode = this.getTargetARNodeFromSCNNode(hitResult.node);
+      if (savedModel && savedModel.scalingEnabled && savedModel.ios) {
+        this.targetNodeForScaling = savedModel.ios;
+        this.targetNodeInitialScale=this.targetNodeForScaling.scale;
+      } else {
+        this.targetNodeForScaling = undefined;
+      }
+
+    } else if (this.targetNodeForScaling) {
+      if (state === UIGestureRecognizerState.Changed) {
+        // no real need for this
+        // savedModel.onRotate();
+
+         this.targetNodeForScaling.scale={
+          x: this.targetNodeInitialScale.x*recognizer.scale ,
+          y: this.targetNodeInitialScale.y*recognizer.scale ,
+          z: this.targetNodeInitialScale.z*recognizer.scale
+        }
+
+      } else if (state === UIGestureRecognizerState.Ended) {
+        this.targetNodeForScaling = undefined;
       }
     }
   }
@@ -542,7 +610,7 @@ export class AR extends ARBase {
     let node: SCNNode = hitResult.node;
 
     if (node !== undefined) {
-      let savedModel = ARState.shapes.get(node.name) || ARState.shapes.get(node.parentNode.name);
+      let savedModel = this.getTargetARNodeFromSCNNode(node);
       if (savedModel !== undefined) {
         savedModel.onTap({
           x: tapPoint.x,
@@ -661,6 +729,25 @@ export class AR extends ARBase {
     ARState.shapes.forEach(node => node.remove());
     ARState.shapes.clear();
   }
+}
+
+
+class ScenePinchHandlerImpl extends NSObject {
+  private _owner: WeakRef<AR>;
+
+  public static initWithOwner(owner: WeakRef<AR>): ScenePinchHandlerImpl {
+    let handler = <ScenePinchHandlerImpl>ScenePinchHandlerImpl.new();
+    handler._owner = owner;
+    return handler;
+  }
+
+  public pinch(args: UIPinchGestureRecognizer): void {
+    this._owner.get().scenePinched(args);
+  }
+
+  public static ObjCExposedMethods = {
+    "pinch": {returns: interop.types.void, params: [interop.types.id]}
+  };
 }
 
 class SceneTapHandlerImpl extends NSObject {

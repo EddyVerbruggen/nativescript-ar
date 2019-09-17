@@ -75,8 +75,10 @@ export interface ARNodeInteraction {
 }
 
 export interface ARCommonNode extends ARNode {
+  
   draggingEnabled?: boolean;
   rotatingEnabled?: boolean;
+  scalingEnabled?: boolean;
 
   moveTo?(to: ARPosition): void;
 
@@ -111,6 +113,7 @@ export interface ARAddOptions {
   // onPan?: (interaction: ARNodeInteraction) => void;
   draggingEnabled?: boolean;
   rotatingEnabled?: boolean;
+  scalingEnabled?: boolean;
   parentNode?: ARNode;
 }
 
