@@ -421,14 +421,14 @@ export class AR extends ARBase {
     }
   }
 
-  private getTargetARNodeFromSCNNode(node:SCNNode):ARCommonNode{
-    if(!(node&&node.name)){
+  private getTargetARNodeFromSCNNode(node: SCNNode): ARCommonNode {
+    if (!(node && node.name)) {
       return undefined;
     }
-    if(node.name[0]=='{'){
+    if (node.name[0] == '{') {
       return ARState.shapes.get(node.name);
     }
-    return node.parentNode?this.getTargetARNodeFromSCNNode(node.parentNode):undefined;
+    return node.parentNode ? this.getTargetARNodeFromSCNNode(node.parentNode) : undefined;
   }
 
   lastPositionForPanning: CGPoint;
@@ -539,7 +539,6 @@ export class AR extends ARBase {
     }
   }
 
-
   public scenePinched(recognizer: UIPinchGestureRecognizer): void {
     let state = recognizer.state;
     if (state === UIGestureRecognizerState.Failed || state === UIGestureRecognizerState.Cancelled) {
@@ -566,7 +565,7 @@ export class AR extends ARBase {
       const savedModel: ARCommonNode = this.getTargetARNodeFromSCNNode(hitResult.node);
       if (savedModel && savedModel.scalingEnabled && savedModel.ios) {
         this.targetNodeForScaling = savedModel.ios;
-        this.targetNodeInitialScale=this.targetNodeForScaling.scale;
+        this.targetNodeInitialScale = this.targetNodeForScaling.scale;
       } else {
         this.targetNodeForScaling = undefined;
       }
@@ -576,10 +575,10 @@ export class AR extends ARBase {
         // no real need for this
         // savedModel.onRotate();
 
-         this.targetNodeForScaling.scale={
-          x: this.targetNodeInitialScale.x*recognizer.scale ,
-          y: this.targetNodeInitialScale.y*recognizer.scale ,
-          z: this.targetNodeInitialScale.z*recognizer.scale
+        this.targetNodeForScaling.scale = {
+          x: this.targetNodeInitialScale.x * recognizer.scale,
+          y: this.targetNodeInitialScale.y * recognizer.scale,
+          z: this.targetNodeInitialScale.z * recognizer.scale
         }
 
       } else if (state === UIGestureRecognizerState.Ended) {
