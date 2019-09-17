@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { RouterExtensions } from "nativescript-angular";
-import { ARCommonNode, ARNodeInteraction, ARPlaneTappedEventData } from "nativescript-ar";
+import { ARCommonNode, ARPlaneTappedEventData } from "nativescript-ar";
 import { isIOS } from "tns-core-modules/platform";
 import { action } from "tns-core-modules/ui/dialogs";
 import { Pokemon } from "~/app/pokemon-data/pokemon";
@@ -54,8 +54,7 @@ export class TryBeforeYouBuyComponent implements OnInit {
             rotatingEnabled: true,
             draggingEnabled: true,
             scalingEnabled: true,
-            scale: pokemon.model.scale / (isIOS ? 15 : 0.8),
-            onLongPress: (interaction: ARNodeInteraction) => interaction.node.remove()
+            scale: pokemon.model.scale / (isIOS ? 20 : 1)
         })
             .then(m => this.currentPokemonNode = m)
             .catch(console.error);
