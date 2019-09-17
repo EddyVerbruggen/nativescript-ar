@@ -2,13 +2,13 @@
   <NavigationButton text="" android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"></NavigationButton>
   <Label class="action-bar-title" text="Search by Card"></Label>
   <ActionItem ios.position="right" (tap)="toggleAR()">
-    <GridLayout>
-      <!-- open AR button label -->
-      <Label class="action-item-fa-label" text="AR" *ngIf="!arScannerActivated"></Label>
-      <!-- open AR button -->
-      <Label class="action-item-fa fa" text="&#xf10b;" *ngIf="!arScannerActivated"></Label>
-      <!-- close AR button -->
-      <Label class="action-item-fa fa" style="font-size: 30" text="&#xf057;" *ngIf="arScannerActivated"></Label>
+    <GridLayout horizontalAlignment="right">
+      <!-- "open AR" button label -->
+      <Label class="action-item-fa-label" text="AR" horizontalAlignment="right" *ngIf="!arScannerActivated"></Label>
+      <!-- "open AR" button -->
+      <Label class="action-item-fa fa" text="&#xf10b;" horizontalAlignment="right" *ngIf="!arScannerActivated"></Label>
+      <!-- "close AR" button -->
+      <Label class="action-item-fa fa" style="font-size: 30" text="&#xf057;" horizontalAlignment="right" *ngIf="arScannerActivated"></Label>
     </GridLayout>
   </ActionItem>
 </ActionBar>
