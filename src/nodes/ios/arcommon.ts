@@ -22,6 +22,17 @@ export abstract class ARCommonNode implements IARCommonNode {
   constructor(options: ARAddOptions, node: SCNNode) {
     this.onTapHandler = options.onTap;
     this.onLongPressHandler = options.onLongPress;
+
+    if(options.parentNode){
+      //propagate event to parent if not listening for it here
+      if(!this.onTapHandler){
+        this.onTapHandler=(interaction=>(<ARCommonNode>options.parentNode).onTap(interaction.touchPosition));
+      }
+      if(!this.onLongPressHandler){
+        this.onLongPressHandler=(interaction=>(<ARCommonNode>options.parentNode).onLongPress(interaction.touchPosition));
+      }
+    }
+
     // this.onPanHandler = options.onPan;
     this.draggingEnabled = options.draggingEnabled;
     this.rotatingEnabled = options.rotatingEnabled;
@@ -101,11 +112,9 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
-  setWorldPosition(worldPos: ARPosition): void {
+  setWorldPosition(pos: ARPosition): void {
 
-    const pos = this.ios.convertPositionFromNode(worldPos, null);
-
-    this.ios.position = {
+    this.ios.worldPosition = {
       x: pos.x,
       y: pos.y,
       z: pos.z
