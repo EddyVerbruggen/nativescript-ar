@@ -1,7 +1,6 @@
+import * as application from 'tns-core-modules/application';
 import { ARAddVideoOptions, ARVideoNode } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
-
-import * as application from 'tns-core-modules/application';
 
 export class ARVideo extends ARCommonNode implements ARVideoNode {
   private videoPlayer: AVPlayer;

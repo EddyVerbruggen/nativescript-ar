@@ -1,8 +1,8 @@
-import { ARAddModelOptions } from "../../ar-common";
-import { ARCommonNode } from "./arcommon";
+import * as fs from "tns-core-modules/file-system";
 
 import * as http from "tns-core-modules/http";
-import * as fs from "tns-core-modules/file-system";
+import { ARAddModelOptions } from "../../ar-common";
+import { ARCommonNode } from "./arcommon";
 
 export class ARModel extends ARCommonNode {
   // note that these babies can be cloned, look for 'clone' at http://jamesonquave.com/blog/arkit-tutorial-in-swift-4-for-xcode-9-using-scenekit/

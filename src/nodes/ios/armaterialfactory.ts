@@ -1,5 +1,5 @@
-import { ARMaterial, ARMaterialProperty, ARMaterialWrapMode } from "../../ar-common";
 import { Color } from "tns-core-modules/color";
+import { ARMaterial, ARMaterialProperty, ARMaterialWrapMode } from "../../ar-common";
 
 export class ARMaterialFactory {
 
@@ -51,8 +51,8 @@ export class ARMaterialFactory {
       console.log("lightingmodel is constant for mat.diffuse: " + mat.diffuse);
       mat.lightingModelName = SCNLightingModelConstant;
       mat.writesToDepthBuffer = false;
-    // } else {
-    //   mat.lightingModelName = SCNLightingModelPhysicallyBased;
+      // } else {
+      //   mat.lightingModelName = SCNLightingModelPhysicallyBased;
     }
   }
 

@@ -33,13 +33,13 @@ export abstract class ARCommonNode implements IARCommonNode {
     this.onTapHandler = options.onTap;
     this.onLongPressHandler = options.onLongPress;
 
-    if(options.parentNode){
-      //propagate event to parent if not listening for it here
-      if(!this.onTapHandler){
-        this.onTapHandler=(interaction=>(<ARCommonNode>options.parentNode).onTap(interaction.touchPosition));
+    if (options.parentNode) {
+      // propagate event to parent if not listening for it here
+      if (!this.onTapHandler) {
+        this.onTapHandler = (interaction => (<ARCommonNode>options.parentNode).onTap(interaction.touchPosition));
       }
-      if(!this.onLongPressHandler){
-        this.onLongPressHandler=(interaction=>(<ARCommonNode>options.parentNode).onLongPress(interaction.touchPosition));
+      if (!this.onLongPressHandler) {
+        this.onLongPressHandler = (interaction => (<ARCommonNode>options.parentNode).onLongPress(interaction.touchPosition));
       }
     }
 
@@ -89,18 +89,18 @@ export abstract class ARCommonNode implements IARCommonNode {
         if (duration > 700) { // a bit arbitrary.. not sure what Android considers a longpress..
           // assume longpress
           this.onLongPress({
-              x: hitResult.getPoint().x,
-              y: hitResult.getPoint().y
-            });
+            x: hitResult.getPoint().x,
+            y: hitResult.getPoint().y
+          });
         } else {
           // assume tap
           if (node instanceof com.google.ar.sceneform.ux.BaseTransformableNode) {
             node.select();
           }
           this.onTap({
-              x: hitResult.getPoint().x,
-              y: hitResult.getPoint().y
-            });
+            x: hitResult.getPoint().x,
+            y: hitResult.getPoint().y
+          });
         }
       }
     }));

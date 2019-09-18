@@ -1,6 +1,6 @@
+import * as utils from "tns-core-modules/utils/utils";
 import { ARUIViewOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
-import * as utils from "tns-core-modules/utils/utils";
 
 declare const java: any;
 

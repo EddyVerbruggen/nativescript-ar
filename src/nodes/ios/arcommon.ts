@@ -1,12 +1,4 @@
-import {
-  ARAddOptions,
-  ARCommonNode as IARCommonNode,
-  ARDimensions2D,
-  ARNodeInteraction,
-  ARPosition,
-  ARRotation,
-  ARScale
-} from "../../ar-common";
+import { ARAddOptions, ARCommonNode as IARCommonNode, ARDimensions2D, ARNodeInteraction, ARPosition, ARRotation, ARScale } from "../../ar-common";
 
 export abstract class ARCommonNode implements IARCommonNode {
   id: string;
@@ -23,13 +15,13 @@ export abstract class ARCommonNode implements IARCommonNode {
     this.onTapHandler = options.onTap;
     this.onLongPressHandler = options.onLongPress;
 
-    if(options.parentNode){
-      //propagate event to parent if not listening for it here
-      if(!this.onTapHandler){
-        this.onTapHandler=(interaction=>(<ARCommonNode>options.parentNode).onTap(interaction.touchPosition));
+    if (options.parentNode) {
+      // propagate event to parent if not listening for it here
+      if (!this.onTapHandler) {
+        this.onTapHandler = (interaction => (<ARCommonNode>options.parentNode).onTap(interaction.touchPosition));
       }
-      if(!this.onLongPressHandler){
-        this.onLongPressHandler=(interaction=>(<ARCommonNode>options.parentNode).onLongPress(interaction.touchPosition));
+      if (!this.onLongPressHandler) {
+        this.onLongPressHandler = (interaction => (<ARCommonNode>options.parentNode).onLongPress(interaction.touchPosition));
       }
     }
 

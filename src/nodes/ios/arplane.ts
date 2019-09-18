@@ -1,4 +1,4 @@
-import { ARAddGeometryOptions, ARAddPlaneOptions, ARDimensions, ARPlane as IARPlane, ARPosition } from "../../ar-common";
+import { ARAddPlaneOptions, ARDimensions, ARPlane as IARPlane, ARPosition } from "../../ar-common";
 import { ARCommonGeometryNode } from "./arcommongeometry";
 
 export class ARPlane extends ARCommonGeometryNode implements IARPlane {
