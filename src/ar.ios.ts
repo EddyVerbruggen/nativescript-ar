@@ -463,13 +463,17 @@ export class AR extends ARBase {
     return undefined;
 
   }
+
   private getTargetARNodeFromSCNNode(node: SCNNode): ARCommonNode {
     if (!(node && node.name)) {
       return undefined;
     }
-    if (node.name[0] == '{') {
+
+    if (node.name[0] === '{') {
       return ARState.shapes.get(node.name);
     }
+
+
     return node.parentNode ? this.getTargetARNodeFromSCNNode(node.parentNode) : undefined;
   }
 
@@ -574,7 +578,6 @@ export class AR extends ARBase {
     }
   }
 
-
   public scenePinched(recognizer: UIPinchGestureRecognizer): void {
     let state = recognizer.state;
     if (state === UIGestureRecognizerState.Failed || state === UIGestureRecognizerState.Cancelled) {
@@ -589,7 +592,7 @@ export class AR extends ARBase {
       
       if (savedModel && savedModel.ios) {
         this.targetNodeForScaling = savedModel.ios;
-        this.targetNodeInitialScale=this.targetNodeForScaling.scale;
+        this.targetNodeInitialScale = this.targetNodeForScaling.scale;
       } else {
         this.targetNodeForScaling = undefined;
       }
@@ -599,11 +602,11 @@ export class AR extends ARBase {
         // no real need for this
         // savedModel.onRotate();
 
-         this.targetNodeForScaling.scale={
-          x: this.targetNodeInitialScale.x*recognizer.scale ,
-          y: this.targetNodeInitialScale.y*recognizer.scale ,
-          z: this.targetNodeInitialScale.z*recognizer.scale
-        }
+        this.targetNodeForScaling.scale = {
+          x: this.targetNodeInitialScale.x * recognizer.scale,
+          y: this.targetNodeInitialScale.y * recognizer.scale,
+          z: this.targetNodeInitialScale.z * recognizer.scale
+        };
 
       } else if (state === UIGestureRecognizerState.Ended) {
         this.targetNodeForScaling = undefined;

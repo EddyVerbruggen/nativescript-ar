@@ -3,7 +3,6 @@ import { RouterExtensions } from "nativescript-angular";
 import { ARTrackingImageDetectedEventData } from "nativescript-ar";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import * as app from "tns-core-modules/application";
-import { isIOS } from "tns-core-modules/platform";
 import { View } from "tns-core-modules/ui/core/view";
 import { Pokemon } from "~/app/pokemon-data/pokemon";
 import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
@@ -93,7 +92,6 @@ export class SearchByCardComponent implements OnInit {
                 z: 0.001
             },
             scale: 1
-            // scale: isIOS ? 0.044 : 5 // TODO this is currently device-dependent
         });
 
         // added a few delays for smoother transitions

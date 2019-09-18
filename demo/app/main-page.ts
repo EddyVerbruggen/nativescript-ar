@@ -395,6 +395,9 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
       z: 0
     },
     scale: 0.1,
+    rotatingEnabled: true,
+    draggingEnabled: true,
+    scalingEnabled: true,
     onTap: (interaction: ARNodeInteraction) => {
       console.log("tapped model id: " + interaction.node.id);
       console.log("tapped model position: " + interaction.node.position);

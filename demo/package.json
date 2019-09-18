@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.plugindemo.ar",
     "tns-android": {
-      "version": "6.0.0"
+      "version": "6.1.0"
     },
     "tns-ios": {
-      "version": "6.0.1"
+      "version": "6.1.0"
     }
   },
   "dependencies": {
@@ -13,14 +13,14 @@
     "nativescript-flashlight": "^1.2.1",
     "nativescript-theme-core": "~1.0.6",
     "nativescript-unit-test-runner": "0.7.0",
-    "tns-core-modules": "~6.0.5"
+    "tns-core-modules": "~6.1.0"
   },
   "devDependencies": {
     "@types/jasmine": "~2.8.0",
     "nativescript-dev-webpack": "~1.0.0",
     "tns-platform-declarations": "~6.0.5",
     "tslint": "~5.4.3",
-    "typescript": "~3.4.0"
+    "typescript": "~3.4.5"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
