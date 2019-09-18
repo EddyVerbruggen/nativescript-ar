@@ -222,17 +222,31 @@ export class AR extends ARBase {
     });
   }
 
+
   public getCameraPosition(): ARPosition {
     const p = this.sceneView.defaultCameraController.pointOfView.worldPosition;
     return {x: p.x, y: p.y, z: p.z};
   }
 
+  private getCameraRotationRad():ARRotation{
+    let rot=this.sceneView.defaultCameraController.pointOfView.eulerAngles;
+    return {x: rot.x, y: rot.y, z: rot.z};
+  }
+
   public getCameraRotation(): ARRotation {
-    const rot = this.sceneView.defaultCameraController.pointOfView.eulerAngles;
+
+    
+    const rot=this.getCameraRotationRad();
+
     const toDeg = (rad) => {
       return ((rad * (180.0 / Math.PI)) + 360) % 360;
     };
-    return {x: toDeg(rot.x), y: toDeg(rot.y), z: toDeg(rot.z)};
+    
+    var euler= {x: toDeg(rot.x), y: toDeg(rot.y), z: toDeg(rot.z)};
+    // if(typeof euler.x!="number"){
+    //   console.log(euler);
+    // }
+    return euler;
   }
 
   private initAR() {
@@ -421,21 +435,50 @@ export class AR extends ARBase {
     }
   }
 
-  private getTargetARNodeFromSCNNode(node:SCNNode):ARCommonNode{
-    if(!(node&&node.name)){
+  private getHitTargetWithProperty(position: CGPoint, property: string) {
+
+    const hitTestResults: NSArray<SCNHitTestResult> =
+      this.sceneView.hitTestOptions(
+        position,
+        NSDictionary.dictionaryWithDictionary(<any>{
+          SCNHitTestBoundingBoxOnlyKey: false,
+          SCNHitTestFirstFoundOnlyKey: false
+        }));
+
+
+    if (hitTestResults.count === 0) {
       return undefined;
     }
-    if(node.name[0]=='{'){
+
+
+    let i = 0;
+    let savedModel = null;
+    while (hitTestResults.count > i) {
+      savedModel = this.getTargetARNodeFromSCNNode(hitTestResults.objectAtIndex(i).node);
+      if (savedModel && (!!savedModel[property])) {
+        return savedModel;
+      }
+      i++;
+    }
+    return undefined;
+
+  }
+  private getTargetARNodeFromSCNNode(node: SCNNode): ARCommonNode {
+    if (!(node && node.name)) {
+      return undefined;
+    }
+    if (node.name[0] == '{') {
       return ARState.shapes.get(node.name);
     }
-    return node.parentNode?this.getTargetARNodeFromSCNNode(node.parentNode):undefined;
+    return node.parentNode ? this.getTargetARNodeFromSCNNode(node.parentNode) : undefined;
   }
 
   lastPositionForPanning: CGPoint;
-  targetNodeForPanning: SCNNode;
+  targetNodeForPanning: ARCommonNode;
   targetNodeForRotating: SCNNode;
   targetNodeForScaling: SCNNode;
   targetNodeInitialScale: SCNVector3;
+  targetNodeInitialPan: SCNVector3;
 
   public scenePanned(recognizer: UIPanGestureRecognizer): void {
     let state = recognizer.state;
@@ -443,51 +486,55 @@ export class AR extends ARBase {
       return;
     }
 
-    let position = recognizer.locationInView(this.sceneView);
-
+    let position = recognizer.locationInView(null);//this.sceneView);
+    let translation = recognizer.translationInView(null);//this.sceneView);
     if (state === UIGestureRecognizerState.Began) {
       this.lastPositionForPanning = position;
 
-      const hitTestResults: NSArray<SCNHitTestResult> =
-          this.sceneView.hitTestOptions(
-              position,
-              <any>{
-                SCNHitTestBoundingBoxOnlyKey: true,
-                SCNHitTestFirstFoundOnlyKey: true
-              });
-
-      if (hitTestResults.count === 0) {
-        this.targetNodeForPanning = undefined;
-        return;
-      }
-
-      const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-      const savedModel: ARCommonNode = this.getTargetARNodeFromSCNNode(hitResult.node);
-      if (savedModel && savedModel.draggingEnabled && savedModel.ios) {
-        this.targetNodeForPanning = savedModel.ios;
-        savedModel.onPan({
-          x: position.x,
-          y: position.y
-        });
+      const savedModel: ARCommonNode = this.getHitTargetWithProperty(position, "draggingEnabled");
+      if (savedModel) {
+        this.targetNodeForPanning = savedModel;
+        this.targetNodeInitialPan = this.targetNodeForPanning.getWorldPosition();
       } else {
         this.targetNodeForPanning = undefined;
       }
 
     } else if (this.targetNodeForPanning) {
       if (state === UIGestureRecognizerState.Changed) {
-        // no real need for this
-        // savedModel.onPan();
 
-        let deltaX = (position.x - this.lastPositionForPanning.x) / 700;
-        let deltaY = (position.y - this.lastPositionForPanning.y) / 700;
-        // TODO when the object is to the RIGHT of the camera, x should 0, when it's to the left, z should be 0..
-        this.targetNodeForPanning.localTranslateBy({x: deltaX, y: -deltaY, z: 0});
-        this.lastPositionForPanning = position;
+
+        //let dist=this.distance(this.getCameraPosition(), this.targetNodeInitialPan);     
+
+        let pixelsPerMeter = 700;
+
+        let node = SCNNode.node();
+        node.position = this.sceneView.defaultCameraController.pointOfView.convertPositionToNode({
+          x: (translation.x / pixelsPerMeter),
+          y: -(translation.y / pixelsPerMeter),
+          z: 0
+        }, null);
+
+        node.rotation = this.sceneView.defaultCameraController.pointOfView.rotation;
+        let p = node.worldPosition;
+        let cp = this.sceneView.defaultCameraController.pointOfView.worldPosition;
+
+
+        const pos = this.targetNodeInitialPan;
+
+        this.targetNodeForPanning.setWorldPosition({
+          x: pos.x + p.x - cp.x, y: pos.y + p.y - cp.y, z: pos.z + p.z - cp.z
+        })
 
       } else if (state === UIGestureRecognizerState.Ended) {
         this.targetNodeForPanning = undefined;
       }
     }
+  }
+
+  private distance(a, b){
+
+    return Math.sqrt(Math.pow(b.x-a.x, 2) + Math.pow(b.y-a.y, 2) + Math.pow(b.z-a.z, 2));
+
   }
 
   public sceneRotated(recognizer: UIRotationGestureRecognizer): void {
@@ -499,22 +546,10 @@ export class AR extends ARBase {
     let position = recognizer.locationInView(this.sceneView);
 
     if (state === UIGestureRecognizerState.Began) {
-      const hitTestResults: NSArray<SCNHitTestResult> =
-          this.sceneView.hitTestOptions(
-              position,
-              <any>{
-                SCNHitTestBoundingBoxOnlyKey: true,
-                SCNHitTestFirstFoundOnlyKey: true
-              });
+     
+      const savedModel: ARCommonNode = this.getHitTargetWithProperty(position, "rotatingEnabled")
 
-      if (hitTestResults.count === 0) {
-        this.targetNodeForRotating = undefined;
-        return;
-      }
-
-      const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-      const savedModel: ARCommonNode = this.getTargetARNodeFromSCNNode(hitResult.node);
-      if (savedModel && savedModel.rotatingEnabled && savedModel.ios) {
+      if (savedModel && savedModel.ios) {
         this.targetNodeForRotating = savedModel.ios;
       } else {
         this.targetNodeForRotating = undefined;
@@ -549,22 +584,10 @@ export class AR extends ARBase {
     let position = recognizer.locationInView(this.sceneView);
 
     if (state === UIGestureRecognizerState.Began) {
-      const hitTestResults: NSArray<SCNHitTestResult> =
-          this.sceneView.hitTestOptions(
-              position,
-              <any>{
-                SCNHitTestBoundingBoxOnlyKey: true,
-                SCNHitTestFirstFoundOnlyKey: true
-              });
-
-      if (hitTestResults.count === 0) {
-        this.targetNodeForScaling = undefined;
-        return;
-      }
-
-      const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-      const savedModel: ARCommonNode = this.getTargetARNodeFromSCNNode(hitResult.node);
-      if (savedModel && savedModel.scalingEnabled && savedModel.ios) {
+      
+      const savedModel: ARCommonNode = this.getHitTargetWithProperty(position, "scalingEnabled")
+      
+      if (savedModel && savedModel.ios) {
         this.targetNodeForScaling = savedModel.ios;
         this.targetNodeInitialScale=this.targetNodeForScaling.scale;
       } else {

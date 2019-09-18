@@ -93,6 +93,9 @@ export interface ARCommonNode extends ARNode {
   onLongPress(touchPosition: ARDimensions2D): void;
 
   onPan(touchPosition: ARDimensions2D): void;
+
+  getWorldPosition():ARPosition;
+  setWorldPosition(to: ARPosition):void;
 }
 
 export interface ARVideoNode extends ARCommonNode {
