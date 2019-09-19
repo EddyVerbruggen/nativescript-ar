@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PageRoute, RouterExtensions } from 'nativescript-angular/router';
-import { AR, ARFaceTrackingActions, ARTrackingFaceEventData } from 'nativescript-ar';
+import { ARFaceTrackingActions, ARTrackingFaceEventData } from 'nativescript-ar';
 import { switchMap } from "rxjs/operators";
 import { Page } from 'tns-core-modules/ui/page/page';
 import { GlassesService } from '~/app/services/glasses.service';
@@ -21,7 +21,6 @@ export class PreviewGlassesComponent implements OnInit {
   private currentlyActiveModel;
 
   constructor(private routerExtensions: RouterExtensions, private glassesService: GlassesService, private pageRoute: PageRoute, private page: Page) {
-    console.log("AR supported? " + AR.isSupported());
     this.items = this.glassesService.getGlasses();
     this.page.actionBarHidden = true;
   }
@@ -43,9 +42,7 @@ export class PreviewGlassesComponent implements OnInit {
   }
 
   onIndexChanged($event) {
-    console.log("this.items.length: " + this.items.length);
     if (this.trackForGlassesChanges && $event.value < this.items.length) {
-      console.log($event.value);
       this.selectedModelIndex = $event.value;
       this.previewGlasses();
     }
@@ -60,7 +57,7 @@ export class PreviewGlassesComponent implements OnInit {
         this.faceTrackingActions.addModel(this.items[this.selectedModelIndex].model)
             .then(model => this.currentlyActiveModel = model)
             .catch(err => console.log(`Error adding model: ${err}`));
-      })
+      });
     }
   }
 

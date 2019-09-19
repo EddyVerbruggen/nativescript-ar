@@ -7,17 +7,17 @@
   "nativescript": {
     "id": "org.nativescript.plugindemo.ar.vue",
     "tns-ios": {
-      "version": "6.0.2"
+      "version": "6.1.1"
     },
     "tns-android": {
-      "version": "6.0.2"
+      "version": "6.1.1"
     }
   },
   "dependencies": {
     "nativescript-ar": "file:../publish/package/nativescript-ar-1.0.0.tgz",
     "nativescript-theme-core": "~1.0.6",
     "nativescript-vue": "~2.4.0",
-    "tns-core-modules": "~6.0.0"
+    "tns-core-modules": "~6.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -36,7 +36,7 @@
     "node-sass": "^4.9.2",
     "sass-loader": "^7.1.0",
     "terser-webpack-plugin": "^1.1.0",
-    "tns-platform-declarations": "~6.0.0",
+    "tns-platform-declarations": "~6.1.0",
     "typescript": "~3.4.5",
     "vue-loader": "^15.2.6",
     "webpack": "^4.16.4",
