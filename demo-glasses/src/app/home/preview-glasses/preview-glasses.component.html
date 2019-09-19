@@ -1,0 +1,22 @@
+<GridLayout rows="*" class="page">
+  <AR trackingMode="FACE"
+      (trackingFaceDetected)="trackingFaceDetected($event)"
+      debugLevel="PHYSICS_SHAPES">
+  </AR>
+
+  <Pager [items]="items" #pager (loaded)="onLoaded()" [selectedIndex]="selectedModelIndex"
+         (selectedIndexChange)="onIndexChanged($event)" class="pager" backgroundColor="transparent">
+    <ng-template let-i="index" let-item="item">
+      <FlexboxLayout flexDirection="column" height="200" verticalAlignment="bottom" padding="10">
+        <GridLayout rows="*, auto, auto, 30" columns="*, auto" class="pager-item">
+          <Image row="0" colSpan="2" rowSpan="4" class="glasses" [src]="item.image"></Image>
+          <Label row="2" col="1" class="price" [text]="item.price | currency"></Label>
+          <Label row="2" class="title" [text]="item.title"></Label>
+          <Label row="3" class="description" [text]="item.description"></Label>
+        </GridLayout>
+      </FlexboxLayout>
+    </ng-template>
+  </Pager>
+
+  <Button text="close" class="close-ar" (tap)="onBackTapped()" horizontalAlignment="left"></Button>
+</GridLayout>

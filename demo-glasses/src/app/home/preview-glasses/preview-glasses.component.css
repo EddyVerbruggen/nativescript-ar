@@ -1,0 +1,35 @@
+.close-ar {
+  color: black;
+  background-color: white;
+  font-weight: bold;
+  border-radius: 12;
+  padding: 6 12;
+  text-align: center;
+  margin-left: 50px;
+  margin-top: 30px;
+  vertical-align: top;
+  opacity: 0.8;
+}
+
+.pager-item {
+  border-radius: 40%;
+  padding: 40px;
+  background-color: white;
+}
+
+.description {
+  font-weight: 200;
+  font-size: 12px;
+}
+
+.title {
+  font-weight: 700;
+}
+
+.price {
+  font-weight: 700;
+}
+
+.glasses {
+  margin-top: -150px;
+}

@@ -1,0 +1,21 @@
+.description {
+  font-weight: 200;
+  margin: 0 0 0 40px;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+.title {
+  font-weight: 700;
+  margin: 10px 0 0 40px;
+  font-size: 20px;
+}
+
+.price {
+  font-weight: 700;
+  margin: 0 0 10px 40px;
+}
+
+.glasses {
+  height: 350px;
+}

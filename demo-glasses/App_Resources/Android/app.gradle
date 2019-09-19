@@ -1,0 +1,8 @@
+android {
+  defaultConfig {
+    generatedDensities = []
+  }
+  aaptOptions {
+    additionalParameters "--no-version-vectors"
+  }
+}
