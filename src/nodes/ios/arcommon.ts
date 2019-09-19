@@ -12,19 +12,6 @@ export abstract class ARCommonNode implements IARCommonNode {
   scalingEnabled: boolean;
 
   constructor(options: ARAddOptions, node: SCNNode) {
-    this.onTapHandler = options.onTap;
-    this.onLongPressHandler = options.onLongPress;
-
-    if (options.parentNode) {
-      // propagate event to parent if not listening for it here
-      if (!this.onTapHandler) {
-        this.onTapHandler = (interaction => (<ARCommonNode>options.parentNode).onTap(interaction.touchPosition));
-      }
-      if (!this.onLongPressHandler) {
-        this.onLongPressHandler = (interaction => (<ARCommonNode>options.parentNode).onLongPress(interaction.touchPosition));
-      }
-    }
-
     // this.onPanHandler = options.onPan;
     this.draggingEnabled = options.draggingEnabled;
     this.rotatingEnabled = options.rotatingEnabled;
@@ -41,7 +28,20 @@ export abstract class ARCommonNode implements IARCommonNode {
     }
 
     // generate a unique name, used for later reference
-    node.name = this.id = (JSON.stringify(options.position) + "_" + new Date().getTime());
+    node.name = this.id = (JSON.stringify(options.position) + "_" + JSON.stringify(options.scale) + "_" + JSON.stringify(options.rotation) + "_" + new Date().getTime());
+
+    this.onTapHandler = options.onTap;
+    this.onLongPressHandler = options.onLongPress;
+
+    if (options.parentNode) {
+      // propagate event to parent if not listening for it here
+      if (!this.onTapHandler) {
+        this.onTapHandler = (interaction => (<ARCommonNode>options.parentNode).onTap(interaction.touchPosition));
+      }
+      if (!this.onLongPressHandler) {
+        this.onLongPressHandler = (interaction => (<ARCommonNode>options.parentNode).onLongPress(interaction.touchPosition));
+      }
+    }
 
     // note that certain models stop working when using image tracking when these lines are enabled, so only applying when 'mass' was requested (which makes sense anyway IMO)
     if (options.mass) {

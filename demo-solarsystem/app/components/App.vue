@@ -203,7 +203,7 @@
         arLabel: 'Look for a surface and tap it..',
         solarSystemLoaded: false,
         orbitalName: undefined,
-        orbitSpeed: -5,
+        orbitSpeed: -15,
         rotationSpeed: -15,
         hasControlPanel: false,
         page: undefined,
@@ -258,7 +258,7 @@
         ar.addNode({
           position: {
             x: arPlaneTappedEventData.position.x,
-            y: arPlaneTappedEventData.position.y + 0.5, // half a meter above the plane we tapped
+            y: arPlaneTappedEventData.position.y + 1, // a meter above the plane we tapped
             z: arPlaneTappedEventData.position.z
           }
         }).then(solarSystemNode => {

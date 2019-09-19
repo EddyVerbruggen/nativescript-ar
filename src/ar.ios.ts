@@ -422,7 +422,7 @@ export class AR extends ARBase {
     }
 
     const hitResult: SCNHitTestResult = hitTestResults.firstObject;
-    const savedModel = this.getTargetARNodeFromSCNNode(hitResult.node);
+    const savedModel = this.getTargetARNodeFromSCNNode(hitResult.node, "onLongPress");
     if (savedModel) {
       savedModel.onLongPress({
         x: tapPoint.x,
@@ -458,16 +458,17 @@ export class AR extends ARBase {
     return undefined;
   }
 
-  private getTargetARNodeFromSCNNode(node: SCNNode): ARCommonNode {
+  private getTargetARNodeFromSCNNode(node: SCNNode, functionName?: string): ARCommonNode {
     if (!(node && node.name)) {
       return undefined;
     }
 
-    if (node.name[0] === '{') {
-      return ARState.shapes.get(node.name);
+    const shape: ARCommonNode = ARState.shapes.get(node.name);
+    if (shape && (!functionName || shape[functionName])) {
+      return shape;
     }
 
-    return node.parentNode ? this.getTargetARNodeFromSCNNode(node.parentNode) : undefined;
+    return node.parentNode ? this.getTargetARNodeFromSCNNode(node.parentNode, functionName) : undefined;
   }
 
   lastPositionForPanning: CGPoint;
@@ -620,7 +621,7 @@ export class AR extends ARBase {
     let node: SCNNode = hitResult.node;
 
     if (node !== undefined) {
-      let savedModel = this.getTargetARNodeFromSCNNode(node);
+      let savedModel = this.getTargetARNodeFromSCNNode(node, "onTap");
       if (savedModel !== undefined) {
         savedModel.onTap({
           x: tapPoint.x,
