@@ -1,18 +1,8 @@
-import {
-  AR,
-  ARLoadedEventData,
-  ARNodeInteraction,
-  ARPlaneDetectedEventData,
-  ARPlaneTappedEventData,
-  ARSceneTappedEventData,
-  ARTrackingFaceEventData,
-  ARTrackingImageDetectedEventData
-} from 'nativescript-ar';
+import { AR, ARLoadedEventData, ARNodeInteraction, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingImageDetectedEventData, ARVideoNode } from 'nativescript-ar';
 import { Color } from 'tns-core-modules/color';
 import * as observable from 'tns-core-modules/data/observable';
 import * as pages from 'tns-core-modules/ui/page';
 import { isIOS } from 'tns-core-modules/ui/page';
-import { ARVideoNode } from "../../src";
 import { HelloWorldModel } from './main-view-model';
 
 const flashlight = require("nativescript-flashlight");
