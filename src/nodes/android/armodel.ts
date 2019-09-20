@@ -29,7 +29,7 @@ export class ARModel extends ARCommonGeometryNode {
           }))
           .exceptionally(new java.util.function.Function({
             apply: error => {
-              console.error("failed loading: " + options.name);
+              console.error("failed loading '" + options.name + "': " + error);
               reject(error);
             }
           }));

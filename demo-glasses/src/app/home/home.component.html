@@ -6,7 +6,7 @@
   <ListView [items]="items" (itemTap)="onGlassesTap($event)">
     <ng-template let-i="index" let-item="item">
       <GridLayout rows="30, *, 30" columns="*, auto">
-        <Image col="1" rowSpan="3" stretch="fill" class="glasses" [src]="item.image"></Image>
+        <Image col="1" rowSpan="3" stretch="aspectFit" class="glasses" [src]="item.image"></Image>
         <Label row="0" class="title" [text]="item.title"></Label>
         <Label row="1" class="description" [text]="item.description" textWrap="true"></Label>
         <Label row="2" class="price" [text]="item.price | currency"></Label>

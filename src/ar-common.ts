@@ -269,6 +269,10 @@ export interface ARTrackingFaceEventData extends AREventData {
 }
 
 export interface ARFaceTrackingActions {
+  /**
+   * On Android there can be only 1 active model (I think).
+   * @param options
+   */
   addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
 
   addText(options: ARAddTextOptions): Promise<ARCommonNode>;

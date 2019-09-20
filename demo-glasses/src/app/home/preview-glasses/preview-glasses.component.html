@@ -5,11 +5,12 @@
   </AR>
 
   <Pager [items]="items" #pager (loaded)="onLoaded()" [selectedIndex]="selectedModelIndex"
-         (selectedIndexChange)="onIndexChanged($event)" class="pager" backgroundColor="transparent">
+         (selectedIndexChange)="onIndexChanged($event)"
+         verticalAlignment="bottom" class="pager" backgroundColor="transparent">
     <ng-template let-i="index" let-item="item">
       <FlexboxLayout flexDirection="column" height="200" verticalAlignment="bottom" padding="10">
         <GridLayout rows="*, auto, auto, 30" columns="*, auto" class="pager-item">
-          <Image row="0" colSpan="2" rowSpan="4" class="glasses" [src]="item.image"></Image>
+          <Image row="0" colSpan="2" rowSpan="4" stretch="aspectFit" class="glasses" [src]="item.image"></Image>
           <Label row="2" col="1" class="price" [text]="item.price | currency"></Label>
           <Label row="2" class="title" [text]="item.title"></Label>
           <Label row="3" class="description" [text]="item.description"></Label>

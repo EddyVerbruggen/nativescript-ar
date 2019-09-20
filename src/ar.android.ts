@@ -1,7 +1,7 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneTappedEventData, ARPosition, ARRotation, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneTappedEventData, ARPosition, ARRotation, ARTrackingFaceEventData, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { TNSArFragmentForImageDetection } from "./imagefragment.android";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
@@ -12,6 +12,7 @@ import { ARSphere } from "./nodes/android/arsphere";
 import { ARTube } from "./nodes/android/artube";
 import { ARUIView } from "./nodes/android/aruiview";
 import { ARVideo } from "./nodes/android/arvideo";
+import { ARText } from "./nodes/ios/artext";
 import { FragmentScreenGrab } from "./screengrab-android";
 import { VideoRecorder } from "./videorecorder.android";
 
@@ -66,11 +67,13 @@ const addPlane = (options: ARAddPlaneOptions, parentNode: com.google.ar.scenefor
   });
 };
 
-const addModel = (options: ARAddModelOptions, parentNode: com.google.ar.sceneform.Node): Promise<ARModel> => {
+const addModel = (options: ARAddModelOptions, parentNode?: com.google.ar.sceneform.Node): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
     ARModel.create(options, _fragment)
         .then((model: ARModel) => {
-          model.android.setParent(parentNode);
+          if (parentNode) {
+            model.android.setParent(parentNode);
+          }
           resolve(model);
         }).catch(reject);
   });
@@ -229,6 +232,31 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   }
 }
 
+class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
+  constructor(public faceNode: com.google.ar.sceneform.ux.AugmentedFaceNode) {
+  }
+
+  addModel(options: ARAddModelOptions): Promise<ARModel> {
+    return new Promise((resolve, reject) => {
+      addModel(options)
+          .then(model => {
+            (<any>this.faceNode).setParent(_fragment.getArSceneView().getScene());
+            this.faceNode.setFaceRegionsRenderable(<any>model.android.getRenderable());
+            // note that (at least in this case) the texture doesn't seem to make a difference
+            // faceNode.setFaceMeshTexture(foxFaceMeshTexture);
+            resolve();
+          })
+          .catch(err => reject)
+    });
+  }
+
+  addText(options: ARAddTextOptions): Promise<ARText> {
+    // TODO
+    // return addText(options, this.node);
+    return null;
+  }
+}
+
 export class AR extends ARBase {
   private faceNodeMap = new Map();
 
@@ -242,7 +270,6 @@ export class AR extends ARBase {
     _fragment.getArSceneView().getArFrame().getCamera().getPose().getTranslation(p, 0);
     return {x: p[0], y: p[1], z: p[2]};
   }
-
 
   public getCameraRotation(): ARRotation {
 
@@ -297,77 +324,7 @@ export class AR extends ARBase {
     if (this.trackingMode === ARTrackingMode.FACE) {
       _fragment = new TNSArFragmentForFaceDetection();
 
-      // TODO for now this is a fixed face mesh, but of course we want to pass this stuff in
-      let foxFaceRenderable: com.google.ar.sceneform.rendering.ModelRenderable;
-      let foxFaceMeshTexture: com.google.ar.sceneform.rendering.Texture;
-
-      com.google.ar.sceneform.rendering.ModelRenderable.builder()
-          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face.sfb"))
-          .build()
-          .thenAccept(new java.util.function.Consumer({
-            accept: renderable => {
-              foxFaceRenderable = renderable;
-              foxFaceRenderable.setShadowCaster(false);
-              foxFaceRenderable.setShadowReceiver(false);
-            }
-          }))
-          .exceptionally(new java.util.function.Function({
-            apply: error => console.error(error)
-          }));
-
-
-      // Load the face mesh texture.
-      com.google.ar.sceneform.rendering.Texture.builder()
-          .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("fox_face_mesh_texture.png"))
-          .build()
-          .thenAccept(new java.util.function.Consumer({
-            accept: texture => foxFaceMeshTexture = texture
-          }))
-          .exceptionally(new java.util.function.Function({
-            apply: error => console.error(error)
-          }));
-
-      setTimeout(() => {
-        const sceneView = _fragment.getArSceneView();
-        // This is important to make sure that the camera stream renders first so that the face mesh occlusion works correctly.
-        sceneView.setCameraStreamRenderPriority(com.google.ar.sceneform.rendering.Renderable.RENDER_PRIORITY_FIRST);
-        const scene = sceneView.getScene();
-
-        scene.addOnUpdateListener(new com.google.ar.sceneform.Scene.OnUpdateListener({
-          onUpdate: frameTime => {
-            if (!foxFaceRenderable || !foxFaceMeshTexture) {
-              return;
-            }
-
-            const faceList = sceneView.getSession().getAllTrackables(com.google.ar.core.AugmentedFace.class);
-
-            // create AugmentedFaceNodes for any new faces
-            for (let i = 0; i < faceList.size(); i++) {
-              const face = faceList.get(i);
-              if (!this.faceNodeMap.has(face)) {
-                const faceNode = new com.google.ar.sceneform.ux.AugmentedFaceNode(face);
-                faceNode.setParent(scene);
-                faceNode.setFaceRegionsRenderable(foxFaceRenderable);
-                // note that (at least in this case) the texture doesn't seem to make a difference
-                faceNode.setFaceMeshTexture(foxFaceMeshTexture);
-                this.faceNodeMap.set(face, faceNode);
-              }
-            }
-
-
-            // Remove any AugmentedFaceNodes associated with an AugmentedFace that stopped tracking.
-            this.faceNodeMap.forEach((node: any, face: any) => {
-              if (face.getTrackingState() === com.google.ar.core.TrackingState.STOPPED) {
-                node.setParent(null);
-                this.faceNodeMap.delete(node);
-              }
-            });
-          }
-        }));
-      }, 0);
-
     } else {
-
       if (this.trackingMode === ARTrackingMode.IMAGE) {
         _fragment = new TNSArFragmentForImageDetection();
 
@@ -452,6 +409,53 @@ export class AR extends ARBase {
     }
 
     const onCamPermissionGranted = () => {
+      if (this.trackingMode === ARTrackingMode.FACE) {
+        setTimeout(() => {
+          const sceneView = _fragment.getArSceneView();
+          // This is important to make sure that the camera stream renders first so that the face mesh occlusion works correctly.
+          sceneView.setCameraStreamRenderPriority(com.google.ar.sceneform.rendering.Renderable.RENDER_PRIORITY_FIRST);
+          const scene = sceneView.getScene();
+
+          scene.addOnUpdateListener(new com.google.ar.sceneform.Scene.OnUpdateListener({
+            onUpdate: frameTime => {
+              const faceList = sceneView.getSession().getAllTrackables(com.google.ar.core.AugmentedFace.class);
+
+              // create AugmentedFaceNodes for any new faces
+              for (let i = 0; i < faceList.size(); i++) {
+                const face = faceList.get(i);
+                if (!this.faceNodeMap.has(face)) {
+                  const faceNode = new com.google.ar.sceneform.ux.AugmentedFaceNode(face);
+                  // faceNode.setParent(scene);
+                  this.faceNodeMap.set(face, faceNode);
+
+                  const eventData: ARTrackingFaceEventData = {
+                    eventType: "FOUND",
+                    eventName: ARBase.trackingFaceDetectedEvent,
+                    object: this,
+                    faceTrackingActions: new ARFaceTrackingActionsImpl(faceNode)
+                  };
+                  this.notify(eventData);
+                }
+              }
+
+              // Remove any AugmentedFaceNodes associated with an AugmentedFace that stopped tracking.
+              this.faceNodeMap.forEach((node: any, face: any) => {
+                if (face.getTrackingState() === com.google.ar.core.TrackingState.STOPPED) {
+                  node.setParent(null);
+                  this.faceNodeMap.delete(node);
+                  const eventData: ARTrackingFaceEventData = {
+                    eventType: "LOST",
+                    eventName: ARBase.trackingFaceDetectedEvent,
+                    object: this
+                  };
+                  this.notify(eventData);
+                }
+              });
+            }
+          }));
+        }, 0);
+      }
+
       const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
       supportFragmentManager.beginTransaction().add(this.nativeView.getId(), _fragment).commit();
 
@@ -678,7 +682,6 @@ export class AR extends ARBase {
   }
 
   private _requestPermission(permission: string, onPermissionGranted: Function, reject?): void {
-    console.log(">> requesting permission");
     const permissionRequestCode = 678; // random-ish id
 
     const onPermissionEvent = (args: any) => {

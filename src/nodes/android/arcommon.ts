@@ -16,9 +16,7 @@ export abstract class ARCommonNode implements IARCommonNode {
 
   public static createNode(options: ARAddOptions, fragment) {
     if ((options.draggingEnabled || options.rotatingEnabled || options.scalingEnabled)) {
-      const node = new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
-      // node.select();
-      return node;
+      return new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
     }
 
     return new com.google.ar.sceneform.Node();
@@ -55,11 +53,10 @@ export abstract class ARCommonNode implements IARCommonNode {
     if (options.scale) {
       this.android.setLocalScale(
           new (<any>com.google.ar.sceneform).math.Vector3(
-              options.scale instanceof ARScale ? options.scale.x : options.scale,
-              options.scale instanceof ARScale ? options.scale.y : options.scale,
-              options.scale instanceof ARScale ? options.scale.z : options.scale)
+              typeof options.scale === "number" ? options.scale : options.scale.x,
+              typeof options.scale === "number" ? options.scale : options.scale.y,
+              typeof options.scale === "number" ? options.scale : options.scale.z)
       );
-      console.log("scale set to: " + this.android.getLocalScale());
     }
 
     if (options.position) {
@@ -75,7 +72,6 @@ export abstract class ARCommonNode implements IARCommonNode {
     // generate a unique name, used for later reference
     this.id = (JSON.stringify(options.position) + "_" + new Date().getTime());
 
-    // TODO for these, consider adopting TNSNode's gestures in Blackwell's fork
     this.android.setOnTapListener(new com.google.ar.sceneform.Node.OnTapListener({
       onTap: (hitResult: any /* com.google.ar.sceneform.HitTestResult */, motionEvent: android.view.MotionEvent) => {
         const duration = motionEvent.getEventTime() - motionEvent.getDownTime();

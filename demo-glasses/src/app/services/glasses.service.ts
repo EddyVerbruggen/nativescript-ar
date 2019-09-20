@@ -1,83 +1,63 @@
 import { Injectable } from '@angular/core';
+import { isIOS } from "tns-core-modules/platform";
+
+const prefix = isIOS ? "Models.scnassets/" : "";
+const postfix = isIOS ? ".dae" : ".glb";
 
 const models = [
   {
-    name: "Models.scnassets/glasses-vv-1.dae",
+    name: `${prefix}glasses-vv-1${postfix}`,
     position: {
       x: 0.001,
       y: 0.01,
       z: 0
     },
-    scale: {
-      x: 1.03,
-      y: 1.03,
-      z: 1.03
-    }
+    scale: .8
   },
   {
-    name: "Models.scnassets/glasses-vv-2.dae",
+    name: `${prefix}glasses-vv-2${postfix}`,
     position: {
       x: 0,
       y: 0.037,
       z: 0.035
     },
-    scale: {
-      x: 1.13,
-      y: 1.13,
-      z: 1.13
-    }
+    scale: 1.13
   },
   {
-    name: "Models.scnassets/glasses-vv-3.dae",
+    name: `${prefix}glasses-vv-3${postfix}`,
     position: {
       x: 0,
       y: 0.02,
       z: -0.02
     },
-    scale: {
-      x: 1.11,
-      y: 1.11,
-      z: 1.11
-    }
+    scale: 1.11
   },
   {
-    name: "Models.scnassets/glasses-vv-4.dae",
+    name: `${prefix}glasses-vv-4${postfix}`,
     position: {
       x: 0,
       y: 0.02,
       z: -0.02
     },
-    scale: {
-      x: 1.11,
-      y: 1.11,
-      z: 1.11
-    }
+    scale: 1.11
   },
   {
-    name: "Models.scnassets/glasses-vv-5.dae",
+    name: `${prefix}glasses-vv-5${postfix}`,
     position: {
       x: 0.0005,
       y: 0.023,
       z: -0.02
     },
-    scale: {
-      x: 1.15,
-      y: 1.15,
-      z: 1.15
-    }
+    scale: 1.15
   },
   {
-    name: "Models.scnassets/glasses-vv-6.dae",
+    name: `${prefix}glasses-vv-6${postfix}`,
     position: {
       x: 0.0005,
       y: 0.021,
       z: -0.03
     },
-    scale: {
-      x: 1.15,
-      y: 1.15,
-      z: 1.15
-    }
+    scale: 1.15
   }
 ];
 
