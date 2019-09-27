@@ -21,14 +21,14 @@
     "plugin.link": "npm link && cd ../demo && npm link nativescript-ar && cd ../src",
     "plugin.tscwatch": "npm run tsc -- -w",
     "demo.ios": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run ios",
-    "demo.android": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run android",
+    "demo.android": "npm i && npm run tsc && tns plugin build && npm run tsc.demo && cd ../demo && tns run android",
     "demo.android.GalaxyS10Eddy": "npm run demo android -- --device RF8M70REQCP",
     "demo.solarsystem.ios": "npm i && npm run tsc && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck app/*.ts && tns run ios --bundle",
-    "demo.solarsystem.android": "npm i && npm run tsc && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck app/*.ts && tns run android --bundle",
+    "demo.solarsystem.android": "npm i && npm run tsc && tns plugin build && cd ../publish && ./pack.sh && cd ../demo-solarsystem && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck app/*.ts && tns run android --bundle",
     "demo.pokemon.ios": "npm i && npm run tsc && cd ../publish && ./pack.sh && cd ../demo-pokemon && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck && tns run ios",
-    "demo.pokemon.android": "npm i && npm run tsc && cd ../publish && ./pack.sh && cd ../demo-pokemon && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck && tns run android",
+    "demo.pokemon.android": "npm i && npm run tsc && tns plugin build && cd ../publish && ./pack.sh && cd ../demo-pokemon && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck && tns run android",
     "demo.glasses.ios": "npm i && npm run tsc && cd ../publish && ./pack.sh && cd ../demo-glasses && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck && tns run ios",
-    "demo.glasses.android": "npm i && npm run tsc && cd ../publish && ./pack.sh && cd ../demo-glasses && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck && tns run android",
+    "demo.glasses.android": "npm i && npm run tsc && tns plugin build && cd ../publish && ./pack.sh && cd ../demo-glasses && tns plugin remove nativescript-ar && tns plugin add ../publish/package/*.tgz && tsc -skipLibCheck && tns run android",
     "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-ar && tns plugin add ../src",
     "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
     "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**' --exclude '**/typings/**'",
@@ -64,10 +64,10 @@
   "devDependencies": {
     "nativescript-dev-typescript": "~0.10.0",
     "rimraf": "^2.5.0",
-    "tns-core-modules": "~6.0.0",
-    "tns-platform-declarations": "~6.0.0",
+    "tns-core-modules": "~6.1.1",
+    "tns-platform-declarations": "next",
     "tslint": "~5.4.3",
-    "typescript": "~3.4.0"
+    "typescript": "~3.4.5"
   },
   "dependencies": {},
   "bootstrapper": "nativescript-plugin-seed"
