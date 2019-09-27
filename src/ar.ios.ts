@@ -1,6 +1,8 @@
 import * as application from "tns-core-modules/application";
 import { fromNativeSource, ImageSource } from "tns-core-modules/image-source";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARPosition, ARRotation, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { device } from "tns-core-modules/platform";
+import lazy from "tns-core-modules/utils/lazy";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneDetectionOrientation, ARPlaneTappedEventData, ARPosition, ARRotation, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARGroup } from "./nodes/ios/argroup";
 import { ARImage } from "./nodes/ios/arimage";
@@ -17,6 +19,8 @@ export { ARDebugLevel, ARTrackingMode };
 
 declare const ARImageAnchor: any;
 const main_queue = dispatch_get_current_queue();
+
+const sdkVersion = lazy(() => parseInt(device.sdkVersion));
 
 const ARState = {
   planes: new Map<string, ARPlane>(),
@@ -117,7 +121,7 @@ const addTube = (options: ARAddTubeOptions, parentNode: SCNNode): Promise<ARComm
 
 export class AR extends ARBase {
   sceneView: ARSCNView;
-  private configuration: any; // TODO ARConfiguration;
+  private configuration: ARConfiguration;
   private delegate: any; // ARSCNViewDelegateImpl;
   private physicsWorldContactDelegate: SCNPhysicsContactDelegateImpl;
   private sceneTapHandler: SceneTapHandlerImpl;
@@ -134,7 +138,6 @@ export class AR extends ARBase {
       return false;
     }
   }
-
 
   static isImageTrackingSupported(): boolean {
     try {
@@ -204,15 +207,28 @@ export class AR extends ARBase {
     if (!this.sceneView) {
       return;
     }
-    this.sceneView.showsStatistics = on;
+    this.sceneView.showsStatistics = !!on;
   }
 
-  public togglePlaneDetection(on: boolean): void {
+  public setPlaneDetection(to: ARPlaneDetectionOrientation): void {
     if (!this.sceneView) {
       return;
     }
-    this.configuration.planeDetection = on ? ARPlaneDetection.Horizontal : ARPlaneDetection.None;
-    this.sceneView.session.runWithConfiguration(this.configuration);
+
+    let arPlaneDetection = ARPlaneDetection.None;
+    if (to === "HORIZONTAL") {
+      arPlaneDetection = ARPlaneDetection.Horizontal;
+    } else if (to === "VERTICAL") {
+      arPlaneDetection = ARPlaneDetection.Vertical;
+    }
+    const config = <ARWorldTrackingConfiguration>this.configuration;
+    config.planeDetection = arPlaneDetection;
+
+    // TODO pass this in - currently this is configured to occlude human bodies, see https://developer.apple.com/documentation/arkit/arconfiguration/3089121-framesemantics?language=objc
+    if (sdkVersion() >= 13) {
+      // note that this requires at least the A12 chip (iPhone Xs)
+      config.frameSemantics = ARFrameSemantics.PersonSegmentationWithDepth;
+    }
   }
 
   public togglePlaneVisibility(on: boolean): void {
@@ -221,7 +237,6 @@ export class AR extends ARBase {
       plane.setMaterial(material, on ? this.planeOpacity : 0);
     });
   }
-
 
   public getCameraPosition(): ARPosition {
     const p = this.sceneView.defaultCameraController.pointOfView.worldPosition;
@@ -251,6 +266,7 @@ export class AR extends ARBase {
       return;
     }
 
+    // TODO to prevent screen dimming because no touch input is received we can integrate nativescript-insomnia and use that in the superclass, or invoke: UIApplication.shared.isIdleTimerDisabled = true
     if (this.trackingMode === ARTrackingMode.IMAGE) {
       if (!AR.isImageTrackingSupported()) {
         console.log("############### Image tracking is not supported on this device. It's probably not running iOS 12+.");
@@ -272,16 +288,14 @@ export class AR extends ARBase {
 
     } else if (this.trackingMode === ARTrackingMode.FACE) {
       if (!AR.isFaceTrackingSupported()) {
-        console.log("############### Face tracking is not supported on this device. A device running 12+ is required, with a front-facing TrueDepth camera.");
+        console.log("############### Face tracking is not supported on this device. A device running iOS 12+ is required, with a front-facing TrueDepth camera.");
         return;
       }
       this.configuration = ARFaceTrackingConfiguration.new();
 
-    } else {
+    } else { // 'WORLD'
       this.configuration = ARWorldTrackingConfiguration.new();
     }
-
-    this.configuration.lightEstimationEnabled = true;
 
     this.sceneView = ARSCNView.new();
     this.sceneView.delegate = this.delegate = ARSCNViewDelegateImpl.createWithOwnerResultCallbackAndOptions(
@@ -297,22 +311,30 @@ export class AR extends ARBase {
     //     {});
 
     this.toggleStatistics(this.showStatistics);
-    this.togglePlaneDetection(this.detectPlanes);
 
     // enabling these lines often result in an error: 'sensor failed to deliver [..] Make sure that the application has the required privacy settings'
     this.sceneView.autoenablesDefaultLighting = true;
     this.sceneView.automaticallyUpdatesLighting = true;
     this.sceneView.scene.rootNode.name = "root";
 
+    // experiments..
+    // this.sceneView.rendersMotionBlur = true;
+    // this.sceneView.rendersContinuously = true;
+
     const scene = SCNScene.new();
     this.sceneView.scene = scene;
+
+    if (this.trackingMode === ARTrackingMode.WORLD) {
+      this.setPlaneDetection(this.planeDetection);
+      this.addBottomPlane(scene);
+    }
+
+    this.configuration.lightEstimationEnabled = true;
+    this.sceneView.session.runWithConfiguration(this.configuration);
 
     // tweak with delegate, see https://github.com/markdaws/arkit-by-example/blob/master/arkit-by-example/ViewController.m
     // const env = UIImage.imageNamed("./Assets.scnassets/Environment/spherical.jpg");
     // scene.lightingEnvironment.contents = env;
-
-    // TODO some of this is probably only relevant for WORLD tracking
-    this.addBottomPlane(scene);
 
     // register a tap handler
     this.sceneTapHandler = SceneTapHandlerImpl.initWithOwner(new WeakRef(this));
@@ -733,10 +755,13 @@ export class AR extends ARBase {
   }
 
   public reset(): void {
-    this.configuration.planeDetection = ARPlaneDetection.Horizontal;
+    // TODO (low prio) restore to the requested value
+    (<ARWorldTrackingConfiguration>this.configuration).planeDetection = ARPlaneDetection.Horizontal;
     this.sceneView.session.runWithConfigurationOptions(this.configuration, ARSessionRunOptions.ResetTracking | ARSessionRunOptions.RemoveExistingAnchors);
+
     ARState.planes.forEach(plane => plane.remove());
     ARState.planes.clear();
+
     ARState.shapes.forEach(node => node.remove());
     ARState.shapes.clear();
   }
@@ -973,7 +998,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
     const faceAnchor: ARFaceAnchor = anchor;
     let eventType: ARTrackingFaceEventType = "UPDATED";
 
-    // if we didn't have a face but now we do
+    // if we didn't have a face, now we do
     if (!this.hasFace) {
       this.hasFace = true;
       owner.reset();
@@ -993,10 +1018,10 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
 
     const blendShapes: NSDictionary<string, number> = faceAnchor.blendShapes;
 
-    owner.notify(<ARTrackingFaceEventData>{
+    const eventData = <ARTrackingFaceEventData>{
       eventName: ARBase.trackingFaceDetectedEvent,
       object: owner,
-      eventType: eventType,
+      eventType,
       properties: {
         eyeBlinkLeft: blendShapes.valueForKey(ARBlendShapeLocationEyeBlinkLeft),
         eyeBlinkRight: blendShapes.valueForKey(ARBlendShapeLocationEyeBlinkRight),
@@ -1010,9 +1035,9 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
         mouthSmileLeft: blendShapes.valueForKey(ARBlendShapeLocationMouthSmileLeft),
         mouthSmileRight: blendShapes.valueForKey(ARBlendShapeLocationMouthSmileRight),
         tongueOut: blendShapes.valueForKey(ARBlendShapeLocationTongueOut)
-      },
-      faceTrackingActions: eventType === "FOUND" ? new ARFaceTrackingActionsImpl(renderer, anchor, node, this) : undefined
-    });
+      }
+    };
+    dispatch_async(main_queue, () => owner.notify(eventData));
   }
 
   rendererDidRemoveNodeForAnchor(renderer: SCNSceneRenderer, node: SCNNode, anchor: ARAnchor): void {
@@ -1027,28 +1052,38 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
 
     const sceneViewRenderer: any = renderer; // ARSCNView
 
-    let faceGeometry: ARSCNFaceGeometry;
-    // if faceMaterial is set, make the faceGeometry mesh exclude eyes and mouth
-    if (owner.faceMaterial) {
-      faceGeometry = ARSCNFaceGeometry.faceGeometryWithDevice(sceneViewRenderer.device);
-      const material = faceGeometry.firstMaterial;
+    if (anchor instanceof ARFaceAnchor) {
+      let faceGeometry: ARSCNFaceGeometry;
+      // if faceMaterial is set, make the faceGeometry mesh exclude eyes and mouth
+      if (owner.faceMaterial) {
+        faceGeometry = ARSCNFaceGeometry.faceGeometryWithDevice(sceneViewRenderer.device);
+        const material = faceGeometry.firstMaterial;
 
-      material.colorBufferWriteMask = SCNColorMask.All;
-      material.diffuse.contents = owner.faceMaterial;
-      material.lightingModelName = SCNLightingModelPhysicallyBased;
+        material.colorBufferWriteMask = SCNColorMask.All;
+        material.diffuse.contents = owner.faceMaterial;
+        material.lightingModelName = SCNLightingModelPhysicallyBased;
 
-      node.addChildNode(SCNNode.nodeWithGeometry(faceGeometry));
-    } else {
-      // if faceMaterial is NOT set, make the faceGeometry mesh include eyes and mouth
-      faceGeometry = ARSCNFaceGeometry.faceGeometryWithDeviceFillMesh(sceneViewRenderer.device, true);
-      if (faceGeometry) {
-        faceGeometry.firstMaterial.colorBufferWriteMask = SCNColorMask.None;
+        node.addChildNode(SCNNode.nodeWithGeometry(faceGeometry));
+      } else {
+        // if faceMaterial is NOT set, make the faceGeometry mesh include eyes and mouth
+        faceGeometry = ARSCNFaceGeometry.faceGeometryWithDeviceFillMesh(sceneViewRenderer.device, true);
+        if (faceGeometry) {
+          faceGeometry.firstMaterial.colorBufferWriteMask = SCNColorMask.None;
+        }
       }
-    }
 
-    this.occlusionNode = SCNNode.nodeWithGeometry(faceGeometry);
-    this.occlusionNode.renderingOrder = -1;
-    node.addChildNode(this.occlusionNode);
+      this.occlusionNode = SCNNode.nodeWithGeometry(faceGeometry);
+      this.occlusionNode.renderingOrder = -1;
+      node.addChildNode(this.occlusionNode);
+
+      const eventData = <ARTrackingFaceEventData>{
+        eventName: ARBase.trackingFaceDetectedEvent,
+        object: owner,
+        eventType: "FOUND",
+        faceTrackingActions: new ARFaceTrackingActionsImpl(renderer, anchor, node, this, owner.sceneView)
+      };
+      dispatch_async(main_queue, () => owner.notify(eventData));
+    }
 
     if (!(anchor instanceof ARImageAnchor)) {
       return node;
@@ -1148,7 +1183,7 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 }
 
 class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
-  constructor(public renderer: SCNSceneRenderer, public anchor: ARAnchor, public node: SCNNode, public owner: ARSCNViewDelegateImpl) {
+  constructor(public renderer: SCNSceneRenderer, public anchor: ARAnchor, public node: SCNNode, public owner: ARSCNViewDelegateImpl, public sceneView: ARSCNView) {
   }
 
   addModel(options: ARAddModelOptions): Promise<ARModel> {
@@ -1157,6 +1192,10 @@ class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
 
   addText(options: ARAddTextOptions): Promise<ARText> {
     return addText(options, this.node);
+  }
+
+  addUIView(options: ARUIViewOptions): Promise<ARUIView> {
+    return addUIView(options, this.node, this.sceneView);
   }
 }
 

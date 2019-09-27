@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { RouterExtensions } from "nativescript-angular";
-import { ARCommonNode, ARPlaneTappedEventData } from "nativescript-ar";
+import { ARCommonNode, ARMaterial, ARPlaneTappedEventData } from "nativescript-ar";
+import { Color } from "tns-core-modules/color";
 import { isIOS } from "tns-core-modules/platform";
 import { action } from "tns-core-modules/ui/dialogs";
 import { Pokemon } from "~/app/pokemon-data/pokemon";
@@ -15,6 +16,10 @@ export class TryBeforeYouBuyComponent implements OnInit {
 
     pokemonList: Array<Pokemon> = [];
     currentPokemonNode: ARCommonNode;
+    public planeMaterial = <ARMaterial>{
+        diffuse: new Color("white"),
+        transparency: 0.2
+    };
 
     constructor(private pokemonDataService: PokemonDataService,
                 private pokemonFavoritesService: PokemonFavoritesService,
@@ -23,7 +28,7 @@ export class TryBeforeYouBuyComponent implements OnInit {
 
     ngOnInit(): void {
         this.pokemonDataService.getPokemonList()
-        // only select Pokemon with a model
+            // only select Pokemon with a model
             .then(pokemonList => this.pokemonList = pokemonList.filter(p => p.model))
             .catch(e => console.error);
     }

@@ -1,7 +1,7 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneTappedEventData, ARPosition, ARRotation, ARTrackingFaceEventData, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneDetectionOrientation, ARPlaneTappedEventData, ARPosition, ARRotation, ARTrackingFaceEventData, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { TNSArFragmentForImageDetection } from "./imagefragment.android";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
@@ -244,16 +244,18 @@ class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
             this.faceNode.setFaceRegionsRenderable(<any>model.android.getRenderable());
             // note that (at least in this case) the texture doesn't seem to make a difference
             // faceNode.setFaceMeshTexture(foxFaceMeshTexture);
-            resolve();
+            resolve(model);
           })
-          .catch(err => reject)
+          .catch(err => reject);
     });
   }
 
   addText(options: ARAddTextOptions): Promise<ARText> {
-    // TODO
-    // return addText(options, this.node);
-    return null;
+    return Promise.reject("addText not implemented for ARFaceTrackingActions");
+  }
+
+  addUIView(options: ARUIViewOptions): Promise<ARUIView> {
+    return Promise.reject("addUIView not implemented for ARFaceTrackingActions");
   }
 }
 
@@ -263,6 +265,13 @@ export class AR extends ARBase {
   initNativeView(): void {
     super.initNativeView();
     this.initAR();
+  }
+
+  disposeNativeView(): void {
+    super.disposeNativeView();
+    // destroy AR fragment
+    const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
+    supportFragmentManager.beginTransaction().remove(_fragment).commit();
   }
 
   public getCameraPosition(): ARPosition {
@@ -412,6 +421,9 @@ export class AR extends ARBase {
       if (this.trackingMode === ARTrackingMode.FACE) {
         setTimeout(() => {
           const sceneView = _fragment.getArSceneView();
+          if (!sceneView) {
+            return;
+          }
           // This is important to make sure that the camera stream renders first so that the face mesh occlusion works correctly.
           sceneView.setCameraStreamRenderPriority(com.google.ar.sceneform.rendering.Renderable.RENDER_PRIORITY_FIRST);
           const scene = sceneView.getScene();
@@ -435,6 +447,15 @@ export class AR extends ARBase {
                     faceTrackingActions: new ARFaceTrackingActionsImpl(faceNode)
                   };
                   this.notify(eventData);
+
+                } else {
+                  // TODO also handle the "UPDATE" case, and return "smiling", "left eye" etc info.. but it's a bit more low-level on Android as can be seen below
+                  // const faceNode: com.google.ar.sceneform.ux.AugmentedFaceNode = this.faceNodeMap.get(face);
+                  // const augmentedFace: any /* com.google.ar.core.AugmentedFace */ = faceNode.getAugmentedFace();
+                  // const facePose = augmentedFace.getCenterPose();
+                  // console.log(">> augmentedFace, facePose: " + facePose);
+                  // const nosetipRegionPose = augmentedFace.getRegionPose(com.google.ar.core.AugmentedFace.RegionType.NOSE_TIP);
+                  // console.log(">> augmentedFace, nosetipRegionPose: " + nosetipRegionPose);
                 }
               }
 
@@ -453,7 +474,7 @@ export class AR extends ARBase {
               });
             }
           }));
-        }, 0);
+        }, 1000);
       }
 
       const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
@@ -545,10 +566,9 @@ export class AR extends ARBase {
     // this.renderer.setDrawPlanes(on); // TODO
   }
 
-  togglePlaneDetection(on: boolean): void {
+  setPlaneDetection(to: ARPlaneDetectionOrientation): void {
     // TODO this is just 'faking it' for now (by calling togglePlaneVisibility)
-    console.log(">> togglePlaneDetection: " + on);
-    this.togglePlaneVisibility(on);
+    this.togglePlaneVisibility(to !== "NONE");
   }
 
   toggleStatistics(on: boolean): void {

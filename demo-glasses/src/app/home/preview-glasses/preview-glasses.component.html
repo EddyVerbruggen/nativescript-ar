@@ -1,10 +1,12 @@
 <GridLayout rows="*" class="page">
+
   <AR trackingMode="FACE"
-      (trackingFaceDetected)="trackingFaceDetected($event)"
-      debugLevel="PHYSICS_SHAPES">
+      showStatistics="false"
+      faceMaterial_DISABLED="Assets.xcassets/wireframeTexture.imageset"
+      (trackingFaceDetected)="trackingFaceDetected($event)">
   </AR>
 
-  <Pager [items]="items" #pager (loaded)="onLoaded()" [selectedIndex]="selectedModelIndex"
+  <Pager height="200" [items]="items" (loaded)="onLoaded()" [selectedIndex]="selectedModelIndex"
          (selectedIndexChange)="onIndexChanged($event)"
          verticalAlignment="bottom" class="pager" backgroundColor="transparent">
     <ng-template let-i="index" let-item="item">

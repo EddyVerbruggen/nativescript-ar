@@ -45,10 +45,9 @@ const planeOpacityProperty = new Property<AR, number>({
   defaultValue: 0.1
 });
 
-const detectPlanesProperty = new Property<AR, boolean>({
-  name: "detectPlanes",
-  defaultValue: false,
-  valueConverter: booleanConverter
+const planeDetectionProperty = new Property<AR, ARPlaneDetectionOrientation>({
+  name: "planeDetection",
+  defaultValue: "NONE"
 });
 
 const showStatisticsProperty = new Property<AR, boolean>({
@@ -247,6 +246,8 @@ export interface ARTrackingImageDetectedEventData extends AREventData {
 
 export type ARTrackingFaceEventType = "FOUND" | "UPDATED" | "LOST";
 
+export type ARPlaneDetectionOrientation = "NONE" | "HORIZONTAL" | "VERTICAL";
+
 export interface ARTrackingFaceEventData extends AREventData {
   eventType: ARTrackingFaceEventType;
   /**
@@ -276,6 +277,8 @@ export interface ARFaceTrackingActions {
   addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
 
   addText(options: ARAddTextOptions): Promise<ARCommonNode>;
+
+  addUIView(options: ARUIViewOptions): Promise<ARCommonNode>;
 }
 
 export interface ARImageTrackingOptions {
@@ -356,7 +359,7 @@ export abstract class AR extends ContentView {
   faceMaterial: string;
   planeMaterial: string;
   planeOpacity: number;
-  detectPlanes: boolean;
+  planeDetection: ARPlaneDetectionOrientation;
   showStatistics: boolean;
   trackingMode: ARTrackingMode;
   trackingImagesBundle: string;
@@ -396,7 +399,7 @@ export abstract class AR extends ContentView {
 
   abstract addUIView(options: ARUIViewOptions): Promise<ARCommonNode>;
 
-  abstract togglePlaneDetection(on: boolean): void;
+  abstract setPlaneDetection(to: ARPlaneDetectionOrientation): void;
 
   abstract toggleStatistics(on: boolean): void;
 
@@ -436,8 +439,8 @@ export abstract class AR extends ContentView {
     this.trackingImagesBundle = value;
   }
 
-  [detectPlanesProperty.setNative](value: boolean) {
-    this.detectPlanes = value;
+  [planeDetectionProperty.setNative](value: ARPlaneDetectionOrientation) {
+    this.planeDetection = value;
   }
 
   [showStatisticsProperty.setNative](value: boolean) {
@@ -452,7 +455,7 @@ export abstract class AR extends ContentView {
 }
 
 showStatisticsProperty.register(AR);
-detectPlanesProperty.register(AR);
+planeDetectionProperty.register(AR);
 debugLevelProperty.register(AR);
 trackingModeProperty.register(AR);
 trackingImagesBundleProperty.register(AR);

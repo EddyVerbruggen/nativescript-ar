@@ -13,7 +13,7 @@ export class HelloWorldModel extends Observable {
   // public planeMaterial = new Color("red");
   public planeMaterial = <ARMaterial>{
     diffuse: new Color("white"),
-    transparency: 0.2
+    transparency: 0.25
   };
 
   constructor() {

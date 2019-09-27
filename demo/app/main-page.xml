@@ -31,7 +31,7 @@
           faceMaterial__DISABLED2="Assets.xcassets/wireframeTexture.imageset"
           planeMaterial="{{ planeMaterial }}"
           planeOpacity="0.25"
-          detectPlanes="true"
+          planeDetection="HORIZONTAL"
           showStatistics="true"
           arLoaded="arLoaded"
           sceneTapped="sceneTapped"

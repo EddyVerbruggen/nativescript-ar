@@ -14,7 +14,7 @@ But to help add behavior to the AR experience, here are the properties and event
 |`trackingMode`|`WORLD`|One of the options in the `ARTrackingMode` enum: `WORLD`, `IMAGE`, `FACE`. Normally, use `WORLD`, but if you want to precisely track images (and replace them in-view with fi. a box, video, or model) then use `IMAGE`.
 |`trackingImagesBundle`|`undefined`|Only used when `trackingMode` is `IMAGE`. The bundle of images you want to recognize. See [the demo app](https://github.com/EddyVerbruggen/nativescript-ar/tree/fe10b5afe0442df5a941c66568f0cedbd42124d6/demo/app/App_Resources/iOS/Assets.xcassets/AR%20Resources.arresourcegroup), as well as the screenshot below.
 |`debugLevel`|`NONE`|One of the options in the `ARDebugLevel` enum: `NONE`, `WORLD_ORIGIN`, `FEATURE_POINTS`, `PHYSICS_SHAPES`.
-|`detectPlanes`|`false`|You can have the plugin detecting planes right away by setting this to `true`.
+|`planeDetection`|`NONE`|To make the plugin detect planes in `WORLD` tracking mode, set this to either `HORIZONTAL` or `VERTICAL` (the latter is not currently supported on Android).
 |`showStatistics`|`false`|Draw a few statistics at the bottom.
 |`faceMaterial`|-|A `string` referencing a texture for the face when `trackingMode  is `FACE`.  
 |`planeMaterial`|-|A `string` referencing a texture for the planes. For instance, the demo uses ['tron'](https://github.com/EddyVerbruggen/nativescript-ar/tree/master/demo/app/App_Resources/iOS/Assets.scnassets/Materials/tron). Can also be a `Color` or `ARMaterial` instance. You won't see the planes if not set.  

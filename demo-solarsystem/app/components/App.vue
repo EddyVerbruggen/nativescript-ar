@@ -22,7 +22,7 @@
 
       <AR
           debugLevel="FEATURE_POINTS"
-          detectPlanes="true"
+          planeDetection="HORIZONTAL"
           showStatistics="true"
           @arLoaded="arLoaded"
           @planeTapped="loadSolarSystem">
