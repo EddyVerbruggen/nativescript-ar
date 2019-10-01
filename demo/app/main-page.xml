@@ -7,7 +7,7 @@
       <StackLayout id="uselessToggleView">
         <StackLayout orientation="horizontal" class="p-10 c-white c-bg-orange">
           <Label text="Useless toggle:"/>
-          <Switch checked="true" ontap="switchTapped"/>
+          <Switch checked="true" ontap="{{ switchTapped }}"/>
         </StackLayout>
       </StackLayout>
 
@@ -29,14 +29,14 @@
           debugLevel="FEATURE_POINTS"
           faceMaterial__DISABLED="Assets.scnassets/Materials/tnsgranite/tnsgranite-diffuse.png"
           faceMaterial__DISABLED2="Assets.xcassets/wireframeTexture.imageset"
-          planeMaterial="{{ planeMaterial }}"
           planeOpacity="0.25"
           planeDetection="HORIZONTAL"
           showStatistics="true"
-          arLoaded="arLoaded"
-          sceneTapped="sceneTapped"
-          planeDetected="planeDetected"
-          planeTapped="planeTapped">
+          planeMaterial="{{ planeMaterial }}"
+          arLoaded="{{ arLoaded }}"
+          sceneTapped="{{ sceneTapped }}"
+          planeDetected="{{ planeDetected }}"
+          planeTapped="{{ planeTapped }}">
       </AR:AR>
 
       <StackLayout horizontalAlignment="right" verticalAlignment="bottom">
