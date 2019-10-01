@@ -1132,8 +1132,8 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   constructor(public plane: SCNPlane, public planeNode: SCNNode, private sceneView: ARSCNView) {
   }
 
-  playVideo(nativeUrl: string, loop?: boolean): void {
-    const videoPlayer = AVPlayer.playerWithURL(NSURL.URLWithString(nativeUrl));
+  playVideo(url: string, loop?: boolean): void {
+    const videoPlayer = AVPlayer.playerWithURL(NSURL.URLWithString(url));
     this.plane.firstMaterial.diffuse.contents = videoPlayer;
 
     if (loop === true) {

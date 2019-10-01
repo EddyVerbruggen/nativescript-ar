@@ -289,7 +289,7 @@ export interface ARImageTrackingOptions {
 }
 
 export interface ARImageTrackingActions {
-  playVideo(nativeUrl: string, loop?: boolean): void;
+  playVideo(url: string, loop?: boolean): void;
 
   stopVideoLoop(): void;
 
