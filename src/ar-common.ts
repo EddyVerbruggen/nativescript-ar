@@ -74,7 +74,6 @@ export interface ARNodeInteraction {
 }
 
 export interface ARCommonNode extends ARNode {
-
   draggingEnabled?: boolean;
   rotatingEnabled?: boolean;
   scalingEnabled?: boolean;
@@ -87,15 +86,15 @@ export interface ARCommonNode extends ARNode {
 
   scaleBy?(by: number | ARScale): void;
 
+  getWorldPosition(): ARPosition;
+
+  setWorldPosition(to: ARPosition): void;
+
   onTap(touchPosition: ARDimensions2D): void;
 
   onLongPress(touchPosition: ARDimensions2D): void;
 
   onPan(touchPosition: ARDimensions2D): void;
-
-  getWorldPosition(): ARPosition;
-
-  setWorldPosition(to: ARPosition): void;
 }
 
 export interface ARVideoNode extends ARCommonNode {

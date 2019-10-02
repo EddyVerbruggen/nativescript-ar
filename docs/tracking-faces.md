@@ -50,18 +50,18 @@ See the example above. The properties of `ARTrackingFaceEventData` are:
 
 |property|description
 |---|---
-|`object`|The `AR` object for you to call any API function upon.
-|`eventType`|One of `FOUND`, `UPDATED`, `LOST`.
-|`faceTrackingActions`|This is available when `eventType` is `FOUND`. See below for details.
-|`properties`|iOS only. This object has these properties, which represent a probability of 0 to 1: `eyeBlinkLeft`, `eyeBlinkRight`, `jawOpen`, `mouthFunnel`, `mouthSmileLeft`, `mouthSmileRight`, `tongueOut`, and `lookAtPoint` which is an `ARPosition` object (with x, y, z properties).
+|`object`|The `AR` object for you to call any API function upon
+|`eventType`|One of `FOUND`, `UPDATED`, `LOST`
+|`faceTrackingActions`|This is available when `eventType` is `FOUND`. See below for details
+|`properties`|iOS only. This object has these properties, which represent a probability of 0 to 1: `eyeBlinkLeft`, `eyeBlinkRight`, `jawOpen`, `mouthFunnel`, `mouthSmileLeft`, `mouthSmileRight`, `tongueOut`, and `lookAtPoint` which is an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object with `x`, `y`, and `z` properties
 
 The `faceTrackingActions` object is of type [`ARFaceTrackingActions`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L275-L285) and has these functions:
 
 |function|description
 |---|---
-|`addModel`|See [api/addModel](./api.md#addmodel).
-|`addText`|iOS only. See [api/addText](./api.md#addtext).
-|`addUIView`|See [api/addUIView](./api.md#adduiview).
+|`addModel`|See [api/addModel](./api.md#addmodel)
+|`addText`|iOS only. See [api/addText](./api.md#addtext)
+|`addUIView`|See [api/addUIView](./api.md#adduiview)
 
 ## Continue reading
 - [Learn about all AR view tag properties](./tag-properties.md)

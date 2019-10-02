@@ -22,19 +22,23 @@ class MyModel {
 Then call one of the functions below, like `this.ar.addModel({})`:
 
 - [add*](#add)
+
+- [addNode](#addnode)
 - [addModel](#addmodel)
 - [addBox](#addbox)
 - [addSphere](#addsphere)
 - [addTube](#addtube)
 - [addText](#addtext)
-- [addNode](#addnode)
 - [addImage](#addimage)
 - [addUIView](#adduiview)
+
 - [isSupported](#issupported-static)
+
 - [grabScreenshot](#grabscreenshot-ios)
 
 ## `add*`
-Shared properties of all `add*` functions are:
+
+### Shared properties of all `add*` functions
 
 #### `position` 
 <img src="images/xyz.png" width="300px"/>
@@ -79,13 +83,85 @@ rotation: ARRotation = {
 }
 ```
 
-#### `mass` (optional)
+#### `mass` (optional, iOS only)
 By default objects don't have a mass so they're not subject to gravity and don't 'fall'.
 
 If you want the object to fall you may also want to increase the `position.y` (for a higher drop).
 
 ```typescript
 mass: number = 0.1;
+```
+
+### Shared functions of all `add*` functions
+
+#### `onTap`
+
+```typescript
+import { ARNodeInteraction } from "nativescript-ar";
+
+onTap: (interaction: ARNodeInteraction) => {
+  console.log("A node was tapped at coordinates " + interaction.touchPosition.x + " x " + interaction.touchPosition.y);
+  // as an example, here's how to rotate that node 5 degrees to the right:
+  interaction.node.rotateBy({
+    x: 0,
+    y: 0,
+    z: -5
+  });
+}
+```
+
+The `interaction` object above is of type [`ARNodeInteraction`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L71-L74) and contains a `touchPosition` (`x`, `y` coordinate) and a `node` object of type [`ARCommonNode`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L76-L99) which contains these properties:
+
+|property|description
+|---|---
+|`position`|Returns the node's position as an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object with `x`, `y`, and `z` properties 
+|`rotation`|Returns the node's rotation as an [`ARRotation`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L350-L352) object with `x`, `y`, and `z` properties (see the example above) 
+|`scale`|Returns the node's scale as an [`ARScale`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L342-L344) object with `x`, `y`, and `z` properties
+|`ios`|Returns the native iOS object
+|`android`|Returns the native Android object
+
+Furthermore, the `node` contains these functions by which you can interact with the node you tapped:
+
+|function|description
+|---|---
+|`remove`|Removes the node from the scene
+|`moveTo`|Move the node to a position (in meters from the camera) by passing in an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object with `x`, `y`, and `z` properties
+|`moveBy`|Move the node by a number of meters by passing in an `ARPosition` object
+|`rotateBy`|Rotate the node by a number of degrees by passing in an [`ARRotation`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L350-L352) object with `x`, `y`, and `z` properties (see the example above)
+|`scaleBy`|Scale the node by either a `number` or an [`ARScale`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L342-L344) object with `x`, `y`, and `z` properties
+|`getWorldPosition`|Get the position of the node in the world as an `ARPosition` object
+|`setWorldPosition`|Set the position of the node in the world by passing in an `ARPosition` object
+
+
+#### `onLongPress`
+
+```typescript
+import { ARNodeInteraction } from "nativescript-ar";
+
+onLongPress: (interaction: ARNodeInteraction) => {
+  console.log("A node was longpressed at coordinates " + interaction.touchPosition.x + " x " + interaction.touchPosition.y);
+  // as an example, here's how to rotate that node 5 degrees to the right:
+  interaction.node.rotateBy({
+    x: 0,
+    y: 0,
+    z: -5
+  });
+}
+```
+
+The `interaction` object above is of type [`ARNodeInteraction`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L71-L74) and contains a `touchPosition` (`x`, `y` coordinate) and a `node` object of type [`ARCommonNode`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L76-L99) which contains the same functions as described at `onTap` above.
+
+## `addNode`
+Use this if you want to add a node which you can attach other nodes to (models, images, spheres, etc), but you don't want the node itself to show up.
+
+```typescript
+ar.addNode({
+  position: {
+    x: 0,
+    y: 1.2,
+    z: 1
+  }
+});
 ```
 
 ## `addModel`
@@ -252,8 +328,8 @@ ar.addTube({
   innerRadius: 0.3,
   outerRadius: 0.5,
   height: 0.8,
-  radialSegmentCount: 80,
-  radialSegmentCount: 4,
+  radialSegmentCount: 40,
+  heightSegmentCount: 10,
   mass: 0.001,
   materials: [{
     diffuse: {
@@ -269,6 +345,7 @@ ar.addTube({
 ```
 
 ## `addText`
+This is implemented for iOS only.
 
 ```typescript
 import { ARNode } from "nativescript-ar";
@@ -292,11 +369,18 @@ ar.addText({
 });
 ```
 
-## `addNode`
-TODO
-
 ## `addImage`
-TODO
+
+```typescript
+ar.addImage({
+  position: {
+    x: 0,
+    y: 0.5,
+    z: -2
+  },
+  image: "https://d2odgkulk9w7if.cloudfront.net/images/default-source/logos/ns-logo-shadowed-min.png"
+});
+```
 
 ## `addUIView`
 This one is a bit tricky and requires some tinkering with sizes and positioning because the rendered view may differ a bit between platforms.
@@ -312,26 +396,27 @@ So what you need to do is declare a view like in this Vue example:
 ```html
 <Page @loaded="pageLoaded">
   <ActionBar title="ARRRR"></ActionBar>
+
   <GridLayout columns="*" rows="*">
 
-    <!-- because this controlPanel layout is "below" the AR node (z-index-wise) it's not shown to the user -->
+    <!-- because this layout is "below" the AR node (z-index-wise) it's not shown to the user -->
     <StackLayout id="myUIView">
       <Label text="any NativeScript view can go here" horizontalAlignment="center"></Label>
     </StackLayout>
 
-  <!-- this will hide the above layouts during the time the app is loaded and the AR camera view is showing -->
-  <StackLayout class="cover">
-  </StackLayout>
+    <!-- this will hide the above layouts during the time the app is loaded and the AR camera view is showing -->
+    <StackLayout class="cover">
+    </StackLayout>
 
-  <AR
-      planeDetection="HORIZONTAL"
-      @arLoaded="arLoaded"
-      @planeTapped="loadARContent">
-  </AR>
+    <AR
+        planeDetection="HORIZONTAL"
+        @arLoaded="arLoaded"
+        @planeTapped="loadARContent">
+    </AR>
 
-  <!-- because this label is "above" the AR node, it _is_ visible -->
-  <Label :text="arLabel" class="ar-label" verticalAlignment="top"></Label>
-</GridLayout>
+    <!-- because this label is "above" the AR node, it _is_ visible -->
+    <Label :text="arLabel" class="ar-label" verticalAlignment="top"></Label>
+  </GridLayout>
 </Page>
 ```
 

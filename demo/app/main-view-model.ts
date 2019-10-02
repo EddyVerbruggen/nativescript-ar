@@ -367,9 +367,7 @@ export class HelloWorldModel extends Observable {
         z: args.position.z
       },
       image: "https://d2odgkulk9w7if.cloudfront.net/images/default-source/logos/ns-logo-shadowed-min.png"
-
     }).catch(console.error);
-
 
     args.object.addModel({
       name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
