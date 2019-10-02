@@ -3,8 +3,6 @@ AR API
 
 [🔙](../README.md)
 
-TODO all features of ARCommonNode, ARAddOptions, ARImageTrackingActions, etc
-
 The easiest way to obtain a reference to the `AR` object is by grabbing it from the `arLoaded` event you bind in the view:
 
 ```typescript
@@ -19,21 +17,23 @@ class MyModel {
 }
 ```
 
-Then call one of the functions below, like `this.ar.addModel({})`:
+Then call one of the 'add*' functions below, like `this.ar.addModel()`:
 
 - [add*](#add)
-
 - [addNode](#addnode)
 - [addModel](#addmodel)
 - [addBox](#addbox)
+- [addPlane](#addplane)
 - [addSphere](#addsphere)
 - [addTube](#addtube)
 - [addText](#addtext)
 - [addImage](#addimage)
+- [addVideo](#addvideo)
 - [addUIView](#adduiview)
 
+Or one of the other functions:
+- [trackImage](#trackimage)
 - [isSupported](#issupported-static)
-
 - [grabScreenshot](#grabscreenshot-ios)
 
 ## `add*`
@@ -53,6 +53,11 @@ position: ARPosition = {
   z: number
 }
 ```
+
+#### `parentNode`
+Instead of adding a node relative to the camera, you can add it to another node that's already part of the scene.
+
+We leverage this feature in the Solar System demo by [adding life to planets](https://github.com/EddyVerbruggen/nativescript-ar/blob/77d1d4585f0f92aa2d6f6de494c528f7895e2b28/demo-solarsystem/app/components/App.vue#L350).
 
 #### `scale` (optional)
 This can either be a `number` or an `ARScale`:
@@ -83,7 +88,16 @@ rotation: ARRotation = {
 }
 ```
 
-#### `mass` (optional, iOS only)
+#### `draggingEnabled`
+Set this to `true` to enable moving objects around.
+
+#### `rotatingEnabled`
+Set this to `true` to enable rotating objects.
+
+#### `scalingEnabled`
+Set this to `true` to enable scaling of objects.
+
+#### `mass` (iOS only)
 By default objects don't have a mass so they're not subject to gravity and don't 'fall'.
 
 If you want the object to fall you may also want to increase the `position.y` (for a higher drop).
@@ -269,6 +283,23 @@ ar.addBox({
 }).then(arNode => console.log("Box was added"));
 ```
 
+## `addPlane`
+Add
+```typescript
+import { ARNodeInteraction } from "nativescript-ar";
+import { Color } from "tns-core-modules/color";
+
+ar.addPlane({
+  position: {
+    x: 1,
+    y: 1,
+    z: 1
+  },
+  dimensions: 1,
+  materials: [new Color("green")],
+});
+```
+
 ## `addSphere`
 <img src="images/scnsphere.png" width="316px"/>
 
@@ -382,6 +413,32 @@ ar.addImage({
 });
 ```
 
+## `addVideo`
+
+```typescript
+import { isIOS } from "tns-core-modules/platform";
+
+ar.addVideo({
+  position: {
+    x: args.position.x,
+    y: args.position.y + 0.7,
+    z: args.position.z
+  },
+  // you can use either a local or remote video, but beware: sometimes sample-videos.com is down, or your device can have slow Internet
+  video: isIOS ? "art.scnassets/celebration.mp4" : "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4",
+  onTap: (interaction: ARNodeInteraction) => {
+    const node = <ARVideoNode>interaction.node;
+    if (node.isPlaying()) {
+      node.pause();
+    } else {
+      node.play();
+    }
+  }
+}).catch(console.error);
+```
+
+As you can see in the example above, the returned `ARVideoNode` provides these methods for further interaction: `isPlaying`, `pause`, `play`.
+
 ## `addUIView`
 This one is a bit tricky and requires some tinkering with sizes and positioning because the rendered view may differ a bit between platforms.
 
@@ -433,6 +490,32 @@ ar.addUIView({
 ```
 
 For more details, please see [this implementation](https://github.com/EddyVerbruggen/nativescript-ar/blob/master/demo-solarsystem/app/components/App.vue) in the Solar System demo app.
+
+## `trackImage`
+You can either track images by providing an image bundle [like so](https://github.com/EddyVerbruggen/nativescript-ar/blob/c13ca5c000a660069ee74506330be41e74b565e3/demo-pokemon/src/app/search-by-card/search-by-card.component.html#L38),
+but also non-bundled images (even from the web!) by using this `trackImage` function.
+
+> On iOS this is supported with `trackingMode` either `WORLD` or `IMAGE`. On Android only with `IMAGE`.
+
+```typescript
+import { ARTrackingImageDetectedEventData } from "nativescript-ar";
+import { isIOS } from "tns-core-modules/platform";
+
+ar.trackImage({
+  image: "https://raw.githubusercontent.com/EddyVerbruggen/nativescript-ar/master/demo/app/App_Resources/Android/src/main/assets/tnsgranite-diffuse.png",
+  onDetectedImage: (args: ARTrackingImageDetectedEventData) => {
+    args.imageTrackingActions.addModel({
+      name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+      position: {
+        x: args.position.x,
+        y: args.position.y,
+        z: args.position.z - 0.1
+      },
+      scale: 0.1
+    });
+  }
+});
+```
 
 ## `isSupported` (static)
 Check whether or not the device is AR-capable.

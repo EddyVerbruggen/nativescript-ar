@@ -56,11 +56,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
     return true;
   }
 
-
   public addImagesInFolder(name: string, imageWidthMeters?: number) {
-    console.log("Add folder: " + name);
-
-
     let width = imageWidthMeters || -1;
 
     const context = utils.ad.getApplicationContext();
@@ -72,17 +68,14 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       list = assetManager.list(name);
     }
 
-    console.log(list.length + ": " + name);
     let path;
     let file;
-
 
     for (let i = 0; i < list.length; i++) {
       file = list[i];
       path = name + "/" + file;
 
       if (path.indexOf('.imgdb') > 0) {
-
         this.loadImgDatabase(path);
         return;
       }
@@ -106,28 +99,20 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       path = name + "/" + file;
 
       if (path.indexOf('.jpg') > 0 || path.indexOf('.png') > 0) {
-
         let assetName = path.split('/').pop().split('.').slice(0, -1).join('.');
         this.addImage(path, assetName, width);
 
       } else {
-
         let length = assetManager.list(path).length;
-        console.log(path + ": " + length);
         if (length) {
           this.addImagesInFolder(path, width);
         }
       }
     }
-
   }
-
 
   private loadImgDatabase(asset: string) {
     try {
-
-      console.log("found asset db");
-
       const context = utils.ad.getApplicationContext();
       const assetManager = context.getAssets();
       let is = assetManager.open(asset);
@@ -136,11 +121,9 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
       this.session.configure(this.config);
       return;
 
-
     } catch (e) {
       console.error(e);
     }
-
   }
 
   private readContentWidth(asset: string) {
@@ -188,7 +171,6 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
   }
 
   private addBitmap(augmentedImageBitmap, name: string, imageWidthMeters: number) {
-    console.log("augmentedImageBitmap: " + augmentedImageBitmap);
     if (augmentedImageBitmap == null) {
       console.log('error loading asset: ' + name);
       return;

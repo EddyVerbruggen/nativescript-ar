@@ -381,7 +381,7 @@ export abstract class AR extends ContentView {
 
   abstract addNode(options: ARAddOptions): Promise<ARCommonNode>;
 
-  abstract addPlane(options: ARAddOptions): Promise<ARCommonNode>;
+  abstract addPlane(options: ARAddPlaneOptions): Promise<ARCommonNode>;
 
   abstract addModel(options: ARAddModelOptions): Promise<ARCommonNode>;
 
