@@ -311,7 +311,6 @@
                     this.hasControlPanel = true;
                     ar.addUIView({
                       position: {x: 0, y: .22, z: 0},
-                      // dimensions:{x:1, y:0.8}, //ios might need this
                       parentNode: objectNode,
                       view: this.page.getViewById("controlPanel"),
                       scale: 0.4

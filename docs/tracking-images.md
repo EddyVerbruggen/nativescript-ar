@@ -47,6 +47,29 @@ export class HelloWorldModel extends Observable {
 }
 ```
 
+## The `trackingImageDetected` event
+See the example above. The properties of `ARTrackingImageDetectedEventData` are:
+
+|property|description
+|---|---
+|`object`|An `AR` object for you to call any API function upon.
+|`position`|An [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object, consisting of `x`, `y`, and `z` properties.
+|`size`|An [`ARSize`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L332-L340) object, consisting of `width` and `height` properties.
+|`imageName`|The name of the detected image.
+|`imageTrackingActions`|See below for details.
+
+The `imageTrackingActions` object is of type [`ARImageTrackingActions`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L294-L308) and has these functions:
+
+|function|description
+|---|---
+|`addModel`|See [api/addModel](./api.md#addmodel).
+|`addBox`|See [api/addBox](./api.md#addbox).
+|`addImage`|See [api/addBox](./api.md#addimage).
+|`addUIView`|See [api/addUIView](./api.md#adduiview).
+|`addNode`|See [api/addNode](./api.md#addnode).
+|`playVideo`|Overlays the image with a video. Pass in a URL to a video, and optionally a boolean telling the video to loop: `imageTrackingActions.playVideo("https://mysite.com/myvideo.mov", true)`.
+|`stopVideoLoop`|Stops the video.
+
 ## Continue reading
 - [Learn about all AR view tag properties](./tag-properties.md)
 - [Learn about using the AR API](./api.md)

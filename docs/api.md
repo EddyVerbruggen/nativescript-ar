@@ -1,5 +1,5 @@
-API
-===
+AR API
+======
 
 [🔙](../README.md)
 
@@ -27,6 +27,9 @@ Then call one of the functions below, like `this.ar.addModel({})`:
 - [addSphere](#addsphere)
 - [addTube](#addtube)
 - [addText](#addtext)
+- [addNode](#addnode)
+- [addImage](#addimage)
+- [addUIView](#adduiview)
 - [isSupported](#issupported-static)
 - [grabScreenshot](#grabscreenshot-ios)
 
@@ -288,6 +291,63 @@ ar.addText({
   }
 });
 ```
+
+## `addNode`
+TODO
+
+## `addImage`
+TODO
+
+## `addUIView`
+This one is a bit tricky and requires some tinkering with sizes and positioning because the rendered view may differ a bit between platforms.
+
+A great example can be seen in the [Solar System demo app](../demo-solarsystem), check out [this UI declaration](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/demo-solarsystem/app/components/App.vue#L7-L12) which are a few NativeScript `Label` and `Slider` tags wrapped in a `StackLayout` which renders like this:
+
+<img src="images/addUIView.jpg" width="450px"/>
+
+_Neat huh!?_
+
+So what you need to do is declare a view like in this Vue example:
+
+```html
+<Page @loaded="pageLoaded">
+  <ActionBar title="ARRRR"></ActionBar>
+  <GridLayout columns="*" rows="*">
+
+    <!-- because this controlPanel layout is "below" the AR node (z-index-wise) it's not shown to the user -->
+    <StackLayout id="myUIView">
+      <Label text="any NativeScript view can go here" horizontalAlignment="center"></Label>
+    </StackLayout>
+
+  <!-- this will hide the above layouts during the time the app is loaded and the AR camera view is showing -->
+  <StackLayout class="cover">
+  </StackLayout>
+
+  <AR
+      planeDetection="HORIZONTAL"
+      @arLoaded="arLoaded"
+      @planeTapped="loadARContent">
+  </AR>
+
+  <!-- because this label is "above" the AR node, it _is_ visible -->
+  <Label :text="arLabel" class="ar-label" verticalAlignment="top"></Label>
+</GridLayout>
+</Page>
+```
+
+Once the AR view is showing, you can grab that `myUIView` view and add it to the camera.
+By passing a `parentNode` you can position the view relative to another node.
+
+```typescript
+ar.addUIView({
+  position: {x: 0, y: .22, z: 0},
+  parentNode: objectNode,
+  view: this.page.getViewById("myUIView"),
+  scale: 0.4
+}).then(view => console.log("UI view added"));
+```
+
+For more details, please see [this implementation](https://github.com/EddyVerbruggen/nativescript-ar/blob/master/demo-solarsystem/app/components/App.vue) in the Solar System demo app.
 
 ## `isSupported` (static)
 Check whether or not the device is AR-capable.

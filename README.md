@@ -28,10 +28,10 @@ tns plugin add nativescript-ar
 
 ## Embedding an AR view
 - [I'm Using NativeScript with Angular](docs/ar-angular.md)
-- [I'm Using NativeScript with Vue](docs/ar-xml.md)
-- [I'm Using NativeScript with XML](docs/ar-vue.md)
+- [I'm Using NativeScript with Vue](docs/ar-vue.md)
+- [I'm Using NativeScript with XML](docs/ar-xml.md)
 
-## Type of AR experiences
+## Types of AR experiences
 - [World tracking](docs/tracking-world.md): augment the world around you
 - [Face tracking](docs/tracking-faces.md): augment a face
 - [Image tracking](docs/tracking-images.md): augment 2D images your camera finds
