@@ -4,7 +4,9 @@ nativescript-ar with Angular
 [🔙](../README.md)
 
 ## Demo app
-This plugin is part of the [plugin showcase app](https://github.com/EddyVerbruggen/nativescript-pluginshowcase/tree/master/app/ar) I built using Angular.
+Check out the [Pokémon](../demo-pokemon), which is an example of [Image tracking](./tracking-images.md) or the [Glasses](../demo-glasses) demo app, which is an example of [Face tracking](./tracking-faces.md)..
+
+Also, this plugin is part of the [plugin showcase app](https://github.com/EddyVerbruggen/nativescript-pluginshowcase/tree/master/app/ar) I built using Angular.
 
 ## Declaring the `<AR>` view
 Browse to the module where you want to show off some AR goodness and add:
@@ -21,12 +23,11 @@ Open a view that's in the same module (or you've added it to the global app modu
   <Label row="0" text="Scan a surface.." class="p-20" horizontalAlignment="center"></Label>
   <AR
     row="1"
-    debugLevel="FEATURE_POINTS"
     detectPlanes="true"
     showStatistics="true"
     [planeMaterial]="planeMaterial"
     (planeTapped)="planeTapped($event)">
-    <!-- you can add layouts here if you like to overlay the AR view -->
+    <!-- you can add layouts here if you like to overlay the AR view (see the demos in this repo) -->
   </AR>
 </GridLayout>
 ```
@@ -34,7 +35,6 @@ Open a view that's in the same module (or you've added it to the global app modu
 Open its component and, for instance, add:
 
 ```typescript
-// add to imports
 import { AR, ARMaterial,ARPlaneTappedEventData } from "nativescript-ar";
 import { Color } from "tns-core-modules/color";
 
@@ -60,4 +60,6 @@ export class MyComponent {
 ```
 
 ## Continue reading
-- [Tell me about those <AR> tag properties](tag-properties.md)
+- [World tracking](./tracking-world.md): augment the world around you
+- [Face tracking](./tracking-faces.md): augment a face
+- [Image tracking](./tracking-images.md): augment 2D images your camera finds

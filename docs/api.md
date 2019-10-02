@@ -3,6 +3,24 @@ API
 
 [🔙](../README.md)
 
+TODO all features of ARCommonNode, ARAddOptions, ARImageTrackingActions, etc
+
+The easiest way to obtain a reference to the `AR` object is by grabbing it from the `arLoaded` event you bind in the view:
+
+```typescript
+import { AR, ARLoadedEventData } from "nativescript-ar";
+
+class MyModel {
+  private ar: AR;
+
+  public arLoaded(args: ARLoadedEventData): void {
+    this.ar = args.object;
+  }
+}
+```
+
+Then call one of the functions below, like `this.ar.addModel({})`:
+
 - [add*](#add)
 - [addModel](#addmodel)
 - [addBox](#addbox)
@@ -15,7 +33,7 @@ API
 ## `add*`
 Shared properties of all `add*` functions are:
 
-#### `position`
+#### `position` 
 <img src="images/xyz.png" width="300px"/>
 
 Looking at the image above, you can see the `0,0,0` coordinate is your device (not the floor),

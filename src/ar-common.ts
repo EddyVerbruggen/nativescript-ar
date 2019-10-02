@@ -250,8 +250,10 @@ export type ARPlaneDetectionOrientation = "NONE" | "HORIZONTAL" | "VERTICAL";
 
 export interface ARTrackingFaceEventData extends AREventData {
   eventType: ARTrackingFaceEventType;
+
   /**
    * Set when eventType is either "FOUND" or "UPDATED".
+   * Only available on iOS.
    */
   properties?: {
     eyeBlinkLeft: number;
@@ -263,6 +265,7 @@ export interface ARTrackingFaceEventData extends AREventData {
     mouthSmileRight: number;
     tongueOut: number;
   };
+
   /**
    * Set when eventType is "FOUND".
    */

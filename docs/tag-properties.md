@@ -11,7 +11,7 @@ But to help add behavior to the AR experience, here are the properties and event
 ## Properties
 |property|default|description
 |---|---|---
-|`trackingMode`|`WORLD`|One of the options in the `ARTrackingMode` enum: `WORLD`, `IMAGE`, `FACE`. Normally, use `WORLD`, but if you want to precisely track images (and replace them in-view with fi. a box, video, or model) then use `IMAGE`.
+|`trackingMode`|`WORLD`|One of the options in the `ARTrackingMode` enum: `WORLD`, `IMAGE`, `FACE`. If you want to track images (and replace them in-view with fi. a box, video, or model) then use `IMAGE`. Use `FACE` if you want to augment faces (with the front camera).
 |`trackingImagesBundle`|`undefined`|Only used when `trackingMode` is `IMAGE`. The bundle of images you want to recognize. See [the demo app](https://github.com/EddyVerbruggen/nativescript-ar/tree/fe10b5afe0442df5a941c66568f0cedbd42124d6/demo/app/App_Resources/iOS/Assets.xcassets/AR%20Resources.arresourcegroup), as well as the screenshot below.
 |`debugLevel`|`NONE`|One of the options in the `ARDebugLevel` enum: `NONE`, `WORLD_ORIGIN`, `FEATURE_POINTS`, `PHYSICS_SHAPES`.
 |`planeDetection`|`NONE`|To make the plugin detect planes in `WORLD` tracking mode, set this to either `HORIZONTAL` or `VERTICAL` (the latter is not currently supported on Android).

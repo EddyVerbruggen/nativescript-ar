@@ -67,6 +67,7 @@ export class PreviewGlassesComponent implements OnInit {
           .then(model => this.currentlyActiveModel = model)
           .catch(err => console.log(`Error adding model: ${err}`));
 
+      // note that this is currently supported on iOS only
       this.faceTrackingActions.addText(
           {
             text: glasses.title,

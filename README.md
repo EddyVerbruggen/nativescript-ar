@@ -14,11 +14,11 @@ NativeScript Augmented Reality
 [twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
 [twitter-url]:https://twitter.com/eddyverbruggen
 
-> Tip: give this [article by TJ](https://www.nativescript.org/blog/getting-started-with-augmented-reality-in-nativescript) a read if you want a nice introduction to AR in NativeScript.
+> Tip: give this [article by TJ](https://www.nativescript.org/blog/getting-started-with-augmented-reality-in-nativescript) a read if you want a nice introduction to AR in NativeScript. It uses an older version of the plugin, but it's still quite relevant.
 
 ### Supported platforms
-* iPhone SE, 6s, iPad Pro, iPad 2017, or newer. Running iOS 11 or newer.
-* Android support is work in progress and honestly not too useful as the number of devices capable of running complex AR scenes lags way behind iOS.
+* iPhone SE, 6s, iPad Pro, iPad 2017, or newer support ARKit. Running iOS 11 or newer.
+* [Many Android devices](https://developers.google.com/ar/discover/supported-devices#android_play) support ARCore nowadays. Obviously the faster the device, the better the experience.
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
@@ -26,12 +26,15 @@ From the command prompt go to your app's root folder and execute:
 tns plugin add nativescript-ar
 ```
 
-You'll need to install at least Xcode 9 to run AR on iOS.
-
-## Continue reading
+## Embedding an AR view
 - [I'm Using NativeScript with Angular](docs/ar-angular.md)
-- [I'm Using NativeScript with XML](docs/ar-xml.md)
+- [I'm Using NativeScript with Vue](docs/ar-xml.md)
+- [I'm Using NativeScript with XML](docs/ar-vue.md)
 
-## Advanced topics
-- [AR view tag properties](docs/tag-properties.md)
+## Type of AR experiences
+- [World tracking](docs/tracking-world.md): augment the world around you
+- [Face tracking](docs/tracking-faces.md): augment a face
+- [Image tracking](docs/tracking-images.md): augment 2D images your camera finds
+
+## Using the AR API
 - [AR API](docs/api.md)

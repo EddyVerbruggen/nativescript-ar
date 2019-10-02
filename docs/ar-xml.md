@@ -4,7 +4,7 @@ nativescript-ar with XML
 [🔙](../README.md)
 
 ## Demo app
-Check out [the embedded demo app](../demo).
+Check out the [demo app](../demo).
 
 ## Declaring the `<AR>` view
 Add the `AR` namespace to the view you want AR-ify, then add use it like any other UI component:
@@ -75,4 +75,6 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 ```
 
 ## Continue reading
-- [Tell me about those <AR> tag properties](tag-properties.md)
+- [World tracking](docs/tracking-world.md): augment the world around you
+- [Face tracking](docs/tracking-faces.md): augment a face
+- [Image tracking](docs/tracking-images.md): augment 2D images your camera finds
