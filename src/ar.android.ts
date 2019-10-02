@@ -674,7 +674,7 @@ export class AR extends ARBase {
 
   trackImage(options: ARImageTrackingOptions): void {
     if (!(_fragment instanceof TNSArFragmentForImageDetection)) {
-      throw "Only supported in trackingMode: IMAGE";
+      throw "On Android, this is only supported in trackingMode: IMAGE";
     }
 
     const name = options.name || options.image.split('/').pop().split('.').slice(0, -1).join('.');
