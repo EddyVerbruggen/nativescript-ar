@@ -38,7 +38,15 @@ export class HelloWorldModel extends Observable {
       this.ar.trackImage({
         image: "https://raw.githubusercontent.com/EddyVerbruggen/nativescript-ar/master/demo/app/App_Resources/Android/src/main/assets/tnsgranite-diffuse.png",
         onDetectedImage: (args) => {
-          console.log("Detected Image Handler: " + args.imageName);
+          args.imageTrackingActions.addModel({
+            name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+            position: {
+              x: args.position.x,
+              y: args.position.y,
+              z: args.position.z - 0.1
+            },
+            scale: 0.1
+          });
         }
       });
     } catch (e) {
@@ -345,7 +353,7 @@ export class HelloWorldModel extends Observable {
     this.ar.addVideo({
       position: {
         x: args.position.x,
-        y: args.position.y + 1, // want to drop the box from a meter high (when mass > 0)? add +1
+        y: args.position.y + 1,
         z: args.position.z
       },
       // you can use either a local or remote video, but beware: sometimes sample-videos.com is down or your device has slow Internet

@@ -282,7 +282,7 @@ export class AR extends ARBase {
         }
         imageTrackingConfig.trackingImages = trackingImages;
         // tracking unlimited images probably has severe performance implications
-        imageTrackingConfig.maximumNumberOfTrackedImages = Math.min(trackingImages.count, 10);
+        imageTrackingConfig.maximumNumberOfTrackedImages = Math.min(trackingImages.count, 50);
       }
       this.configuration = imageTrackingConfig;
 
@@ -719,11 +719,18 @@ export class AR extends ARBase {
   }
 
   trackImage(options: ARImageTrackingOptions): void {
-    if (!(this.configuration instanceof ARImageTrackingConfiguration)) {
-      throw "Only supported in trackingMode: IMAGE";
+    let set: NSMutableSet<ARReferenceImage>;
+
+    if (this.configuration instanceof ARImageTrackingConfiguration) {
+      set = NSMutableSet.setWithSet(this.configuration.trackingImages);
+      this.configuration.trackingImages = set;
+    } else if (this.configuration instanceof ARWorldTrackingConfiguration) {
+      set = NSMutableSet.setWithSet(this.configuration.detectionImages);
+      this.configuration.detectionImages = set;
+    } else {
+      throw "'trackImage' is only supported with trackingMode: IMAGE";
     }
 
-    const set = NSMutableSet.setWithSet(this.configuration.trackingImages);
     const name = options.name || options.image.split('/').pop().split('.').slice(0, -1).join('.');
 
     let img;
@@ -738,9 +745,7 @@ export class AR extends ARBase {
     refImage.name = name;
     set.addObject(refImage);
 
-
-    this.configuration.maximumNumberOfTrackedImages = Math.min(set.count, 10);
-    this.configuration.trackingImages = set;
+    this.configuration.maximumNumberOfTrackedImages = Math.min(set.count, 50);
     this.sceneView.session.runWithConfigurationOptions(this.configuration, ARSessionRunOptions.ResetTracking | ARSessionRunOptions.RemoveExistingAnchors);
 
     if (!options.onDetectedImage) {
