@@ -442,7 +442,7 @@ As you can see in the example above, the returned `ARVideoNode` provides these m
 ## `addUIView`
 This one is a bit tricky and requires some tinkering with sizes and positioning because the rendered view may differ a bit between platforms.
 
-A great example can be seen in the [Solar System demo app](../demo-solarsystem), check out [this UI declaration](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/demo-solarsystem/app/components/App.vue#L7-L12) which are a few NativeScript `Label` and `Slider` tags wrapped in a `StackLayout` which renders like this:
+A great example can be seen in the [Solar System demo app](../demo-solarsystem), check out [this UI declaration](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/demo-solarsystem/app/components/App.vue#L7-L12) which are a few NativeScript `Label` and `Slider` tags wrapped in a blue `StackLayout` - which renders like this:
 
 <img src="images/addUIView.jpg" width="450px"/>
 

@@ -12,7 +12,7 @@ But to help add behavior to the AR experience, here are the properties and event
 |property|default|description
 |---|---|---
 |`trackingMode`|`WORLD`|One of the options in the `ARTrackingMode` enum: `WORLD`, `IMAGE`, `FACE`. If you want to track images (and replace them in-view with fi. a box, video, or model) then use `IMAGE`. Use `FACE` if you want to augment faces (with the front camera).
-|`trackingImagesBundle`|`undefined`|Only used when `trackingMode` is `IMAGE`. The bundle of images you want to recognize. See [the demo app](https://github.com/EddyVerbruggen/nativescript-ar/tree/fe10b5afe0442df5a941c66568f0cedbd42124d6/demo/app/App_Resources/iOS/Assets.xcassets/AR%20Resources.arresourcegroup), as well as the screenshot below.
+|`trackingImagesBundle`|`undefined`|Only used when `trackingMode` is `IMAGE`. The bundle of images you want to recognize. See [the Pokémon demo app](https://github.com/EddyVerbruggen/nativescript-ar/tree/5de2b10b7be9a7a187c63b745707f691f3959106/demo-pokemon/App_Resources/iOS/Assets.xcassets/PokemonResources.arresourcegroup) for iOS, as well as the screenshot below. For Android, we refer to the [assets folder](https://github.com/EddyVerbruggen/nativescript-ar/tree/5de2b10b7be9a7a187c63b745707f691f3959106/demo-pokemon/App_Resources/Android/src/main/assets/PokemonResources).
 |`debugLevel`|`NONE`|One of the options in the `ARDebugLevel` enum: `NONE`, `WORLD_ORIGIN`, `FEATURE_POINTS`, `PHYSICS_SHAPES`.
 |`planeDetection`|`NONE`|To make the plugin detect planes in `WORLD` tracking mode, set this to either `HORIZONTAL` or `VERTICAL` (the latter is not currently supported on Android).
 |`showStatistics`|`false`|Draw a few statistics at the bottom.
