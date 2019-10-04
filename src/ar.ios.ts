@@ -226,8 +226,11 @@ export class AR extends ARBase {
 
     // TODO pass this in - currently this is configured to occlude human bodies, see https://developer.apple.com/documentation/arkit/arconfiguration/3089121-framesemantics?language=objc
     if (sdkVersion() >= 13) {
-      // note that this requires at least the A12 chip (iPhone Xs)
-      config.frameSemantics = ARFrameSemantics.PersonSegmentationWithDepth;
+      // note that this requires at least the A12 chip (iPhone Xs and newer), so add this try-catch to prevent a crash on fi. an iPhone X
+      try {
+        config.frameSemantics = ARFrameSemantics.PersonSegmentationWithDepth;
+      } catch (ignore) {
+      }
     }
   }
 
