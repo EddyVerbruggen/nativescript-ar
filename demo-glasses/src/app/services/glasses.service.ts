@@ -12,7 +12,7 @@ const models = [
       y: 0.01,
       z: 0
     },
-    scale: .8
+    scale: .9
   },
   {
     name: `${prefix}glasses-vv-2${postfix}`,

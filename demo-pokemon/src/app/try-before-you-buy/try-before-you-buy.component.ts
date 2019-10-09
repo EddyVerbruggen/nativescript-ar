@@ -59,7 +59,7 @@ export class TryBeforeYouBuyComponent implements OnInit {
             rotatingEnabled: true,
             draggingEnabled: true,
             scalingEnabled: true,
-            scale: pokemon.model.scale / (isIOS ? 20 : 1)
+            scale: pokemon.model.scale / (isIOS ? 12 : 1)
         })
             .then(m => this.currentPokemonNode = m)
             .catch(console.error);

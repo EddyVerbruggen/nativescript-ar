@@ -49,10 +49,10 @@
     name: "Sun",
     distance: 0,
     orbitSpeed: 0,
-    scale: 0.7,
+    scale: 0.85,
     materials: [{
       diffuse: materialPrefix + "Sol_Opaque_Mat_baseColor.png",
-      // emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
+      specular: materialPrefix + "Sol_Opaque_Mat_emissive.png"
     }],
     tilt: 0,
     children: [{
@@ -90,7 +90,7 @@
       children: [{
         name: "Moon",
         distance: EARTH_TO_MOON_METERS,
-        orbitSpeed: 3,
+        orbitSpeed: 0, // "locked" with Earth
         scale: 0.018 * SCALE_FACTOR,
         tilt: 6.68,
         materials: [{
@@ -258,7 +258,7 @@
         ar.addNode({
           position: {
             x: arPlaneTappedEventData.position.x,
-            y: arPlaneTappedEventData.position.y + 1, // a meter above the plane we tapped
+            y: arPlaneTappedEventData.position.y + 1.2, // a bit above the plane we tapped (in meters)
             z: arPlaneTappedEventData.position.z
           }
         }).then(solarSystemNode => {
@@ -339,7 +339,6 @@
               }
             }).then(parentNode => {
               // add some life to the planet ;)
-              console.log("Added.. has life? " + solarSystemObject.life);
               if (solarSystemObject.life) {
                 solarSystemObject.life.forEach(life => {
                   const name = isIOS

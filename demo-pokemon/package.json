@@ -2,7 +2,7 @@
   "nativescript": {
     "id": "org.nativescript.plugindemo.ar.ng.pokemon",
     "tns-android": {
-      "version": "6.1.1"
+      "version": "6.1.2"
     },
     "tns-ios": {
       "version": "6.1.1"
