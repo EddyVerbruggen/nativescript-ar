@@ -52,7 +52,7 @@
     scale: 0.85,
     materials: [{
       diffuse: materialPrefix + "Sol_Opaque_Mat_baseColor.png",
-      specular: materialPrefix + "Sol_Opaque_Mat_emissive.png"
+      emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
     }],
     tilt: 0,
     children: [{
