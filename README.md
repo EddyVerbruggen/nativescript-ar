@@ -38,3 +38,43 @@ tns plugin add nativescript-ar
 
 ## Using the AR API
 - [AR API](docs/api.md)
+
+## Running the demos
+To dive in quickly, install NativeScript if you don't have it yet: `npm i -g nativescript`,
+then clone this repo:
+
+```bash
+git clone https://github.com/EddyVerbruggen/nativescript-ar
+cd nativescript-ar/src
+```
+
+In the `src` folder you'll find a `package.json` which has the commands to build and run these demos:
+
+### Solar System (Vue)
+
+```bash
+npm run demo.solarsystem.ios 
+npm run demo.solarsystem.android 
+```
+
+### Pokémon (Angular)
+
+```bash
+npm run demo.pokemon.ios 
+npm run demo.pokemon.android 
+```
+
+### Glasses (Angular)
+
+```bash
+npm run demo.glasses.ios 
+npm run demo.glasses.android 
+```
+
+### No-name demo (TypeScript)
+This is just a kitchen sink demo with a lot of random stuff.
+
+```bash
+npm run demo.ios 
+npm run demo.android 
+```
