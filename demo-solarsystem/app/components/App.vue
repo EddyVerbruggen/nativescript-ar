@@ -57,7 +57,7 @@ import {ARDebugLevel} from "nativescript-ar";
   const EARTH_ORBIT_SPEED = 29;
 
   // Saturn now officially has 82 moons, so let's add some ;)
-  const NR_OF_SATURN_MOONS = 82;
+  const NR_OF_SATURN_MOONS = isIOS ? 82 : 20; // not sure how performance is affected on Android, so using a safer number
   const saturnMoonColors = ["red", "yellow", "blue", "green", "purple", "orange", "pink", "gray", "brown", "black"];
   const saturnMoonNColors = [];
   saturnMoonColors.forEach(s => saturnMoonNColors.push(new Color(s)));
@@ -87,7 +87,7 @@ import {ARDebugLevel} from "nativescript-ar";
     name: "Sun",
     distance: 0,
     orbitSpeed: 0,
-    scale: 0.82,
+    scale: SUN_DEFAULT_SCALE,
     materials: [{
       diffuse: materialPrefix + "Sol_Opaque_Mat_baseColor.png",
       emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
