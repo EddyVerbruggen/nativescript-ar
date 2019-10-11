@@ -222,7 +222,7 @@ export abstract class ARCommonNode implements IARCommonNode {
     );
   }
 
-  setScale(scale: number | ARScale): void {
+  scaleTo(scale: number | ARScale): void {
     this.android.setLocalScale(
         new (<any>com.google.ar.sceneform).math.Vector3(
             (scale instanceof ARScale ? scale.x : scale),

@@ -1,14 +1,17 @@
+import {ARDebugLevel} from "nativescript-ar";
 <template>
   <Page @loaded="pageLoaded">
-    <ActionBar title="Welcome to NativeScript-Vue!"></ActionBar>
+    <ActionBar title="Solar System {N}-Vue"></ActionBar>
     <GridLayout columns="*" rows="*">
 
       <!-- because this controlPanel layout is "below" the AR node (z-index-wise) it's not shown to the user -->
       <StackLayout id="controlPanel" class="control-panel">
         <Label text="Orbit Speed:" horizontalAlignment="center"></Label>
-        <Slider v-model="orbitSpeed" width="100%" minValue="-20" maxValue="20" horizontalAlignment="center"></Slider>
+        <Slider v-model="orbitSpeed" width="100%" minValue="-30" maxValue="50" horizontalAlignment="center"></Slider>
         <Label text="Rotation Speed:" horizontalAlignment="center"></Label>
-        <Slider v-model="rotationSpeed" width="100%" minValue="-20" maxValue="20" horizontalAlignment="center"></Slider>
+        <Slider v-model="rotationSpeed" width="100%" minValue="-20" maxValue="50" horizontalAlignment="center"></Slider>
+        <Label text="Sun size:" horizontalAlignment="center"></Label>
+        <Slider v-model="sunSize" width="100%" minValue="0" maxValue="100" horizontalAlignment="center"></Slider>
       </StackLayout>
 
       <!-- same comment as above -->
@@ -23,33 +26,68 @@
       <AR
           debugLevel="FEATURE_POINTS"
           planeDetection="HORIZONTAL"
-          showStatistics="true"
           @arLoaded="arLoaded"
           @planeTapped="loadSolarSystem">
       </AR>
 
-      <!-- because this label is "above" the AR node, it _is_ visible -->
-      <Label :text="arLabel" class="ar-label" verticalAlignment="top"></Label>
+      <!-- because this bit is "above" the AR node, it _is_ visible -->
+      <StackLayout class="ar-label" verticalAlignment="top">
+        <Label :text="arLabel" verticalAlignment="top"></Label>
+        <Label :text="simulatedDateFormatted" style="font-size: 12"></Label>
+      </StackLayout>
     </GridLayout>
   </Page>
 </template>
 
 <script lang="ts">
-  import { AR } from "nativescript-ar";
+  import { AR, ARDebugLevel } from "nativescript-ar";
+  import { Color } from "tns-core-modules/color";
   import { isIOS } from "tns-core-modules/platform";
+
+  const materialPrefix = isIOS ? "Orbitals.scnassets/" : "";
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const DAY_MS = 24 * 60 * 60 * 1000;
 
   // if this is set to 1 (which is more realistic), you'd have a hard time seeing all planets
   const SCALE_FACTOR = 4;
 
+  const SUN_DEFAULT_SCALE = 0.82;
   const SUN_TO_EARTH_METERS = 1.0;
   const EARTH_TO_MOON_METERS = 0.15;
+  const EARTH_ORBIT_SPEED = 29;
 
-  const materialPrefix = isIOS ? "Orbitals.scnassets/" : "";
+  // Saturn now officially has 82 moons, so let's add some ;)
+  const NR_OF_SATURN_MOONS = 82;
+  const saturnMoonColors = ["red", "yellow", "blue", "green", "purple", "orange", "pink", "gray", "brown", "black"];
+  const saturnMoonNColors = [];
+  saturnMoonColors.forEach(s => saturnMoonNColors.push(new Color(s)));
+  const saturnMoons = [];
+  for (let i = 0; i < NR_OF_SATURN_MOONS; i++) {
+    saturnMoons.push({
+      name: "Saturn moon",
+      distance: 0.4 + (Math.random() / 300),
+      orbitSpeed: 100 * Math.random(),
+      scale: (Math.random() / 80) * SCALE_FACTOR,
+      tilt: i * 13,
+      position: {
+        x: 0.04 + (Math.random() / 50),
+        y: 0,
+        z: 0
+      },
+      materials: isIOS ? [{
+        diffuse: materialPrefix + "Luna_Mat_baseColor.png",
+        normal: materialPrefix + "Luna_Mat_normal.png",
+        roughness: materialPrefix + "Luna_Mat_occlusionRoughnessMetallic.png",
+        emission: saturnMoonNColors[Math.round(Math.random() * 9)]
+      }] : [saturnMoonNColors[Math.round(Math.random() * 9)]],
+    });
+  }
+
   const solarSystemDefinition = {
     name: "Sun",
     distance: 0,
     orbitSpeed: 0,
-    scale: 0.85,
+    scale: 0.82,
     materials: [{
       diffuse: materialPrefix + "Sol_Opaque_Mat_baseColor.png",
       emission: materialPrefix + "Sol_Opaque_Mat_emissive.png"
@@ -79,7 +117,7 @@
     }, {
       name: "Earth",
       distance: SUN_TO_EARTH_METERS,
-      orbitSpeed: 29,
+      orbitSpeed: EARTH_ORBIT_SPEED,
       scale: 0.05 * SCALE_FACTOR,
       tilt: 23.4,
       materials: [{
@@ -172,7 +210,8 @@
         diffuse: materialPrefix + "SaturnPlanet_Opaque_Mat_baseColor.png"
       }],
       scale: 0.1325 * SCALE_FACTOR,
-      tilt: 26.73
+      tilt: 26.73,
+      children: saturnMoons
     }, {
       name: "Uranus",
       distance: 5.2,
@@ -203,8 +242,11 @@
         arLabel: 'Look for a surface and tap it..',
         solarSystemLoaded: false,
         orbitalName: undefined,
+        simulatedDate: new Date(),
+        simulatedDateFormatted: undefined,
         orbitSpeed: -15,
         rotationSpeed: -15,
+        sunSize: 50,
         hasControlPanel: false,
         page: undefined,
         ar: undefined,
@@ -238,11 +280,21 @@
               z: 0
             });
           });
+
+          if (this.solarSystemLoaded) {
+            this.updateSimulatedDate(orbitSpeedCompensation);
+          }
         }, 1000 / fps);
       },
 
+      updateSimulatedDate(speed) {
+        const d = new Date(this.simulatedDate.getTime() + ((speed / 2.3) * DAY_MS));
+        this.simulatedDate = d;
+        this.simulatedDateFormatted = MONTHS[d.getMonth()] + " " + d.getFullYear()
+      },
+
       arLoaded(arLoadedEventData) {
-        console.log(">> AR Loaded! Object: " + arLoadedEventData.object);
+        console.log("AR loaded");
         this.ar = arLoadedEventData.object;
       },
 
@@ -265,6 +317,8 @@
           console.log("solarSystemNode added: " + solarSystemNode);
           this.renderSolarsystemObject(ar, solarSystemDefinition, solarSystemNode);
           this.arLabel = "Now tap the sun for controls..";
+          // disabling plane detection
+          ar.setDebugLevel(ARDebugLevel.NONE);
         })
       },
 
@@ -303,6 +357,7 @@
               scale: solarSystemObject.scale,
               radius,
               materials: solarSystemObject.materials,
+              position: solarSystemObject.position,
               onTap: () => {
                 console.log(">> tap: " + solarSystemObject.name);
                 this.arLabel = solarSystemObject.name + " tapped";
@@ -310,10 +365,10 @@
                   if (!this.hasControlPanel) {
                     this.hasControlPanel = true;
                     ar.addUIView({
-                      position: {x: 0, y: .22, z: 0},
+                      position: {x: 0, y: .33, z: 0},
                       parentNode: objectNode,
                       view: this.page.getViewById("controlPanel"),
-                      scale: 0.4
+                      scale: 0.5
                     }).then(view => {
                       setInterval(() => {
                         try {
@@ -338,7 +393,7 @@
                 }
               }
             }).then(parentNode => {
-              // add some life to the planet ;)
+              // add some life to planets ;)
               if (solarSystemObject.life) {
                 solarSystemObject.life.forEach(life => {
                   const name = isIOS
@@ -398,15 +453,24 @@
                 ar.addBox({
                   parentNode,
                   dimensions: {
-                    x: 1.2,
+                    x: 1.8,
                     y: 0,
-                    z: 1.2
+                    z: 1.8
                   },
                   materials: [{
                     diffuse: materialPrefix + "saturn_loop.png",
-                    transparency: 0.7
+                    transparency: 0.6
                   }]
                 }).catch(console.error);
+
+              } else if (solarSystemObject.name === "Sun") {
+                let lastSunSize = this.sunSize;
+                setInterval(() => {
+                  if (lastSunSize !== this.sunSize) {
+                    lastSunSize = this.sunSize;
+                    parentNode.scaleTo(0.016 * this.sunSize);
+                  }
+                }, 500);
               }
 
             }).catch(e => {
@@ -440,10 +504,10 @@
   }
 
   .control-panel {
-    width: 300;
-    height: 270;
+    width: 320;
+    height: 320;
     padding: 24;
-    /*opacity: 0.8;*/
+    opacity: 0.8;
     font-size: 24;
     color: white;
     border-radius: 10;

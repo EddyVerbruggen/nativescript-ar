@@ -6,5 +6,4 @@
 !index.d.ts
 tsconfig.json
 typings/
-platforms/android/AndroidManifest.xml
 platforms/android/tns-ar-lib-src/

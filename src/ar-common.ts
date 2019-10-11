@@ -86,6 +86,8 @@ export interface ARCommonNode extends ARNode {
 
   scaleBy?(by: number | ARScale): void;
 
+  scaleTo?(to: number | ARScale): void;
+
   getWorldPosition(): ARPosition;
 
   setWorldPosition(to: ARPosition): void;

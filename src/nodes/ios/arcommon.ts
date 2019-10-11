@@ -151,7 +151,7 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
-  setScale(scale: number | ARScale): void {
+  scaleTo(scale: number | ARScale): void {
     this.ios.scale = {
       x: (scale instanceof ARScale ? scale.x : scale),
       y: (scale instanceof ARScale ? scale.y : scale),
