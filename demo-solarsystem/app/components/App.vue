@@ -54,7 +54,7 @@ import {ARDebugLevel} from "nativescript-ar";
   const SUN_DEFAULT_SCALE = 0.82;
   const SUN_TO_EARTH_METERS = 1.0;
   const EARTH_TO_MOON_METERS = 0.15;
-  const EARTH_ORBIT_SPEED = 29;
+  const EARTH_ORBIT_SPEED = 30.5;
 
   // Saturn now officially has 82 moons, so let's add some ;)
   const NR_OF_SATURN_MOONS = isIOS ? 82 : 20; // not sure how performance is affected on Android, so using a safer number
