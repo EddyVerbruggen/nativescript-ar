@@ -55,7 +55,7 @@ export class ARMaterialFactory {
         run: () => {
 
           let gltf = blankGLTF();
-          let index = 0;
+          let index = 0; //keep track of the texture index as textures are added 
 
           if (material.diffuse) {
             if (material.diffuse.constructor.name === "Color") {
@@ -73,7 +73,22 @@ export class ARMaterialFactory {
                   "index": index
                 }
               });
+    
+              index++;
+            }
+          }
+          if (material.specular) {
+            if (material.specular.constructor.name === "Color") {
 
+
+              gltf.materials[0]["extensions"] = {
+                "KHR_materials_pbrSpecularGlossiness": {
+                  "diffuseFactor": colorFrom(<Color>material.specular)
+                }
+              };
+
+            } else {
+              addTexture(gltf, material.specular, index);
 
               gltf.materials[0]["extensions"] = {
                 "KHR_materials_pbrSpecularGlossiness": {
