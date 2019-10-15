@@ -1,0 +1,24 @@
+{
+  "nativescript": {
+    "id": "org.nativescript.demoplainjs",
+    "tns-android": {
+      "version": "6.1.2"
+    },
+    "tns-ios": {
+      "version": "6.1.0"
+    }
+  },
+  "description": "NativeScript Application",
+  "license": "SEE LICENSE IN <your-license-filename>",
+  "repository": "<fill-your-repository-here>",
+  "dependencies": {
+    "nativescript-ar": "^1.0.2",
+    "nativescript-theme-core": "~1.0.6",
+    "tns-core-modules": "~6.1.0"
+  },
+  "devDependencies": {
+    "nativescript-dev-webpack": "~1.2.0"
+  },
+  "gitHead": "1964ea9e8ca1a0518e0d6370781eedcf6c23db42",
+  "readme": "NativeScript Application"
+}
