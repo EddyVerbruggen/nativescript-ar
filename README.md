@@ -60,21 +60,29 @@ npm run demo.solarsystem.android
 ### Pokémon (Angular)
 
 ```bash
-npm run demo.pokemon.ios 
-npm run demo.pokemon.android 
+npm run demo.pokemon.ios
+npm run demo.pokemon.android
 ```
 
 ### Glasses (Angular)
 
 ```bash
-npm run demo.glasses.ios 
-npm run demo.glasses.android 
+npm run demo.glasses.ios
+npm run demo.glasses.android
 ```
 
-### No-name demo (TypeScript)
+### TypeScript demo
 This is just a kitchen sink demo with a lot of random stuff.
 
 ```bash
-npm run demo.ios 
-npm run demo.android 
+npm run demo.ios
+npm run demo.android
+```
+
+### JavaScript demo
+This is a super simple demo which show how to integrate this plugin with plain JavaScript NativeScript apps.
+
+```bash
+npm run demo.plainjs.ios
+npm run demo.plainjs.android
 ```
