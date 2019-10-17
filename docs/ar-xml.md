@@ -75,6 +75,6 @@ export function planeTapped(args: ARPlaneTappedEventData): void {
 ```
 
 ## Continue reading
-- [World tracking](/tracking-world.md): augment the world around you
-- [Face tracking](/tracking-faces.md): augment a face
-- [Image tracking](/tracking-images.md): augment 2D images your camera finds
+- [World tracking](./tracking-world.md): augment the world around you
+- [Face tracking](./tracking-faces.md): augment a face
+- [Image tracking](./tracking-images.md): augment 2D images your camera finds
