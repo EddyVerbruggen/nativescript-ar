@@ -39,6 +39,7 @@ export class HelloWorldModel extends Observable {
         image: "https://raw.githubusercontent.com/EddyVerbruggen/nativescript-ar/master/demo/app/App_Resources/Android/src/main/assets/tnsgranite-diffuse.png",
         onDetectedImage: (args) => {
           args.imageTrackingActions.addModel({
+            // name: isIOS ? "Models.scnassets/Teapot.usdz" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
             name: isIOS ? "Models.scnassets/Car.dae" : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
             position: {
               x: args.position.x,
