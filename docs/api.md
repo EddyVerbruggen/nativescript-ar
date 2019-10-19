@@ -180,7 +180,7 @@ ar.addNode({
 
 ## `addModel`
 You can add 3D models to the AR scene by passing in `ARAddModelOptions` to the `addModel` function.
-ARKit supports `.dae` files as used in our demo app, but you may need to clean up the model a bit so
+ARKit supports `.dae` and `.usdz` files as used in our demo app, but you may need to clean up the model a bit so
 it's properly shown. [Google a bit](https://www.google.nl/search?q=arkit+dae) for details.
 
 Here are a few nice resources for `.dae` models:
@@ -188,7 +188,9 @@ Here are a few nice resources for `.dae` models:
 - [Turbosquid.com, free](https://www.turbosquid.com/Search/Index.cfm?keyword=&search_type=free&media_typeid=2&file_type=194&=true&sort_column=A8&sort_order=desc)
 - [Turbosquid.com, all](https://www.turbosquid.com/Search/Index.cfm?keyword=&media_typeid=2&file_type=194&=true&sort_column=A8&sort_order=desc)
 
-> 💡 TIP: You can convert iOS Collada `.dae` files to an Android-compatible format:
+> 💡 TIP 1: You can convert many file formats (including `.glb` and `.glTF`) to `.usdz` with [this online tool](https://www.vectary.com/3d-modeling-news/usdz-converter-create-usdz-files-for-free-online-with-vectary/).
+
+> 💡 TIP 2: You can convert iOS Collada `.dae` files to an Android-compatible format:
 
 Download [COLLADA2GLTF](https://github.com/KhronosGroup/COLLADA2GLTF), then run these commands from the folder you installed it to:
 
