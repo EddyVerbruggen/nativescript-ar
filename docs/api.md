@@ -34,8 +34,8 @@ Then call one of the 'add*' functions below, like `this.ar.addModel()`:
 Once you added something to the scene, you'll get back an instance of `ARCommonNode` which supports a lot of features so you can interact with the node.
 This object has a lot of properties and functions:
 
-- [Node properties](#node-properties)
-- [Node functions](#node-functions)
+- [ARCommonNode properties](#arcommonnode-properties)
+- [ARCommonNode functions](#arcommonnode-functions)
 
 Oh, and you might want to check beforehand if AR or one of its features is supported:
 
@@ -139,7 +139,7 @@ onTap: (interaction: ARNodeInteraction) => {
 
 The `interaction` object above is of type [`ARNodeInteraction`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L71-L74) and contains a `touchPosition` (`x`, `y` coordinate) and a `node` object of type [`ARCommonNode`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L76-L99) which contains these properties:
 
-##### Node properties
+##### ARCommonNode properties
 
 |property|description
 |---|---
@@ -149,7 +149,7 @@ The `interaction` object above is of type [`ARNodeInteraction`](https://github.c
 |`ios`|Returns the native iOS object
 |`android`|Returns the native Android object
 
-##### Node functions
+##### ARCommonNode functions
 
 Furthermore, the `node` contains these functions by which you can interact with the node you tapped:
 
@@ -158,15 +158,15 @@ Furthermore, the `node` contains these functions by which you can interact with 
 |`setVisible`|Toggle visibility of the node by passing in a `boolean`.
 |`remove`|Removes the node from the scene
 |`moveTo`|Move the node to a position (in meters from the camera) by passing in an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object with `x`, `y`, and `z` properties
-|`moveBy`|Move the node by a number of meters by passing in an `ARPosition` object
+|`moveBy`|Move the node by a number of meters by passing in an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object
 |`rotateBy`|Rotate the node by a number of degrees by passing in an [`ARRotation`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L350-L352) object with `x`, `y`, and `z` properties (see the example above)
 |`scaleTo`|Scale the node to either a `number` or an [`ARScale`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L342-L344) object with `x`, `y`, and `z` properties
 |`scaleBy`|Scale the node by either a `number` or an [`ARScale`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L342-L344) object with `x`, `y`, and `z` properties
-|`getPosition`|Get the local position of the node as an `ARPosition` object
-|`getWorldPosition`|Get the position of the node in the world as an `ARPosition` object
-|`setWorldPosition`|Set the position of the node in the world by passing in an `ARPosition` object
+|`getPosition`|Get the local position of the node as an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object
+|`getWorldPosition`|Get the position of the node in the world as an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object
+|`setWorldPosition`|Set the position of the node in the world by passing in an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object
 |`lookAtWorldPosition`|Make the node look at (face) a certain position in the world by passing in an `ARPosition` object. Which can fi. be the world position of another node, or the camera
-|`lookAtPosition`|Make the node look at certain position by passing in an `ARPosition` object. Which can fi. be the world position of another node, or the camera
+|`lookAtPosition`|Make the node look at certain position by passing in an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object. Which can fi. be the world position of another node, or the camera
 |`lookAtNode`|A convenience method so you don't have to pass in the position of a node, but rather the node itself
 
 #### `onLongPress`
@@ -558,20 +558,18 @@ Check whether or not the device is AR-capable.
 ## `isImageTrackingSupported` (static)
 Check whether or not the device can track images (`TRACKING_MODE="IMAGE"`).
 
+```typescript
+import { AR } from "nativescript-ar";
+var imageTrackingSupported = AR.isImageTrackingSupported();
+```
+
 ## `isFaceTrackingSupported` (static)
 Check whether or not the device can track faces (`TRACKING_MODE="FACE"`). 
 Note that on iOS this feature requires a "TrueDepth" camera (iPhone X and newer).
 
-#### JavaScript
-```js
-var AR = require("nativescript-ar").AR;
-var supported = AR.isSupported();
-```
-
-#### TypeScript
 ```typescript
 import { AR } from "nativescript-ar";
-const supported = AR.isSupported();
+var faceTrackingSupported = AR.isFaceTrackingSupported();
 ```
 
 ## `grabScreenshot` (iOS)
