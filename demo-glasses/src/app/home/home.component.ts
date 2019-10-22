@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { RouterExtensions } from "nativescript-angular/router";
+import { AR } from "nativescript-ar";
 import { GlassesService } from "../services/glasses.service";
 
 @Component({
@@ -13,6 +14,8 @@ export class HomeComponent {
 
   constructor(private _routerExtensions: RouterExtensions, private _glassesService: GlassesService) {
     this.items = this._glassesService.getGlasses();
+
+    console.log(`Face tracking supported? ${AR.isFaceTrackingSupported()}`);
   }
 
   onGlassesTap(args): void {

@@ -24,7 +24,6 @@ export abstract class ARCommonNode implements IARCommonNode {
 
   private static defaultMaterial: com.google.ar.sceneform.rendering.Material;
 
-
   constructor(options: ARAddOptions, node: com.google.ar.sceneform.Node) {
     this.android = node;
 
@@ -186,7 +185,6 @@ export abstract class ARCommonNode implements IARCommonNode {
         )
     );
   }
-
 
   lookAtWorldPosition(worldPos: ARPosition): void {
     const direction = (<any>com.google.ar.sceneform).math.Vector3.subtract(this.android.getWorldPosition(), new (<any>com.google.ar.sceneform).math.Vector3(

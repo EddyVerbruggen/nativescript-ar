@@ -31,9 +31,22 @@ Then call one of the 'add*' functions below, like `this.ar.addModel()`:
 - [addVideo](#addvideo)
 - [addUIView](#adduiview)
 
-Or one of the other functions:
-- [trackImage](#trackimage)
+Once you added something to the scene, you'll get back an instance of `ARCommonNode` which supports a lot of features so you can interact with the node.
+This object has a lot of properties and functions:
+
+- [Node properties](#node-properties)
+- [Node functions](#node-functions)
+
+Oh, and you might want to check beforehand if AR or one of its features is supported:
+
 - [isSupported](#issupported-static)
+- [isImageTrackingSupported](#isimagetrackingsupported-static)
+- [isFaceTrackingSupported](#isfacetrackingsupported-static)
+
+.. or use one of the other functions supported by the plugin:
+
+- [getCameraPosition](#getcameraposition)
+- [trackImage](#trackimage)
 - [grabScreenshot](#grabscreenshot-ios)
 
 ## `add*`
@@ -126,6 +139,8 @@ onTap: (interaction: ARNodeInteraction) => {
 
 The `interaction` object above is of type [`ARNodeInteraction`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L71-L74) and contains a `touchPosition` (`x`, `y` coordinate) and a `node` object of type [`ARCommonNode`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L76-L99) which contains these properties:
 
+##### Node properties
+
 |property|description
 |---|---
 |`position`|Returns the node's position as an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object with `x`, `y`, and `z` properties 
@@ -134,18 +149,25 @@ The `interaction` object above is of type [`ARNodeInteraction`](https://github.c
 |`ios`|Returns the native iOS object
 |`android`|Returns the native Android object
 
+##### Node functions
+
 Furthermore, the `node` contains these functions by which you can interact with the node you tapped:
 
 |function|description
 |---|---
+|`setVisible`|Toggle visibility of the node by passing in a `boolean`.
 |`remove`|Removes the node from the scene
 |`moveTo`|Move the node to a position (in meters from the camera) by passing in an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object with `x`, `y`, and `z` properties
 |`moveBy`|Move the node by a number of meters by passing in an `ARPosition` object
 |`rotateBy`|Rotate the node by a number of degrees by passing in an [`ARRotation`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L350-L352) object with `x`, `y`, and `z` properties (see the example above)
 |`scaleTo`|Scale the node to either a `number` or an [`ARScale`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L342-L344) object with `x`, `y`, and `z` properties
 |`scaleBy`|Scale the node by either a `number` or an [`ARScale`](https://github.com/EddyVerbruggen/nativescript-ar/blob/298ea9c5ad013eddfe1d5fac1adb144621ed1be4/src/ar-common.ts#L342-L344) object with `x`, `y`, and `z` properties
+|`getPosition`|Get the local position of the node as an `ARPosition` object
 |`getWorldPosition`|Get the position of the node in the world as an `ARPosition` object
 |`setWorldPosition`|Set the position of the node in the world by passing in an `ARPosition` object
+|`lookAtWorldPosition`|Make the node look at (face) a certain position in the world by passing in an `ARPosition` object. Which can fi. be the world position of another node, or the camera
+|`lookAtPosition`|Make the node look at certain position by passing in an `ARPosition` object. Which can fi. be the world position of another node, or the camera
+|`lookAtNode`|A convenience method so you don't have to pass in the position of a node, but rather the node itself
 
 #### `onLongPress`
 
@@ -493,6 +515,17 @@ ar.addUIView({
 
 For more details, please see [this implementation](https://github.com/EddyVerbruggen/nativescript-ar/blob/master/demo-solarsystem/app/components/App.vue) in the Solar System demo app.
 
+## `getCameraPosition`
+Use this if you want to know the position of yourself (the camera).
+You can use this fi. to calculate the distance of an AR node to the camera
+as show in [the Solar System demo](https://github.com/EddyVerbruggen/nativescript-ar/blob/6834cf25095f218fa98e57ae38b83c7f2b538cd7/demo-solarsystem/app/components/App.vue#L375-L378).
+
+TODO doc lookAtWorldPosition
+
+```typescript
+const cameraPosition: ARPosition = ar.getCameraPosition();
+```
+
 ## `trackImage`
 You can either track images by providing an image bundle [like so](https://github.com/EddyVerbruggen/nativescript-ar/blob/c13ca5c000a660069ee74506330be41e74b565e3/demo-pokemon/src/app/search-by-card/search-by-card.component.html#L38),
 but also non-bundled images (even from the web!) by using this `trackImage` function.
@@ -521,6 +554,13 @@ ar.trackImage({
 
 ## `isSupported` (static)
 Check whether or not the device is AR-capable.
+
+## `isImageTrackingSupported` (static)
+Check whether or not the device can track images (`TRACKING_MODE="IMAGE"`).
+
+## `isFaceTrackingSupported` (static)
+Check whether or not the device can track faces (`TRACKING_MODE="FACE"`). 
+Note that on iOS this feature requires a "TrueDepth" camera (iPhone X and newer).
 
 #### JavaScript
 ```js

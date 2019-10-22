@@ -6,6 +6,23 @@ Face Tracking
 ## Demo app
 Check out the [Glasses demo app](../demo-glasses).
 
+## Check Face tracking support
+To check whether or not the device is capable of tracking faces,
+use the static `AR.isFaceTrackingSupported()` function.
+ 
+Note that on iOS this feature requires a "TrueDepth" camera (iPhone X and newer).
+
+```typescript
+import { AR } from "nativescript-ar";
+
+export class HelloWorldModel extends Observable {
+  constructor() {
+    super();
+    console.log(`Face tracking supported? ${AR.isFaceTrackingSupported()}`);
+  }
+}
+````
+
 ## Declaring the `<AR>` view
 I'm going to assume you're working on a vanilla NativeScript app with XML,
 but if you're using Angular or Vue you'll have to register the `AR` element as explained in the respective docs.

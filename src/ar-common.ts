@@ -88,6 +88,8 @@ export interface ARCommonNode extends ARNode {
 
   scaleTo?(to: number | ARScale): void;
 
+  getPosition(): ARPosition;
+
   getWorldPosition(): ARPosition;
 
   setWorldPosition(to: ARPosition): void;
@@ -97,6 +99,14 @@ export interface ARCommonNode extends ARNode {
   onLongPress(touchPosition: ARDimensions2D): void;
 
   onPan(touchPosition: ARDimensions2D): void;
+
+  setVisible(visible: boolean): void;
+
+  lookAtWorldPosition(worldPos: ARPosition): void;
+
+  lookAtPosition(localPos: ARPosition): void;
+
+  lookAtNode(node: ARCommonNode): void;
 }
 
 export interface ARVideoNode extends ARCommonNode {
@@ -376,6 +386,10 @@ export abstract class AR extends ContentView {
     return true;
   }
 
+  static isFaceTrackingSupported(): boolean {
+    return true;
+  }
+
   /**
    * This one seems to need work, so not documented yet.
    */
@@ -408,6 +422,8 @@ export abstract class AR extends ContentView {
   abstract toggleStatistics(on: boolean): void;
 
   abstract togglePlaneVisibility(on: boolean): void;
+
+  abstract getCameraPosition(): ARPosition;
 
   abstract setDebugLevel(to: ARDebugLevel): void;
 

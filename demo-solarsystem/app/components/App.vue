@@ -51,6 +51,8 @@ import {ARDebugLevel} from "nativescript-ar";
   // if this is set to 1 (which is more realistic), you'd have a hard time seeing all planets
   const SCALE_FACTOR = 4;
 
+  // TODO add feature: when you look at a planet, highlight it/show its name
+
   const SUN_DEFAULT_SCALE = 0.82;
   const SUN_TO_EARTH_METERS = 1.0;
   const EARTH_TO_MOON_METERS = 0.15;

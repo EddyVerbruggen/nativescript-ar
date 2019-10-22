@@ -121,7 +121,6 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
-
   setRotation(rot: ARRotation): void {
     this.ios.eulerAngles = {
       x: ARCommonNode.degToRadians(rot.x),
@@ -183,7 +182,6 @@ export abstract class ARCommonNode implements IARCommonNode {
   setVisible(visible: boolean): void {
     this.ios.hidden = !visible;
   }
-
 
   allowDragging(): boolean {
     return this.draggingEnabled;
