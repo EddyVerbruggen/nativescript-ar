@@ -82,7 +82,8 @@ export interface ARCommonNode extends ARNode {
 
   moveBy?(by: ARPosition): void;
 
-  rotateBy?(by: ARRotation): void;
+  // TODO implement animations
+  rotateBy?(by: ARRotation, animated?: boolean): void;
 
   scaleBy?(by: number | ARScale): void;
 

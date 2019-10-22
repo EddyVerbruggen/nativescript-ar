@@ -26,6 +26,8 @@ import {ARDebugLevel} from "nativescript-ar";
       <AR
           debugLevel="FEATURE_POINTS"
           planeDetection="HORIZONTAL"
+          planeOpacity="0.25"
+          :planeMaterial="planeMaterial"
           @arLoaded="arLoaded"
           @planeTapped="loadSolarSystem">
       </AR>
@@ -43,6 +45,8 @@ import {ARDebugLevel} from "nativescript-ar";
   import { AR, ARDebugLevel } from "nativescript-ar";
   import { Color } from "tns-core-modules/color";
   import { isIOS } from "tns-core-modules/platform";
+
+  declare const SCNTransaction: any;
 
   const materialPrefix = isIOS ? "Orbitals.scnassets/" : "";
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -242,6 +246,7 @@ import {ARDebugLevel} from "nativescript-ar";
       return {
         msg: 'Hello World!',
         arLabel: 'Look for a surface and tap it..',
+        planeMaterial: new Color("white"),
         solarSystemLoaded: false,
         orbitalName: undefined,
         simulatedDate: new Date(),
@@ -289,6 +294,19 @@ import {ARDebugLevel} from "nativescript-ar";
         }, 1000 / fps);
       },
 
+      enableNativeAnimationsWithDurationOfSeconds(sec) {
+        // TODO add animations (like this) to the plugin (this is a global setting, so only enabling it briefly
+        if (isIOS) {
+          SCNTransaction.animationDuration = sec;
+        }
+      },
+
+      disableNativeAnimations() {
+        if (isIOS) {
+          SCNTransaction.animationDuration = 0;
+        }
+      },
+
       updateSimulatedDate(speed) {
         const d = new Date(this.simulatedDate.getTime() + ((speed / 2.3) * DAY_MS));
         this.simulatedDate = d;
@@ -319,8 +337,10 @@ import {ARDebugLevel} from "nativescript-ar";
           console.log("solarSystemNode added: " + solarSystemNode);
           this.renderSolarsystemObject(ar, solarSystemDefinition, solarSystemNode);
           this.arLabel = "Now tap the sun for controls..";
-          // disabling plane detection
+
+          // disabling plane detection / visiblity
           ar.setDebugLevel(ARDebugLevel.NONE);
+          ar.togglePlaneVisibility(false);
         })
       },
 
@@ -358,11 +378,22 @@ import {ARDebugLevel} from "nativescript-ar";
               parentNode: objectNode,
               scale: solarSystemObject.scale,
               radius,
+              segmentCount: 96, // on iOS, the default is 48
               materials: solarSystemObject.materials,
               position: solarSystemObject.position,
               onTap: () => {
                 console.log(">> tap: " + solarSystemObject.name);
                 this.arLabel = solarSystemObject.name + " tapped";
+
+
+                // a bit of visual feedback
+                this.enableNativeAnimationsWithDurationOfSeconds(.3);
+                objectNode.scaleBy(.5);
+                setTimeout(() => {
+                  objectNode.scaleBy(-.5);
+                  setTimeout(() => this.disableNativeAnimations(), .35);
+                }, 300);
+
                 if (solarSystemObject.name === "Sun") {
                   if (!this.hasControlPanel) {
                     this.hasControlPanel = true;
@@ -376,12 +407,15 @@ import {ARDebugLevel} from "nativescript-ar";
                         try {
                           let p = view.getWorldPosition();
                           let c = ar.getCameraPosition();
-                          c.y = p.y;
-                          view.lookAtWorldPosition(c);
+                          view.lookAtWorldPosition({
+                            x: c.x,
+                            y: p.y, // use the y of the view itself, otherwise it would tilt (look down at the camera) which is a bit weird
+                            z: c.z
+                          });
                         } catch (e) {
                           console.error(e);
                         }
-                      }, 100);
+                      }, 1000 / fps / 4); // every fourth frame should suffice
                     });
                   }
                 } else {
@@ -434,6 +468,7 @@ import {ARDebugLevel} from "nativescript-ar";
                   position: {x: -.0001, y: 0, z: 0},
                   parentNode,
                   radius: radius + (isIOS ? 0.015 : 0.05), // TODO this platform difference is not so nice
+                  segmentCount: 96, // on iOS, the default is 48
                   materials: [{
                     diffuse: materialPrefix + "Earth_Clouds_mat_baseColor.png"
                   }],
@@ -461,7 +496,7 @@ import {ARDebugLevel} from "nativescript-ar";
                   },
                   materials: [{
                     diffuse: materialPrefix + "saturn_loop.png",
-                    transparency: 0.6
+                    transparency: 0.5
                   }]
                 }).catch(console.error);
 
@@ -474,7 +509,6 @@ import {ARDebugLevel} from "nativescript-ar";
                   }
                 }, 500);
               }
-
             }).catch(e => {
               console.error("error adding sphere: " + e);
             });
