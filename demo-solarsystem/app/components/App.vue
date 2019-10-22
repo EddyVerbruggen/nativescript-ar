@@ -69,17 +69,13 @@ import {ARDebugLevel} from "nativescript-ar";
   saturnMoonColors.forEach(s => saturnMoonNColors.push(new Color(s)));
   const saturnMoons = [];
   for (let i = 0; i < NR_OF_SATURN_MOONS; i++) {
+    console.log(100 * Math.random());
     saturnMoons.push({
       name: "Saturn moon",
-      distance: 0.4 + (Math.random() / 300),
-      orbitSpeed: 100 * Math.random(),
-      scale: (Math.random() / 80) * SCALE_FACTOR,
-      tilt: i * 13,
-      position: {
-        x: 0.04 + (Math.random() / 50),
-        y: 0,
-        z: 0
-      },
+      distance: 0.35 + (Math.random() / 5),
+      orbitSpeed: -1000 * Math.random(),
+      scale: (Math.random() / 40) * SCALE_FACTOR,
+      tilt: i * 17,
       materials: isIOS ? [{
         diffuse: materialPrefix + "Luna_Mat_baseColor.png",
         normal: materialPrefix + "Luna_Mat_normal.png",
@@ -387,12 +383,14 @@ import {ARDebugLevel} from "nativescript-ar";
 
 
                 // a bit of visual feedback
-                this.enableNativeAnimationsWithDurationOfSeconds(.3);
-                objectNode.scaleBy(.5);
-                setTimeout(() => {
-                  objectNode.scaleBy(-.5);
-                  setTimeout(() => this.disableNativeAnimations(), .35);
-                }, 300);
+                if (solarSystemObject.name !== "Sun" || this.hasControlPanel) {
+                  this.enableNativeAnimationsWithDurationOfSeconds(.3);
+                  objectNode.scaleBy(.5);
+                  setTimeout(() => {
+                    objectNode.scaleBy(-.5);
+                    setTimeout(() => this.disableNativeAnimations(), .35);
+                  }, 300);
+                }
 
                 if (solarSystemObject.name === "Sun") {
                   if (!this.hasControlPanel) {
@@ -504,6 +502,9 @@ import {ARDebugLevel} from "nativescript-ar";
                 let lastSunSize = this.sunSize;
                 setInterval(() => {
                   if (lastSunSize !== this.sunSize) {
+                    // let's animate this scaleTo this way, until we're able to pass in an animate object
+                    this.enableNativeAnimationsWithDurationOfSeconds(.3);
+                    setTimeout(() => this.disableNativeAnimations(), 350);
                     lastSunSize = this.sunSize;
                     parentNode.scaleTo(0.016 * this.sunSize);
                   }
