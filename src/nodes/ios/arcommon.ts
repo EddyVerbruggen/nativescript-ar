@@ -96,7 +96,6 @@ export abstract class ARCommonNode implements IARCommonNode {
   }
 
   setPosition(pos: ARPosition): void {
-
     this.ios.position = {
       x: pos.x,
       y: pos.y,
@@ -105,7 +104,6 @@ export abstract class ARCommonNode implements IARCommonNode {
   }
 
   setWorldPosition(pos: ARPosition): void {
-
     this.ios.worldPosition = {
       x: pos.x,
       y: pos.y,
