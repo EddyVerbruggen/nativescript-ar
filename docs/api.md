@@ -168,6 +168,7 @@ Furthermore, the `node` contains these functions by which you can interact with 
 |`lookAtWorldPosition`|Make the node look at (face) a certain position in the world by passing in an `ARPosition` object. Which can fi. be the world position of another node, or the camera
 |`lookAtPosition`|Make the node look at certain position by passing in an [`ARPosition`](https://github.com/EddyVerbruggen/nativescript-ar/blob/9b6cd01aed9ff31857593288232cc6c3c2d987e7/src/ar-common.ts#L346-L348) object. Which can fi. be the world position of another node, or the camera
 |`lookAtNode`|A convenience method so you don't have to pass in the position of a node, but rather the node itself
+|`getPositionOnScreen`|Map a 3D node to the screen x/y coordinates. You can use this fi. to see if the user is looking at an object in the 3D world (by considering that's the case if the object is in the center of the screen)
 
 #### `onLongPress`
 

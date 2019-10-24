@@ -451,6 +451,7 @@ import {ARDebugLevel} from "nativescript-ar";
               // if a planet is near the center of the screen, we assume the user is 👀 at it
               if (solarSystemObject.name && solarSystemObject.name !== "Sun") {
                 setInterval(() => {
+                  // TODO we may transform this into a convenience function like this: node.isInCenter(marginHorizontal, marginVertical)
                   const positionOnScreen = objectNode.getPositionOnScreen();
                   const inRange = this.isInFocus(positionOnScreen.x, positionOnScreen.y);
                   if (inRange) {
