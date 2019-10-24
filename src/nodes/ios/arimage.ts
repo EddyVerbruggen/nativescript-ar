@@ -6,13 +6,13 @@ const pixelsPerMeter = 500;
 
 export class ARImage extends ARCommonNode {
 
-  static create(options: ARAddImageOptions): Promise<ARImage> {
+  static create(options: ARAddImageOptions, renderer: SCNSceneRenderer): Promise<ARImage> {
     if (typeof options.image === "string") {
 
       if (options.image.indexOf("://") >= 0) {
         return fromUrl(options.image).then(function (image) {
           options.image = image;
-          return ARImage.create(options);
+          return ARImage.create(options, renderer);
         });
       }
       options.image = fromFileOrResource(options.image);
@@ -35,7 +35,7 @@ export class ARImage extends ARCommonNode {
       materialPlane.firstMaterial.diffuse.contents = image;
       materialPlane.firstMaterial.doubleSided = true;
 
-      resolve(new ARImage(options, SCNNode.nodeWithGeometry(materialPlane)));
+      resolve(new ARImage(options, SCNNode.nodeWithGeometry(materialPlane), renderer));
 
     });
   }

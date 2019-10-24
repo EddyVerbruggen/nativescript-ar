@@ -27,53 +27,53 @@ const ARState = {
   shapes: new Map<string, ARCommonNode>(),
 };
 
-const addUIView = (options: ARUIViewOptions, parentNode: SCNNode, sceneView: ARSCNView): Promise<ARUIView> => {
+const addUIView = (options: ARUIViewOptions, parentNode: SCNNode, sceneView: ARSCNView, renderer: SCNSceneRenderer): Promise<ARUIView> => {
   return new Promise((resolve, reject) => {
-    const view = ARUIView.create(options, sceneView);
+    const view = ARUIView.create(options, sceneView, renderer);
     ARState.shapes.set(view.id, view);
     parentNode.addChildNode(view.ios);
     resolve(view);
   });
 };
 
-const addNode = (options: ARAddOptions, parentNode: SCNNode): Promise<ARCommonNode> => {
+const addNode = (options: ARAddOptions, parentNode: SCNNode, renderer: SCNSceneRenderer): Promise<ARCommonNode> => {
   return new Promise((resolve, reject) => {
-    const group = ARGroup.create(options);
+    const group = ARGroup.create(options, renderer);
     ARState.shapes.set(group.id, group);
     parentNode.addChildNode(group.ios);
     resolve(group);
   });
 };
 
-const addVideo = (options: ARAddVideoOptions, parentNode: SCNNode): Promise<ARVideoNode> => {
+const addVideo = (options: ARAddVideoOptions, parentNode: SCNNode, renderer: SCNSceneRenderer): Promise<ARVideoNode> => {
   return new Promise<ARVideoNode>((resolve, reject) => {
-    const video = ARVideo.create(options);
+    const video = ARVideo.create(options, renderer);
     ARState.shapes.set(video.id, video);
     parentNode.addChildNode(video.ios);
     resolve(video);
   });
 };
 
-const addImage = (options: ARAddImageOptions, parentNode: SCNNode): Promise<ARImage> => {
-  return ARImage.create(options).then(image => {
+const addImage = (options: ARAddImageOptions, parentNode: SCNNode, renderer: SCNSceneRenderer): Promise<ARImage> => {
+  return ARImage.create(options, renderer).then(image => {
     ARState.shapes.set(image.id, image);
     parentNode.addChildNode(image.ios);
     return image;
   });
 };
 
-const addText = (options: ARAddTextOptions, parentNode: SCNNode): Promise<ARText> => {
+const addText = (options: ARAddTextOptions, parentNode: SCNNode, renderer: SCNSceneRenderer): Promise<ARText> => {
   return new Promise<ARText>((resolve, reject) => {
-    const text = ARText.create(options);
+    const text = ARText.create(options, renderer);
     ARState.shapes.set(text.id, text);
     parentNode.addChildNode(text.ios);
     resolve(text);
   });
 };
 
-const addBox = (options: ARAddBoxOptions, parentNode: SCNNode): Promise<ARBox> => {
+const addBox = (options: ARAddBoxOptions, parentNode: SCNNode, renderer: SCNSceneRenderer): Promise<ARBox> => {
   return new Promise((resolve, reject) => {
-    const box = ARBox.create(options);
+    const box = ARBox.create(options, renderer);
     ARState.shapes.set(box.id, box);
     parentNode.addChildNode(box.ios);
     resolve(box);
@@ -89,9 +89,9 @@ const addPlane = (options: ARAddPlaneOptions, parentNode: SCNNode): Promise<ARPl
   });
 };
 
-const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARModel> => {
+const addModel = (options: ARAddModelOptions, parentNode: SCNNode, renderer: SCNSceneRenderer): Promise<ARModel> => {
   return new Promise((resolve, reject) => {
-    const model: ARModel = ARModel.create(options);
+    const model: ARModel = ARModel.create(options, renderer);
     // need to delay this a little, otherwise facedetection models don't get added (for whatever reason)
     setTimeout(() => {
       ARState.shapes.set(model.id, model);
@@ -101,18 +101,18 @@ const addModel = (options: ARAddModelOptions, parentNode: SCNNode): Promise<ARMo
   });
 };
 
-const addSphere = (options: ARAddSphereOptions, parentNode: SCNNode): Promise<ARCommonNode> => {
+const addSphere = (options: ARAddSphereOptions, parentNode: SCNNode, renderer: SCNSceneRenderer): Promise<ARCommonNode> => {
   return new Promise((resolve, reject) => {
-    const sphere: ARSphere = ARSphere.create(options);
+    const sphere: ARSphere = ARSphere.create(options, renderer);
     ARState.shapes.set(sphere.id, sphere);
     parentNode.addChildNode(sphere.ios);
     resolve(sphere);
   });
 };
 
-const addTube = (options: ARAddTubeOptions, parentNode: SCNNode): Promise<ARCommonNode> => {
+const addTube = (options: ARAddTubeOptions, parentNode: SCNNode, renderer: SCNSceneRenderer): Promise<ARCommonNode> => {
   return new Promise((resolve, reject) => {
-    const tube: ARTube = ARTube.create(options);
+    const tube: ARTube = ARTube.create(options, renderer);
     ARState.shapes.set(tube.id, tube);
     parentNode.addChildNode(tube.ios);
     resolve(tube);
@@ -130,6 +130,7 @@ export class AR extends ARBase {
   private sceneRotationHandler: SceneRotationHandlerImpl;
   private scenePinchHandler: ScenePinchHandlerImpl;
   private recorder: RecordAR;
+  renderer: SCNSceneRenderer;
 
   static isSupported(): boolean {
     try {
@@ -682,23 +683,23 @@ export class AR extends ARBase {
 
 
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
-    return addUIView(options, this.resolveParentNode(options), this.sceneView);
+    return addUIView(options, this.resolveParentNode(options), this.sceneView, this.renderer);
   }
 
   addNode(options: ARAddOptions): Promise<ARCommonNode> {
-    return addNode(options, this.resolveParentNode(options));
+    return addNode(options, this.resolveParentNode(options), this.renderer);
   }
 
   addVideo(options: ARAddVideoOptions): Promise<ARVideoNode> {
-    return addVideo(options, this.resolveParentNode(options));
+    return addVideo(options, this.resolveParentNode(options), this.renderer);
   }
 
   addImage(options: ARAddImageOptions): Promise<ARCommonNode> {
-    return addImage(options, this.resolveParentNode(options));
+    return addImage(options, this.resolveParentNode(options), this.renderer);
   }
 
   addModel(options: ARAddModelOptions): Promise<ARCommonNode> {
-    return addModel(options, this.resolveParentNode(options));
+    return addModel(options, this.resolveParentNode(options), this.renderer);
   }
 
   addPlane(options: ARAddPlaneOptions): Promise<ARCommonNode> {
@@ -706,19 +707,19 @@ export class AR extends ARBase {
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARCommonNode> {
-    return addBox(options, this.resolveParentNode(options));
+    return addBox(options, this.resolveParentNode(options), this.renderer);
   }
 
   addSphere(options: ARAddSphereOptions): Promise<ARCommonNode> {
-    return addSphere(options, this.resolveParentNode(options));
+    return addSphere(options, this.resolveParentNode(options), this.renderer);
   }
 
   addText(options: ARAddTextOptions): Promise<ARCommonNode> {
-    return addText(options, this.resolveParentNode(options));
+    return addText(options, this.resolveParentNode(options), this.renderer);
   }
 
   addTube(options: ARAddTubeOptions): Promise<ARCommonNode> {
-    return addTube(options, this.resolveParentNode(options));
+    return addTube(options, this.resolveParentNode(options), this.renderer);
   }
 
   trackImage(options: ARImageTrackingOptions): void {
@@ -962,6 +963,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
   }
 
   rendererDidAddNodeForAnchor(renderer: SCNSceneRenderer, node: SCNNode, anchor: ARAnchor): void {
+    this.owner.get().renderer = renderer;
     if (anchor instanceof ARPlaneAnchor) {
       const owner = this.owner.get();
       // When a new plane is detected we create a new SceneKit plane to visualize it in 3D
@@ -1122,7 +1124,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
       position: planeNode.position,
       size: imageAnchor.referenceImage.physicalSize,
       imageName: imageAnchor.referenceImage.name,
-      imageTrackingActions: new ARImageTrackingActionsImpl(plane, planeNode, owner.sceneView)
+      imageTrackingActions: new ARImageTrackingActionsImpl(plane, planeNode, owner.sceneView, renderer)
     };
 
     // run this on the main thread, otherwise updating the UI from the "imageTrackingActions" callback will error
@@ -1137,7 +1139,7 @@ class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
 class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   AVPlayerItemDidPlayToEndTimeNotificationObserver: any;
 
-  constructor(public plane: SCNPlane, public planeNode: SCNNode, private sceneView: ARSCNView) {
+  constructor(public plane: SCNPlane, public planeNode: SCNNode, private sceneView: ARSCNView, private renderer: SCNSceneRenderer) {
   }
 
   playVideo(url: string, loop?: boolean): void {
@@ -1170,23 +1172,23 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
   }
 
   addBox(options: ARAddBoxOptions): Promise<ARBox> {
-    return addBox(options, this.planeNode);
+    return addBox(options, this.planeNode, this.renderer);
   }
 
   addModel(options: ARAddModelOptions): Promise<ARModel> {
-    return addModel(options, this.planeNode);
+    return addModel(options, this.planeNode, this.renderer);
   }
 
   addImage(options: ARAddImageOptions): Promise<ARImage> {
-    return addImage(options, this.planeNode);
+    return addImage(options, this.planeNode, this.renderer);
   }
 
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
-    return addUIView(options, this.planeNode, this.sceneView);
+    return addUIView(options, this.planeNode, this.sceneView, this.renderer);
   }
 
   addNode(options: ARUIViewOptions): Promise<ARCommonNode> {
-    return addNode(options, this.planeNode);
+    return addNode(options, this.planeNode, this.renderer);
   }
 }
 
@@ -1195,15 +1197,15 @@ class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
   }
 
   addModel(options: ARAddModelOptions): Promise<ARModel> {
-    return addModel(options, this.node);
+    return addModel(options, this.node, this.renderer);
   }
 
   addText(options: ARAddTextOptions): Promise<ARText> {
-    return addText(options, this.node);
+    return addText(options, this.node, this.renderer);
   }
 
   addUIView(options: ARUIViewOptions): Promise<ARUIView> {
-    return addUIView(options, this.node, this.sceneView);
+    return addUIView(options, this.node, this.sceneView, this.renderer);
   }
 }
 

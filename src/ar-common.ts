@@ -108,6 +108,8 @@ export interface ARCommonNode extends ARNode {
   lookAtPosition(localPos: ARPosition): void;
 
   lookAtNode(node: ARCommonNode): void;
+
+  getPositionOnScreen(): ARDimensions2D;
 }
 
 export interface ARVideoNode extends ARCommonNode {

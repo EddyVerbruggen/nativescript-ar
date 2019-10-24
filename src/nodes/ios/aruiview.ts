@@ -9,11 +9,11 @@ const main_queue = dispatch_get_current_queue();
 
 export class ARUIView extends ARCommonNode {
 
-  static create(options: ARUIViewOptions, sceneView: ARSCNView): ARUIView {
-    return new ARUIView(options, sceneView);
+  static create(options: ARUIViewOptions, sceneView: ARSCNView, renderer: SCNSceneRenderer): ARUIView {
+    return new ARUIView(options, sceneView, renderer);
   }
 
-  constructor(options: ARUIViewOptions, sceneView: ARSCNView) {
+  constructor(options: ARUIViewOptions, sceneView: ARSCNView, renderer: SCNSceneRenderer) {
     try {
       const view = options.view;
 
@@ -86,7 +86,7 @@ export class ARUIView extends ARCommonNode {
         node.addChildNode(planeNode);
       });
 
-      super(options, node);
+      super(options, node, renderer);
 
     } catch (e) {
       console.error(e);

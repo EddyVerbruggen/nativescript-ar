@@ -11,7 +11,7 @@ export abstract class ARCommonNode implements IARCommonNode {
   rotatingEnabled: boolean;
   scalingEnabled: boolean;
 
-  constructor(options: ARAddOptions, node: SCNNode) {
+  constructor(options: ARAddOptions, node: SCNNode, private renderer?: SCNSceneRenderer) {
     // this.onPanHandler = options.onPan;
     this.draggingEnabled = options.draggingEnabled;
     this.rotatingEnabled = options.rotatingEnabled;
@@ -138,6 +138,17 @@ export abstract class ARCommonNode implements IARCommonNode {
 
   lookAtNode(node: ARCommonNode): void {
     this.lookAtWorldPosition(node.getWorldPosition());
+  }
+
+  getPositionOnScreen(): ARDimensions2D {
+    if (!this.renderer) {
+      return {x: 0, y: 0};
+    }
+    const positionOnScreen = this.renderer.projectPoint(this.ios.worldPosition);
+    return {
+      x: positionOnScreen.x,
+      y: positionOnScreen.y
+    }
   }
 
   scaleBy(by: number | ARScale): void {

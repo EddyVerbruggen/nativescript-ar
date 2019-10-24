@@ -21,7 +21,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
     }
   }
 
-  static create(options: ARAddVideoOptions): ARVideoNode {
+  static create(options: ARAddVideoOptions, renderer: SCNSceneRenderer): ARVideoNode {
     const video = options.video;
     // const size=tvVideoNode.size;
 
@@ -106,7 +106,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
     const node = SCNNode.nodeWithGeometry(materialPlane);
     // node.addAudioPlayer(SCNAudioPlayer);
 
-    const arVideo = new ARVideo(options, node);
+    const arVideo = new ARVideo(options, node, renderer);
     arVideo.videoPlayer = videoPlayer;
     return arVideo;
   }

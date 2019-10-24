@@ -44,16 +44,22 @@ import {ARDebugLevel} from "nativescript-ar";
 <script lang="ts">
   import { AR, ARDebugLevel } from "nativescript-ar";
   import { Color } from "tns-core-modules/color";
-  import { isIOS } from "tns-core-modules/platform";
+  import { isIOS, screen } from "tns-core-modules/platform";
 
   declare const SCNTransaction: any;
+
+  // TODO continuously grab the screen x/y position of nodes (not children? - as a optimisation) and see if it's close to the center of the screen.. if so, highlight the node
+  const width = screen.mainScreen.widthDIPs;
+  const height = screen.mainScreen.heightDIPs;
+  const centerX = width / 2;
+  const centerY = height / 2;
 
   const materialPrefix = isIOS ? "Orbitals.scnassets/" : "";
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const DAY_MS = 24 * 60 * 60 * 1000;
 
   // if this is set to 1 (which is more realistic), you'd have a hard time seeing all planets
-  const SCALE_FACTOR = 4;
+  const SCALE_FACTOR = 5;
 
   // TODO add feature: when you look at a planet, highlight it/show its name
 
@@ -69,9 +75,7 @@ import {ARDebugLevel} from "nativescript-ar";
   saturnMoonColors.forEach(s => saturnMoonNColors.push(new Color(s)));
   const saturnMoons = [];
   for (let i = 0; i < NR_OF_SATURN_MOONS; i++) {
-    console.log(100 * Math.random());
     saturnMoons.push({
-      name: "Saturn moon",
       distance: 0.35 + (Math.random() / 5),
       orbitSpeed: -1000 * Math.random(),
       scale: (Math.random() / 40) * SCALE_FACTOR,
@@ -330,8 +334,7 @@ import {ARDebugLevel} from "nativescript-ar";
             z: arPlaneTappedEventData.position.z
           }
         }).then(solarSystemNode => {
-          console.log("solarSystemNode added: " + solarSystemNode);
-          this.renderSolarsystemObject(ar, solarSystemDefinition, solarSystemNode);
+          this.renderSolarSystemObject(ar, solarSystemDefinition, solarSystemNode);
           this.arLabel = "Now tap the sun for controls..";
 
           // disabling plane detection / visiblity
@@ -340,7 +343,29 @@ import {ARDebugLevel} from "nativescript-ar";
         })
       },
 
-      renderSolarsystemObject(ar, solarSystemObject, parentNode) {
+      isInFocus(x, y): boolean {
+        return Math.abs(x - centerX) < 40 &&
+            Math.abs(y - centerY) < 80;
+      },
+
+      growShrinkNode(objectNode): void {
+        this.enableNativeAnimationsWithDurationOfSeconds(.3);
+        objectNode.scaleBy(.5);
+        setTimeout(() => {
+          objectNode.scaleBy(-.5);
+          setTimeout(() => this.disableNativeAnimations(), .35);
+        }, 300);
+      },
+
+      blinkNode(objectNode): void {
+        objectNode.scaleBy(-.15);
+
+        setTimeout(() => {
+          objectNode.scaleBy(.15);
+        }, 200);
+      },
+
+      renderSolarSystemObject(ar, solarSystemObject, parentNode) {
         ar.addNode({
           parentNode,
           rotation: {
@@ -384,12 +409,7 @@ import {ARDebugLevel} from "nativescript-ar";
 
                 // a bit of visual feedback
                 if (solarSystemObject.name !== "Sun" || this.hasControlPanel) {
-                  this.enableNativeAnimationsWithDurationOfSeconds(.3);
-                  objectNode.scaleBy(.5);
-                  setTimeout(() => {
-                    objectNode.scaleBy(-.5);
-                    setTimeout(() => this.disableNativeAnimations(), .35);
-                  }, 300);
+                  this.growShrinkNode(objectNode);
                 }
 
                 if (solarSystemObject.name === "Sun") {
@@ -427,6 +447,19 @@ import {ARDebugLevel} from "nativescript-ar";
                 }
               }
             }).then(parentNode => {
+
+              // if a planet is near the center of the screen, we assume the user is 👀 at it
+              if (solarSystemObject.name && solarSystemObject.name !== "Sun") {
+                setInterval(() => {
+                  const positionOnScreen = objectNode.getPositionOnScreen();
+                  const inRange = this.isInFocus(positionOnScreen.x, positionOnScreen.y);
+                  if (inRange) {
+                    this.arLabel = `👀 ${solarSystemObject.name} 👀`;
+                    this.blinkNode(objectNode);
+                  }
+                }, 550);
+              }
+
               // add some life to planets ;)
               if (solarSystemObject.life) {
                 solarSystemObject.life.forEach(life => {
@@ -516,7 +549,7 @@ import {ARDebugLevel} from "nativescript-ar";
 
             if (solarSystemObject.children) {
               solarSystemObject.children.forEach(child => {
-                this.renderSolarsystemObject(ar, child, objectNode);
+                this.renderSolarSystemObject(ar, child, objectNode);
               });
             }
           }).catch(e => console.error(e))

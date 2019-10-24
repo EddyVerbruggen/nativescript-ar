@@ -1,9 +1,13 @@
+import { screen } from "tns-core-modules/platform";
 import * as utils from "tns-core-modules/utils/utils";
 import { ARAddOptions, ARCommonNode as IARCommonNode, ARDimensions2D, ARNodeInteraction, ARPosition, ARRotation, ARScale } from "../../ar-common";
 
 declare const java: any;
 
 export abstract class ARCommonNode implements IARCommonNode {
+  static camera: com.google.ar.sceneform.Camera;
+  static screenScale = screen.mainScreen.scale;
+
   id: string;
   android: com.google.ar.sceneform.Node;
   position: ARPosition;
@@ -15,6 +19,10 @@ export abstract class ARCommonNode implements IARCommonNode {
   scalingEnabled: boolean;
 
   public static createNode(options: ARAddOptions, fragment) {
+    if (!ARCommonNode.camera) {
+      ARCommonNode.camera = fragment.getArSceneView().getScene().getCamera();
+    }
+
     if ((options.draggingEnabled || options.rotatingEnabled || options.scalingEnabled)) {
       return new com.google.ar.sceneform.ux.TransformableNode(fragment.getTransformationSystem());
     }
@@ -208,6 +216,14 @@ export abstract class ARCommonNode implements IARCommonNode {
 
   lookAtNode(node: ARCommonNode): void {
     this.lookAtWorldPosition(node.getWorldPosition());
+  }
+
+  getPositionOnScreen(): ARDimensions2D {
+    const screenPoint = ARCommonNode.camera.worldToScreenPoint(this.android.getWorldPosition());
+    return {
+      x: screenPoint.x / ARCommonNode.screenScale,
+      y: screenPoint.y / ARCommonNode.screenScale
+    };
   }
 
   scaleBy(by: number | ARScale): void {

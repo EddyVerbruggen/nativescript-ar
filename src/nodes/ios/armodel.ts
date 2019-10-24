@@ -2,7 +2,7 @@ import { ARAddModelOptions } from "../../ar-common";
 import { ARCommonGeometryNode } from "./arcommongeometry";
 
 export class ARModel extends ARCommonGeometryNode {
-  static create(options: ARAddModelOptions) {
+  static create(options: ARAddModelOptions, renderer: SCNSceneRenderer) {
     let modelScene = SCNScene.sceneNamed(options.name);
 
     let nodeModel: SCNNode;
@@ -14,6 +14,6 @@ export class ARModel extends ARCommonGeometryNode {
       nodeModel = modelScene.rootNode;
     }
 
-    return new ARModel(options, nodeModel.clone());
+    return new ARModel(options, nodeModel.clone(), renderer);
   }
 }

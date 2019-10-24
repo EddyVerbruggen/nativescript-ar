@@ -4,8 +4,8 @@ import { ARCommonNode } from "./arcommon";
 import { ARMaterialFactory } from "./armaterialfactory";
 
 export abstract class ARCommonGeometryNode extends ARCommonNode {
-  constructor(options: ARAddGeometryOptions, node: SCNNode) {
-    super(options, node);
+  constructor(options: ARAddGeometryOptions, node: SCNNode, renderer?: SCNSceneRenderer) {
+    super(options, node, renderer);
 
     if (options.materials) {
       ARCommonGeometryNode.applyMaterial(node, options.materials);
