@@ -148,7 +148,7 @@ export abstract class ARCommonNode implements IARCommonNode {
     return {
       x: positionOnScreen.x,
       y: positionOnScreen.y
-    }
+    };
   }
 
   scaleBy(by: number | ARScale): void {
