@@ -233,6 +233,11 @@ export class AR extends ARBase {
       } catch (ignore) {
       }
     }
+
+    // update the configuration if needed
+    if (this.sceneView.session.configuration) {
+      this.sceneView.session.runWithConfiguration(config);
+    }
   }
 
   public togglePlaneVisibility(on: boolean): void {
@@ -253,8 +258,6 @@ export class AR extends ARBase {
   }
 
   public getCameraRotation(): ARRotation {
-
-
     const rot = this.getCameraRotationRad();
 
     const toDeg = (rad) => {

@@ -428,6 +428,8 @@ export abstract class AR extends ContentView {
 
   abstract getCameraPosition(): ARPosition;
 
+  abstract getCameraRotation(): ARRotation;
+
   abstract setDebugLevel(to: ARDebugLevel): void;
 
   abstract grabScreenshot(): Promise<ImageSource>;
