@@ -742,6 +742,7 @@ export class AR extends ARBase {
 
     let img;
 
+    // TODO (no rush) add 'app' bundle option, via '~' prefix, and even a NativeScript Image object
     if (options.image.indexOf('://') > 0) {
       img = UIImage.imageWithData(NSData.alloc().initWithContentsOfURL(NSURL.URLWithString(options.image)));
     } else {

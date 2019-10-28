@@ -29,9 +29,11 @@ export class AugmentCardComponent {
                 return filtered.length > 0 ? filtered[0] : null;
             });
 
-        console.log("Tracking image for pokemon: " + pokemon);
-
-        args.imageTrackingActions.playVideo("https://pokemonletsgo.pokemon.com/assets/video/go-park-video.mp4", true);
+        if (args.imageName.indexOf("CharmanderTShirt") === 0) {
+            args.imageTrackingActions.playVideo("https://github.com/EddyVerbruggen/nativescript-ar/raw/master/demo-pokemon/App_Resources/iOS/art.scnassets/celebration.mp4", true);
+        } else {
+            args.imageTrackingActions.playVideo("https://pokemonletsgo.pokemon.com/assets/video/go-park-video.mp4", true);
+        }
 
         // we could use this to stop looping the video after 5 seconds
         // setTimeout(() => args.imageTrackingActions.stopVideoLoop(), 5000);
@@ -49,7 +51,7 @@ export class AugmentCardComponent {
 
             args.imageTrackingActions.addModel({
                 name,
-                scale: pokemon.model.scale / (isIOS ? 50 : 1),
+                scale: pokemon.model.scale / (isIOS ? 50 : .7),
                 position: {
                     x: 0,
                     y: 0.035,

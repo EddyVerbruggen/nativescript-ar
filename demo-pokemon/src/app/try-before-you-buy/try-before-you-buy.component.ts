@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { RouterExtensions } from "nativescript-angular";
-import { ARCommonNode, ARMaterial, ARPlaneTappedEventData } from "nativescript-ar";
+import { AR, ARCommonNode, ARMaterial, ARPlaneTappedEventData } from "nativescript-ar";
 import { Color } from "tns-core-modules/color";
 import { isIOS } from "tns-core-modules/platform";
 import { action } from "tns-core-modules/ui/dialogs";
@@ -17,8 +17,7 @@ export class TryBeforeYouBuyComponent implements OnInit {
     pokemonList: Array<Pokemon> = [];
     currentPokemonNode: ARCommonNode;
     public planeMaterial = <ARMaterial>{
-        diffuse: new Color("white"),
-        transparency: 0.2
+        diffuse: new Color("white")
     };
 
     constructor(private pokemonDataService: PokemonDataService,
@@ -44,9 +43,15 @@ export class TryBeforeYouBuyComponent implements OnInit {
             return;
         }
 
+        const ar: AR = args.object;
+
         // "There can be only one!".. or rather: we don't _want_ more than one model on screen in this demo ;)
         if (this.currentPokemonNode) {
             this.currentPokemonNode.remove();
+        } else {
+            // this is the first time the plane was tapped, so let's remove some debugging info/planes
+            ar.togglePlaneVisibility(false);
+            ar.setDebugLevel("NONE");
         }
 
         const name = isIOS
