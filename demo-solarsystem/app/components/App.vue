@@ -1,4 +1,3 @@
-import {ARDebugLevel} from "nativescript-ar";
 <template>
   <Page @loaded="pageLoaded">
     <ActionBar title="Solar System {N}-Vue"></ActionBar>
@@ -32,27 +31,46 @@ import {ARDebugLevel} from "nativescript-ar";
           @planeTapped="loadSolarSystem">
       </AR>
 
+      <!-- adding 'isUserInteractionEnabled' makes sure this layer doesn't steal taps from layers below (esp. the AR one) -->
+      <AbsoluteLayout isUserInteractionEnabled="false" v-if="gameEnabled">
+        <Img src="~/assets/images/crosshair.png" width="32" height="32" opacity="0.75" :left="center.x - 16" :top="center.y - center.yCompensation"/>
+        <Img src="~/assets/images/arrow.png" @loaded="gameArrowLoaded" width="32" height="32" :left="game.objectPositionOffscreenIndicator.x" :top="game.objectPositionOffscreenIndicator.y"/>
+      </AbsoluteLayout>
+
       <!-- because this bit is "above" the AR node, it _is_ visible -->
-      <StackLayout class="ar-label" verticalAlignment="top">
-        <Label :text="arLabel" verticalAlignment="top"></Label>
-        <Label :text="simulatedDateFormatted" style="font-size: 12"></Label>
-      </StackLayout>
+      <GridLayout rows="auto, auto" columns="*, auto" class="ar-info" verticalAlignment="top">
+        <Label row="0" col="0" :text="arLabel" verticalAlignment="top"></Label>
+        <StackLayout row="0" col="1" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="solarSystemLoaded">
+          <Img src="~/assets/images/telescope.png" width="32" height="32" marginRight="10"/>
+          <Switch v-model="gameEnabled" color="white" verticalAlignment="top"></Switch>
+        </StackLayout>
+
+        <Label row="1" col="0" :text="simulatedDateFormatted" style="font-size: 12"></Label>
+        <Label row="1" col="1" :text="game.elapsedTimeFormatted" style="font-size: 12" horizontalAlignment="right" v-if="solarSystemLoaded"></Label>
+      </GridLayout>
+
     </GridLayout>
   </Page>
 </template>
 
 <script lang="ts">
-  import { AR, ARDebugLevel } from "nativescript-ar";
+  import { AR } from "nativescript-ar";
+  import { TNSPlayer } from "nativescript-audio";
+  import { ToastPosition, Toasty } from "nativescript-toasty";
+  import { Vibrate } from "nativescript-vibrate";
   import { Color } from "tns-core-modules/color";
   import { isIOS, screen } from "tns-core-modules/platform";
 
   declare const SCNTransaction: any;
 
-  // TODO continuously grab the screen x/y position of nodes (not children? - as a optimisation) and see if it's close to the center of the screen.. if so, highlight the node
+  let vibrator;
+  let audioPlayer;
+
   const width = screen.mainScreen.widthDIPs;
   const height = screen.mainScreen.heightDIPs;
   const centerX = width / 2;
   const centerY = height / 2;
+  console.log(`::::: screen = ${width} x ${height}`);
 
   const materialPrefix = isIOS ? "Orbitals.scnassets/" : "";
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -61,12 +79,12 @@ import {ARDebugLevel} from "nativescript-ar";
   // if this is set to 1 (which is more realistic), you'd have a hard time seeing all planets
   const SCALE_FACTOR = 5;
 
-  // TODO add feature: when you look at a planet, highlight it/show its name
-
-  const SUN_DEFAULT_SCALE = 0.82;
-  const SUN_TO_EARTH_METERS = 1.0;
+  const SUN_DEFAULT_SCALE = .9;
+  const ONE_AU = 0.75; // 1 AU (Astronomical Unit), which is ~150 million km (the distance from the Earth to the Sun)
   const EARTH_TO_MOON_METERS = 0.15;
   const EARTH_ORBIT_SPEED = 30.5;
+
+  const GAME_OBJECTS = ["Mars", "Earth", "Neptune", "Saturn", "Venus", "Earth's moon", "Mercury", "Jupiter", "Uranus"];
 
   // Saturn now officially has 82 moons, so let's add some ;)
   const NR_OF_SATURN_MOONS = isIOS ? 82 : 20; // not sure how performance is affected on Android, so using a safer number
@@ -78,7 +96,7 @@ import {ARDebugLevel} from "nativescript-ar";
     saturnMoons.push({
       distance: 0.35 + (Math.random() / 5),
       orbitSpeed: -1000 * Math.random(),
-      scale: (Math.random() / 40) * SCALE_FACTOR,
+      scale: (Math.random() / 50) * SCALE_FACTOR,
       tilt: i * 17,
       materials: isIOS ? [{
         diffuse: materialPrefix + "Luna_Mat_baseColor.png",
@@ -101,7 +119,7 @@ import {ARDebugLevel} from "nativescript-ar";
     tilt: 0,
     children: [{
       name: "Mercury",
-      distance: 0.4,
+      distance: 0.4 * ONE_AU,
       orbitSpeed: 47,
       materials: [{
         diffuse: materialPrefix + "Mercury_Mat_baseColor.png",
@@ -112,7 +130,7 @@ import {ARDebugLevel} from "nativescript-ar";
       tilt: 0.03
     }, {
       name: "Venus",
-      distance: 0.7,
+      distance: 0.7 * ONE_AU,
       orbitSpeed: 35,
       materials: [{
         diffuse: materialPrefix + "Venus_Atmosphere_Mat_baseColor.png",
@@ -122,7 +140,7 @@ import {ARDebugLevel} from "nativescript-ar";
       tilt: 2.64
     }, {
       name: "Earth",
-      distance: SUN_TO_EARTH_METERS,
+      distance: ONE_AU,
       orbitSpeed: EARTH_ORBIT_SPEED,
       scale: 0.05 * SCALE_FACTOR,
       tilt: 23.4,
@@ -132,7 +150,7 @@ import {ARDebugLevel} from "nativescript-ar";
         roughness: materialPrefix + "Earth_Mat_occlusionRoughnessMetallic.png"
       }],
       children: [{
-        name: "Moon",
+        name: "Earth's moon",
         distance: EARTH_TO_MOON_METERS,
         orbitSpeed: 0, // "locked" with Earth
         scale: 0.018 * SCALE_FACTOR,
@@ -152,7 +170,7 @@ import {ARDebugLevel} from "nativescript-ar";
       }]
     }, {
       name: "Mars",
-      distance: 1.5,
+      distance: 1.5 * ONE_AU,
       orbitSpeed: 24,
       materials: [{
         diffuse: materialPrefix + "Mars_mat_baseColor.png",
@@ -188,7 +206,7 @@ import {ARDebugLevel} from "nativescript-ar";
         }]
     }, {
       name: "Jupiter",
-      distance: 2.2,
+      distance: 3 * ONE_AU, // IRL this is 5 AU
       orbitSpeed: 30,
       materials: [{
         diffuse: materialPrefix + "Jupiter_Mat_baseColor.png"
@@ -210,7 +228,7 @@ import {ARDebugLevel} from "nativescript-ar";
       ]
     }, {
       name: "Saturn",
-      distance: 3.5,
+      distance: 6 * ONE_AU, // IRL this is 10 AU
       orbitSpeed: 9,
       materials: [{
         diffuse: materialPrefix + "SaturnPlanet_Opaque_Mat_baseColor.png"
@@ -220,7 +238,7 @@ import {ARDebugLevel} from "nativescript-ar";
       children: saturnMoons
     }, {
       name: "Uranus",
-      distance: 5.2,
+      distance: 9 * ONE_AU, // IRL this is 20 AU
       orbitSpeed: 7,
       materials: [{
         diffuse: materialPrefix + "UranusGlobe_Mat_baseColor.png"
@@ -229,7 +247,7 @@ import {ARDebugLevel} from "nativescript-ar";
       tilt: 82.23
     }, {
       name: "Neptune",
-      distance: 6.1,
+      distance: 12 * ONE_AU, // IRL this is 30 AU
       orbitSpeed: 5,
       materials: [{
         diffuse: materialPrefix + "NeptuneGlobe_Mat_baseColor.png"
@@ -245,12 +263,25 @@ import {ARDebugLevel} from "nativescript-ar";
     data() {
       return {
         msg: 'Hello World!',
-        arLabel: 'Look for a surface and tap it..',
+        arLabel: 'Find a surface and tap it',
         planeMaterial: new Color("white"),
         solarSystemLoaded: false,
         orbitalName: undefined,
         simulatedDate: new Date(),
         simulatedDateFormatted: undefined,
+        gameEnabled: false,
+        game: {
+          objectsToFind: [],
+          interval: undefined,
+          startTime: undefined,
+          objectToFind: undefined,
+          elapsedTimeFormatted: "Play Game",
+          objectPositionOffscreenIndicator: {
+            x: -1000,
+            y: -1000
+          },
+          arrow: undefined
+        },
         orbitSpeed: -15,
         rotationSpeed: -15,
         sunSize: 50,
@@ -258,7 +289,12 @@ import {ARDebugLevel} from "nativescript-ar";
         page: undefined,
         ar: undefined,
         orbitals: [],
-        rotators: []
+        rotators: [],
+        center: {
+          x: centerX,
+          y: centerY,
+          yCompensation: isIOS ? 104 : 180
+        }
       }
     },
 
@@ -294,6 +330,10 @@ import {ARDebugLevel} from "nativescript-ar";
         }, 1000 / fps);
       },
 
+      gameArrowLoaded(event): void {
+        this.game.arrow = event.object;
+      },
+
       enableNativeAnimationsWithDurationOfSeconds(sec) {
         // TODO add animations (like this) to the plugin (this is a global setting, so only enabling it briefly
         if (isIOS) {
@@ -313,8 +353,56 @@ import {ARDebugLevel} from "nativescript-ar";
         this.simulatedDateFormatted = MONTHS[d.getMonth()] + " " + d.getFullYear()
       },
 
+      updateElapsedGameTime() {
+        this.game.elapsedTimeFormatted = `${this.getElapsedGameTime()} sec`;
+      },
+
+      getElapsedGameTime() {
+        return Math.round((new Date().getTime() - this.game.startTime) / 1000);
+      },
+
+      findNextGameObject() {
+        const nextObject = this.game.objectsToFind.length === 0 ? undefined : this.game.objectsToFind.pop();
+        if (nextObject) {
+          this.arLabel = `Try to find ${nextObject}`;
+          this.game.objectToFind = nextObject;
+          new Toasty({
+            text: `Try to find ${nextObject}`
+          }).setToastPosition(ToastPosition.CENTER).show();
+        } else {
+          this.giveFeedback();
+          this.arLabel = `FINISHED in ${this.getElapsedGameTime()} seconds 🎉`;
+          this.gameEnabled = false;
+          new Toasty({
+            text: `${this.getElapsedGameTime()} seconds 💪`
+          }).setToastPosition(ToastPosition.CENTER).show();
+        }
+      },
+
+      getVibrator() {
+        if (!vibrator) {
+          vibrator = new Vibrate();
+        }
+        return vibrator;
+      },
+
+      getAudioPlayer() {
+        if (!audioPlayer) {
+          audioPlayer = new TNSPlayer();
+          audioPlayer.initFromFile({
+            audioFile: '~/assets/audio/success.mp3',
+            loop: false
+          });
+        }
+        return audioPlayer;
+      },
+
+      giveFeedback() {
+        this.getVibrator().vibrate();
+        this.getAudioPlayer().play();
+      },
+
       arLoaded(arLoadedEventData) {
-        console.log("AR loaded");
         this.ar = arLoadedEventData.object;
       },
 
@@ -327,42 +415,50 @@ import {ARDebugLevel} from "nativescript-ar";
 
         const ar: AR = arPlaneTappedEventData.object;
 
+        // "Alpha Centauri" ;)
+        /*
+        ar.addSphere({
+          scale: SUN_DEFAULT_SCALE * 2,
+          radius: 0.28,
+          materials: [new Color("blue")],
+          position: {
+            x: arPlaneTappedEventData.position.x + 10,
+            y: arPlaneTappedEventData.position.y + 10,
+            z: arPlaneTappedEventData.position.z + -100
+          },
+        });
+        */
+
         ar.addNode({
           position: {
             x: arPlaneTappedEventData.position.x,
-            y: arPlaneTappedEventData.position.y + 1.2, // a bit above the plane we tapped (in meters)
+            y: arPlaneTappedEventData.position.y + 1.3, // a bit above the plane we tapped (in meters)
             z: arPlaneTappedEventData.position.z
           }
         }).then(solarSystemNode => {
           this.renderSolarSystemObject(ar, solarSystemDefinition, solarSystemNode);
           this.arLabel = "Now tap the sun for controls..";
 
-          // disabling plane detection / visiblity
-          ar.setDebugLevel(ARDebugLevel.NONE);
+          // disabling plane detection and hide already discovered planes
           ar.togglePlaneVisibility(false);
+          ar.setPlaneDetection("NONE");
+          ar.setDebugLevel("NONE");
         })
       },
 
-      isInFocus(x, y): boolean {
-        return Math.abs(x - centerX) < 40 &&
-            Math.abs(y - centerY) < 80;
+      isInFocusRange(x, y): boolean {
+        return Math.abs(x - centerX) < 20 &&
+            Math.abs(y - centerY) < 20;
       },
 
       growShrinkNode(objectNode): void {
+        const scaleChange = .3;
         this.enableNativeAnimationsWithDurationOfSeconds(.3);
-        objectNode.scaleBy(.5);
+        objectNode.scaleBy(scaleChange);
         setTimeout(() => {
-          objectNode.scaleBy(-.5);
+          objectNode.scaleBy(-scaleChange);
           setTimeout(() => this.disableNativeAnimations(), .35);
         }, 300);
-      },
-
-      blinkNode(objectNode): void {
-        objectNode.scaleBy(-.15);
-
-        setTimeout(() => {
-          objectNode.scaleBy(.15);
-        }, 200);
       },
 
       renderSolarSystemObject(ar, solarSystemObject, parentNode) {
@@ -399,13 +495,21 @@ import {ARDebugLevel} from "nativescript-ar";
               parentNode: objectNode,
               scale: solarSystemObject.scale,
               radius,
-              segmentCount: 96, // on iOS, the default is 48
+              segmentCount: Math.min(80, Math.round(150 * solarSystemObject.scale)), // we want fewer segments for small objects (note: on iOS, the default is 48)
               materials: solarSystemObject.materials,
               position: solarSystemObject.position,
               onTap: () => {
-                console.log(">> tap: " + solarSystemObject.name);
-                this.arLabel = solarSystemObject.name + " tapped";
+                if (!solarSystemObject.name) {
+                  return;
+                }
 
+                if (this.gameEnabled) {
+                  new Toasty({
+                    text: `${solarSystemObject.name} tapped`
+                  }).setToastPosition(ToastPosition.BOTTOM).show();
+                } else {
+                  this.arLabel = `${solarSystemObject.name} tapped`;
+                }
 
                 // a bit of visual feedback
                 if (solarSystemObject.name !== "Sun" || this.hasControlPanel) {
@@ -450,15 +554,63 @@ import {ARDebugLevel} from "nativescript-ar";
 
               // if a planet is near the center of the screen, we assume the user is 👀 at it
               if (solarSystemObject.name && solarSystemObject.name !== "Sun") {
+                let shouldFindNext = true;
+
                 setInterval(() => {
-                  // TODO we may transform this into a convenience function like this: node.isInCenter(marginHorizontal, marginVertical)
-                  const positionOnScreen = objectNode.getPositionOnScreen();
-                  const inRange = this.isInFocus(positionOnScreen.x, positionOnScreen.y);
-                  if (inRange) {
-                    this.arLabel = `👀 ${solarSystemObject.name} 👀`;
-                    this.blinkNode(objectNode);
+                  if (this.gameEnabled && solarSystemObject.name === this.game.objectToFind) {
+                    const positionOnScreen = objectNode.getPositionOnScreen();
+                    const inRange = this.isInFocusRange(positionOnScreen.x, positionOnScreen.y);
+                    if (inRange) {
+                      if (shouldFindNext) {
+                        this.growShrinkNode(objectNode);
+                        this.arLabel = `You found ${solarSystemObject.name} 🥳`;
+                        this.giveFeedback();
+                        shouldFindNext = false;
+                        setTimeout(() => {
+                          this.findNextGameObject();
+                          shouldFindNext = true;
+                        }, 1600);
+                      }
+                    } else {
+                      const distL = objectNode.getDistanceTo({x: 0, y: height / 2, z: 0});
+                      const distR = objectNode.getDistanceTo({x: width, y: height / 2, z: 0});
+                      const distT = objectNode.getDistanceTo({x: 0, y: 0, z: 0});
+                      const distB = objectNode.getDistanceTo({x: 0, y: height, z: 0});
+                      const isOnLeftSide = distL < distR;
+                      const isOnTopSide = distT < distB;
+
+                      if (positionOnScreen.x < 0 || positionOnScreen.x > width) {
+                        this.game.objectPositionOffscreenIndicator.x = isOnLeftSide ? 0 : width;
+                      } else if (positionOnScreen.y < 0 || positionOnScreen.y > height) {
+                        this.game.objectPositionOffscreenIndicator.x = positionOnScreen.x;
+                      } else {
+                        this.game.objectPositionOffscreenIndicator.x = -1000; // place off screen
+                      }
+
+                      if (positionOnScreen.y < 0 || positionOnScreen.y > height) {
+                        this.game.objectPositionOffscreenIndicator.y = isOnTopSide ? 0 : height;
+                      } else if (positionOnScreen.x < 0 || positionOnScreen.x > width) {
+                        this.game.objectPositionOffscreenIndicator.y = positionOnScreen.y;
+                      } else {
+                        this.game.objectPositionOffscreenIndicator.y = -1000; // place off screen
+                      }
+
+                      if (this.game.objectPositionOffscreenIndicator.x >= 0 && this.game.objectPositionOffscreenIndicator.y >= 0) {
+                        let arrowRotation = Math.atan2(this.game.objectPositionOffscreenIndicator.y - (height / 2), this.game.objectPositionOffscreenIndicator.x - (width / 2));
+                        arrowRotation = arrowRotation * 180 / Math.PI;
+                        this.game.arrow.style.transform = `rotate(${arrowRotation})`;
+
+                        // make sure the arrow is shown
+                        if (this.game.objectPositionOffscreenIndicator.x === width) {
+                          this.game.objectPositionOffscreenIndicator.x -= 32;
+                        }
+                        if (this.game.objectPositionOffscreenIndicator.y > 0) {
+                          this.game.objectPositionOffscreenIndicator.y -= 114;
+                        }
+                      }
+                    }
                   }
-                }, 550);
+                }, 1000 / fps / 4); // every fourth frame
               }
 
               // add some life to planets ;)
@@ -474,7 +626,6 @@ import {ARDebugLevel} from "nativescript-ar";
                     rotation: life.rotation,
                     scale: life.scale
                   }).then(addedLife => {
-                    console.log("Added life: " + addedLife);
                     // this can be used to move the boy-model over the planet, but we also need to rotate it so his feet always touch the surface
                     /*
                     if (life.name === "WalkingBoy") {
@@ -494,18 +645,15 @@ import {ARDebugLevel} from "nativescript-ar";
 
               // adding planet-specific tweaks here, just for fun/show :)
               if (solarSystemObject.name === "Earth") {
-                console.log("Adding clouds to Earth");
                 let cloudDegreesPerSecond = 12;
                 ar.addSphere({
                   position: {x: -.0001, y: 0, z: 0},
                   parentNode,
                   radius: radius + (isIOS ? 0.015 : 0.05), // TODO this platform difference is not so nice
-                  segmentCount: 96, // on iOS, the default is 48
                   materials: [{
                     diffuse: materialPrefix + "Earth_Clouds_mat_baseColor.png"
                   }],
                   onTap: () => {
-                    console.log(">> tap earth clouds");
                     this.arLabel = solarSystemObject.name + " tapped, reversing clouds ☁ 🔁";
                     this.orbitalName = solarSystemObject.name;
                     // GodMode: reverse the clouds!
@@ -518,14 +666,11 @@ import {ARDebugLevel} from "nativescript-ar";
                 }).catch(console.error);
 
               } else if (solarSystemObject.name === "Saturn") {
-                console.log("Adding a ring to Saturn");
-                ar.addBox({
+                ar.addTube({
                   parentNode,
-                  dimensions: {
-                    x: 1.8,
-                    y: 0,
-                    z: 1.8
-                  },
+                  innerRadius: 0.1,
+                  outerRadius: 1,
+                  height: 0.01,
                   materials: [{
                     diffuse: materialPrefix + "saturn_loop.png",
                     transparency: 0.5
@@ -544,9 +689,7 @@ import {ARDebugLevel} from "nativescript-ar";
                   }
                 }, 500);
               }
-            }).catch(e => {
-              console.error("error adding sphere: " + e);
-            });
+            }).catch(e => console.error("error adding sphere: " + e));
 
             if (solarSystemObject.children) {
               solarSystemObject.children.forEach(child => {
@@ -555,6 +698,47 @@ import {ARDebugLevel} from "nativescript-ar";
             }
           }).catch(e => console.error(e))
         }).catch(e => console.error(e))
+      }
+    },
+    watch: {
+      // when the Switch itself is toggled there's no event (on iOS)
+      gameEnabled: function (enabled) {
+        if (enabled) {
+
+          new Toasty({
+            text: `Hang on, shuffling...`
+          }).setToastPosition(ToastPosition.CENTER).show();
+
+          setTimeout(() => {
+            this.orbitSpeed = 100;
+            setTimeout(() => {
+              this.orbitSpeed = 0.13;
+
+              new Toasty({
+                text: `All set. Let's go 🚀`
+              }).setToastPosition(ToastPosition.CENTER).show();
+
+              this.game.objectsToFind.push(...GAME_OBJECTS);
+              this.game.objectsToFind.sort(() => Math.random() - 0.5);
+
+              setTimeout(() => {
+                this.game.startTime = new Date().getTime();
+                this.game.interval = setInterval(() => this.updateElapsedGameTime(), 1000);
+                this.findNextGameObject();
+                this.updateElapsedGameTime();
+              }, 1200);
+
+            }, 2000);
+          }, 700);
+
+        } else {
+          if (this.game.interval) {
+            clearInterval(this.game.interval);
+            this.game.interval = undefined;
+            this.game.elapsedTimeFormatted = undefined;
+            this.game.objectsToFind = [];
+          }
+        }
       }
     }
   }
@@ -566,11 +750,10 @@ import {ARDebugLevel} from "nativescript-ar";
     color: #ffffff;
   }
 
-  .ar-label {
-    padding: 12 14;
+  .ar-info {
+    padding: 14 16;
     color: black;
     background-color: white;
-    font-weight: bold;
     opacity: .7;
   }
 

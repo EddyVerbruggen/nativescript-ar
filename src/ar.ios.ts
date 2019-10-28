@@ -160,11 +160,11 @@ export class AR extends ARBase {
     if (!this.sceneView) {
       return;
     }
-    if (to === ARDebugLevel.WORLD_ORIGIN) {
+    if (to === "WORLD_ORIGIN") {
       this.sceneView.debugOptions = ARSCNDebugOptionShowWorldOrigin;
-    } else if (to === ARDebugLevel.FEATURE_POINTS) {
+    } else if (to === "FEATURE_POINTS") {
       this.sceneView.debugOptions = ARSCNDebugOptionShowFeaturePoints;
-    } else if (to === ARDebugLevel.PHYSICS_SHAPES) {
+    } else if (to === "PHYSICS_SHAPES") {
       this.sceneView.debugOptions = SCNDebugOptions.ShowPhysicsShapes;
     } else {
       this.sceneView.debugOptions = SCNDebugOptions.None;
@@ -274,7 +274,7 @@ export class AR extends ARBase {
     }
 
     // TODO to prevent screen dimming because no touch input is received we can integrate nativescript-insomnia and use that in the superclass, or invoke: UIApplication.shared.isIdleTimerDisabled = true
-    if (this.trackingMode === ARTrackingMode.IMAGE) {
+    if (this.trackingMode === "IMAGE") {
       if (!AR.isImageTrackingSupported()) {
         console.log("############### Image tracking is not supported on this device. It's probably not running iOS 12+.");
         return;
@@ -293,7 +293,7 @@ export class AR extends ARBase {
       }
       this.configuration = imageTrackingConfig;
 
-    } else if (this.trackingMode === ARTrackingMode.FACE) {
+    } else if (this.trackingMode === "FACE") {
       if (!AR.isFaceTrackingSupported()) {
         console.log("############### Face tracking is not supported on this device. A device running iOS 12+ is required, with a front-facing TrueDepth camera.");
         return;
@@ -331,7 +331,7 @@ export class AR extends ARBase {
     const scene = SCNScene.new();
     this.sceneView.scene = scene;
 
-    if (this.trackingMode === ARTrackingMode.WORLD) {
+    if (this.trackingMode === "WORLD") {
       this.setPlaneDetection(this.planeDetection);
       this.addBottomPlane(scene);
     }

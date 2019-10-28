@@ -95,6 +95,22 @@ export abstract class ARCommonNode implements IARCommonNode {
     };
   }
 
+  getDistanceTo(otherPosition: ARPosition): number {
+    let otherObjectWorldPos = this.renderer.unprojectPoint({
+      x: otherPosition.x,
+      y: otherPosition.y,
+      z: otherPosition.z
+    });
+
+    const pos = this.ios.worldPosition;
+
+    let xd = otherObjectWorldPos.x - pos.x;
+    let yd = otherObjectWorldPos.y - pos.y;
+    let zd = otherObjectWorldPos.z - pos.z;
+
+    return sqrt(xd * xd + yd * yd + zd * zd);
+  }
+
   setPosition(pos: ARPosition): void {
     this.ios.position = {
       x: pos.x,

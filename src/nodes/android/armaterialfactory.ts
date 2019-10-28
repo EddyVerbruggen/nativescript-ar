@@ -16,7 +16,7 @@ export class ARMaterialFactory {
     } else if (material.constructor.name === "Color") {
 
       return ARMaterialFactory.applyColor(node, (<Color>material).android)
-          .then(() => console.log("Material applied"))
+          // .then(() => console.log("Material applied"))
           .catch(err => console.log("Error applying material: " + err));
 
     } else {
@@ -138,14 +138,13 @@ export class ARMaterialFactory {
           const modelPath = file.path;
 
           let promise = file.writeText(JSON.stringify(gltf, null, "   "))
-              .then(() => {
-                return copyAsset("material.bin", tmp.getFile("material.bin").path);
-              });
+              .then(() => copyAsset("material.bin", tmp.getFile("material.bin").path));
 
           gltf.images.forEach(image => {
             promise = promise.then(() => {
-              console.log(`image.uri ${image.uri} `);
-              return copyAsset(image.uri, tmp.getFile(image.uri).path).then(() => console.log("copy success: " + image.uri));
+              return copyAsset(image.uri, tmp.getFile(image.uri).path)
+                  // .then(() => console.log("copy success: " + image.uri))
+                  .catch(err => console.log("Failed to copy " + image.uri + " with error: " + err));
             });
           });
 

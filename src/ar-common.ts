@@ -5,27 +5,18 @@ import { ContentView } from "tns-core-modules/ui/content-view";
 import { Property, View } from "tns-core-modules/ui/core/view";
 import { booleanConverter } from "tns-core-modules/ui/core/view-base";
 
-export enum ARDebugLevel {
-  NONE = <any>"NONE",
-  WORLD_ORIGIN = <any>"WORLD_ORIGIN",
-  FEATURE_POINTS = <any>"FEATURE_POINTS",
-  PHYSICS_SHAPES = <any>"PHYSICS_SHAPES"
-}
+export type ARDebugLevel = "NONE" | "WORLD_ORIGIN" | "FEATURE_POINTS" | "PHYSICS_SHAPES";
 
-export enum ARTrackingMode {
-  WORLD = <any>"WORLD",
-  IMAGE = <any>"IMAGE",
-  FACE = <any>"FACE"
-}
+export type ARTrackingMode = "WORLD" | "IMAGE" | "FACE";
 
 const debugLevelProperty = new Property<AR, ARDebugLevel>({
   name: "debugLevel",
-  defaultValue: ARDebugLevel.NONE
+  defaultValue: "NONE"
 });
 
 const trackingModeProperty = new Property<AR, ARTrackingMode>({
   name: "trackingMode",
-  defaultValue: ARTrackingMode.WORLD
+  defaultValue: "WORLD"
 });
 
 const planeMaterialProperty = new Property<AR, string>({
@@ -94,6 +85,8 @@ export interface ARCommonNode extends ARNode {
   getWorldPosition(): ARPosition;
 
   setWorldPosition(to: ARPosition): void;
+
+  getDistanceTo(otherPosition: ARPosition): number;
 
   onTap(touchPosition: ARDimensions2D): void;
 
@@ -438,18 +431,14 @@ export abstract class AR extends ContentView {
 
   abstract stopRecordingVideo(): Promise<string>;
 
-  [debugLevelProperty.setNative](value?: string | ARDebugLevel) {
+  [debugLevelProperty.setNative](value?: ARDebugLevel) {
     if (value) {
-      if (typeof value === "string") {
-        this.setDebugLevel(ARDebugLevel[value]);
-      } else {
-        this.setDebugLevel(<ARDebugLevel>value);
-      }
+      this.setDebugLevel(value);
     }
   }
 
-  [trackingModeProperty.setNative](value?: string | ARTrackingMode) {
-    this.trackingMode = typeof value === "string" ? ARTrackingMode[value] : <ARTrackingMode>value;
+  [trackingModeProperty.setNative](value: ARTrackingMode) {
+    this.trackingMode = value;
   }
 
   [planeMaterialProperty.setNative](value: string) {

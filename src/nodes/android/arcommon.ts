@@ -169,6 +169,9 @@ export abstract class ARCommonNode implements IARCommonNode {
     );
   }
 
+  getDistanceTo(otherPosition: ARPosition): number {
+    return 0; // TODO see iOS
+  }
 
   rotateBy(by: ARRotation): void {
     const currentRotation = this.android.getLocalRotation();
