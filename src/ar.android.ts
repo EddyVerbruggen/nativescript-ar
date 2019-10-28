@@ -1,7 +1,7 @@
 import * as application from "tns-core-modules/application";
 import { ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
-import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneDetectionOrientation, ARPlaneTappedEventData, ARPosition, ARRotation, ARTrackingFaceEventData, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
+import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneDetectionOrientation, ARPlaneTappedEventData, ARPosition, ARRotation, ARTrackingFaceEventData, ARTrackingImageDetectedEventData, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { TNSArFragmentForImageDetection } from "./imagefragment.android";
 import { ARBox } from "./nodes/android/arbox";
 import { ARGroup } from "./nodes/android/argroup";
@@ -330,11 +330,11 @@ export class AR extends ARBase {
   private initAR() {
     this.nativeView.setId(android.view.View.generateViewId());
 
-    if (this.trackingMode === ARTrackingMode.FACE) {
+    if (this.trackingMode === "FACE") {
       _fragment = new TNSArFragmentForFaceDetection();
 
     } else {
-      if (this.trackingMode === ARTrackingMode.IMAGE) {
+      if (this.trackingMode === "IMAGE") {
         _fragment = new TNSArFragmentForImageDetection();
 
         _fragment.getImageDetectionSceneView().then(sceneView => {
@@ -418,7 +418,7 @@ export class AR extends ARBase {
     }
 
     const onCamPermissionGranted = () => {
-      if (this.trackingMode === ARTrackingMode.FACE) {
+      if (this.trackingMode === "FACE") {
         setTimeout(() => {
           const sceneView = _fragment.getArSceneView();
           if (!sceneView) {
@@ -561,14 +561,13 @@ export class AR extends ARBase {
     return this.nativeView;
   }
 
-  togglePlaneVisibility(on: boolean): void {
-    console.log(">> togglePlaneVisibility: " + on);
-    // this.renderer.setDrawPlanes(on); // TODO
+  togglePlaneVisibility(to: boolean): void {
+    _fragment.getArSceneView().getPlaneRenderer().setVisible(to);
   }
 
   setPlaneDetection(to: ARPlaneDetectionOrientation): void {
-    // TODO this is just 'faking it' for now (by calling togglePlaneVisibility)
-    this.togglePlaneVisibility(to !== "NONE");
+    // this is the official way, but it crashes the app, so commented this line
+    // _fragment.getArSceneView().getPlaneRenderer().setEnabled(to !== "NONE");
   }
 
   toggleStatistics(on: boolean): void {
@@ -576,10 +575,7 @@ export class AR extends ARBase {
   }
 
   setDebugLevel(to: ARDebugLevel): void {
-    // const drawPlanesAndPointClound = to === ARDebugLevel.FEATURE_POINTS || to === ARDebugLevel.PHYSICS_SHAPES;
-    // console.log(">> drawPlanesAndPointClound: " + drawPlanesAndPointClound);
-    // this.renderer.setDrawPointCloud(drawPlanesAndPointClound);
-    // this.renderer.setDrawPlanes(drawPlanesAndPointClound);
+    console.log("Method not implemented: setDebugLevel");
   }
 
   public grabScreenshot(): Promise<ImageSource> {
