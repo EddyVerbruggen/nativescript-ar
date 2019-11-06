@@ -30,24 +30,24 @@ function onNavigatingTo(args) {
     https://docs.nativescript.org/core-concepts/data-binding.
     */
     page.bindingContext = createViewModel();
-
 }
 
-exports.arLoaded=function(args) {
+exports.arLoaded = function (args) {
     console.log('ar loaded!!**');
-}
-exports.planeTapped=function(args) {
+};
+
+exports.planeTapped = function (args) {
 
     console.log('plane tapped');
 
-    args.object.addBox({
-        dimensions:0.1,//{x:0.1, y:0.1, z:0.1},
-        position:args.position
-    })
-    .then(console.log)
-    .catch(console.error)
-
-}
+    args.object.addBox(
+        {
+            dimensions: 0.1,//{x:0.1, y:0.1, z:0.1},
+            position: args.position
+        })
+        .then(console.log)
+        .catch(console.error)
+};
 
 /*
 Exporting a function in a NativeScript code-behind file makes it accessible

@@ -1,9 +1,7 @@
 const Observable = require("tns-core-modules/data/observable").Observable;
 
 function createViewModel() {
-    const viewModel = new Observable();
-   
-    return viewModel;
+    return new Observable();
 }
 
 exports.createViewModel = createViewModel;

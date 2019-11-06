@@ -82,7 +82,7 @@
   const SUN_DEFAULT_SCALE = .9;
   const ONE_AU = 0.75; // 1 AU (Astronomical Unit), which is ~150 million km (the distance from the Earth to the Sun)
   const EARTH_TO_MOON_METERS = 0.15;
-  const EARTH_ORBIT_SPEED = 30.5;
+  const EARTH_ORBIT_SPEED = 26;
 
   const GAME_OBJECTS = ["Mars", "Earth", "Neptune", "Saturn", "Venus", "Earth's moon", "Mercury", "Jupiter", "Uranus"];
 
@@ -95,7 +95,7 @@
   for (let i = 0; i < NR_OF_SATURN_MOONS; i++) {
     saturnMoons.push({
       distance: 0.35 + (Math.random() / 5),
-      orbitSpeed: -1000 * Math.random(),
+      orbitSpeed: -150 * Math.random(),
       scale: (Math.random() / 50) * SCALE_FACTOR,
       tilt: i * 17,
       materials: isIOS ? [{
