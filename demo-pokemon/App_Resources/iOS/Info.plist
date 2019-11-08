@@ -52,5 +52,8 @@
     <key>NSAllowsArbitraryLoads</key>
     <true/>
   </dict>
+  <!-- Making sure Dark Mode is not applied -->
+  <key>UIUserInterfaceStyle</key>
+  <string>Light</string>
   </dict>
 </plist>
