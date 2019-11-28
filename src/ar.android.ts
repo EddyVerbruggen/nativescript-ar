@@ -269,6 +269,11 @@ export class AR extends ARBase {
 
   disposeNativeView(): void {
     super.disposeNativeView();
+    // (fix: #90) remove anchor node
+    if (_origin) {
+      _origin.setParent(null);
+      _origin = null;
+    }
     // destroy AR fragment
     const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
     supportFragmentManager.beginTransaction().remove(_fragment).commit();
