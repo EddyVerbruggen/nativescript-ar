@@ -1,4 +1,4 @@
-import { fromFileOrResource, fromUrl, ImageSource } from "tns-core-modules/image-source";
+import { fromFileOrResource, ImageSource } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
 import { ARAddImageOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
@@ -11,7 +11,7 @@ export class ARImage extends ARCommonNode {
     if (typeof options.image === "string") {
 
       if (options.image.indexOf("://") >= 0) {
-        return fromUrl(options.image).then(image => {
+        return ImageSource.fromUrl(options.image).then(image => {
           options.image = image;
           return ARImage.create(options, fragment);
         });

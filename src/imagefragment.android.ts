@@ -1,5 +1,5 @@
-import { fromFileOrResource, fromUrl } from "tns-core-modules/image-source";
 import * as utils from "tns-core-modules/utils/utils";
+import { ImageSource, fromFileOrResource } from "tns-core-modules/image-source";
 
 export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.ArFragment {
 
@@ -206,7 +206,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
         const assetManager = context.getAssets();
 
         if (asset.indexOf("://") >= 0) {
-          fromUrl(asset).then((image) => {
+          ImageSource.fromUrl(asset).then((image) => {
             this.addBitmap(image.android, name, width);
           }).catch(console.error);
           return;
