@@ -1,4 +1,4 @@
-import { Color } from "tns-core-modules/color";
+import { Color } from "@nativescript/core";
 import { ARAddGeometryOptions, ARMaterial } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 import { ARMaterialFactory } from "./armaterialfactory";

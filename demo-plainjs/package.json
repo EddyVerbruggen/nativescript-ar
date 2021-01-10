@@ -13,8 +13,8 @@
   "repository": "<fill-your-repository-here>",
   "dependencies": {
     "nativescript-ar": "../src",
-    "nativescript-theme-core": "~1.0.6",
-    "tns-core-modules": "~6.1.0"
+    "nativescript-theme-core": "^2.0.24",
+    "@nativescript/core": "^7.0.13"
   },
   "devDependencies": {
     "nativescript-dev-webpack": "~1.2.0"

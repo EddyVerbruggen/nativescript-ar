@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { knownFolders } from "tns-core-modules/file-system";
+import { knownFolders } from "@nativescript/core";
 import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
 import { Pokemon } from "./pokemon";
 

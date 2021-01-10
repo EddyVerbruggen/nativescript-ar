@@ -11,9 +11,9 @@
   "dependencies": {
     "nativescript-ar": "../src",
     "nativescript-flashlight": "^1.2.1",
-    "nativescript-theme-core": "~1.0.6",
+    "nativescript-theme-core": "^2.0.24",
     "nativescript-unit-test-runner": "0.7.0",
-    "tns-core-modules": "~6.1.0"
+    "@nativescript/core": "^7.0.13"
   },
   "devDependencies": {
     "@types/jasmine": "~2.8.0",

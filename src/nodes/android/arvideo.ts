@@ -1,4 +1,4 @@
-import * as utils from "tns-core-modules/utils/utils";
+import { Utils } from "@nativescript/core";
 import { ARAddVideoOptions, ARVideoNode } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
@@ -71,7 +71,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
         videoMat = renderable.getMaterial();
 
         com.google.ar.sceneform.rendering.MaterialFactory.makeOpaqueWithColor(
-            utils.ad.getApplicationContext(),
+            Utils.ad.getApplicationContext(),
             new com.google.ar.sceneform.rendering.Color(android.graphics.Color.MAGENTA))
             .thenAccept(new (<any>java.util).function.Consumer({
               accept: material => {
@@ -143,7 +143,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
       try {
 
         com.google.ar.sceneform.rendering.ModelRenderable.builder()
-            .setSource(utils.ad.getApplicationContext(), android.net.Uri.parse("video_chroma.sfb"))
+            .setSource(Utils.ad.getApplicationContext(), android.net.Uri.parse("video_chroma.sfb"))
             .build()
             .thenAccept(new (<any>java.util).function.Consumer({
               accept: renderable => {
@@ -167,7 +167,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
   static getPlayer(options: ARAddVideoOptions): android.media.MediaPlayer {
 
     const video = options.video;
-    const context = utils.ad.getApplicationContext();
+    const context = Utils.ad.getApplicationContext();
     // const controller = new 	android.widget.MediaController(context);
 
     if (typeof video === "string") {

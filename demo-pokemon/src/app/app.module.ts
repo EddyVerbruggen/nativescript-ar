@@ -1,6 +1,5 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { registerElement } from "nativescript-angular";
-import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+import { NativeScriptModule, registerElement } from "@nativescript/angular";
 import { NativeScriptUISideDrawerModule } from "nativescript-ui-sidedrawer/angular";
 import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
 import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";

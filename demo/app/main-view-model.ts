@@ -1,9 +1,6 @@
 import { AR, ARLoadedEventData, ARMaterial, ARNodeInteraction, ARPlaneDetectedEventData, ARPlaneTappedEventData, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingImageDetectedEventData, ARVideoNode } from "nativescript-ar";
-import { Color } from "tns-core-modules/color";
-import { Observable } from "tns-core-modules/data/observable";
-import { isIOS } from "tns-core-modules/platform";
-import { Image } from "tns-core-modules/ui/image";
-import { Page } from 'tns-core-modules/ui/page';
+
+import { Observable, Page, isIOS, Image, Color } from "@nativescript/core";
 
 declare const NSBundle: any;
 

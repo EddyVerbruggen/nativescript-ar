@@ -58,16 +58,17 @@
   import { TNSPlayer } from "nativescript-audio";
   import { ToastPosition, Toasty } from "nativescript-toasty";
   import { Vibrate } from "nativescript-vibrate";
-  import { Color } from "tns-core-modules/color";
-  import { isIOS, screen } from "tns-core-modules/platform";
+  import { Color } from "@nativescript/core";
+  import { Application, Page, isIOS } from "@nativescript/core";
+  import { isIOS, Screen } from "@nativescript/core";
 
   declare const SCNTransaction: any;
 
   let vibrator;
   let audioPlayer;
 
-  const width = screen.mainScreen.widthDIPs;
-  const height = screen.mainScreen.heightDIPs;
+  const width = Screen.mainScreen.widthDIPs;
+  const height = Screen.mainScreen.heightDIPs;
   const centerX = width / 2;
   const centerY = height / 2;
   console.log(`::::: screen = ${width} x ${height}`);

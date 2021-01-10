@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { isIOS } from "tns-core-modules/platform";
+import { isIOS } from "@nativescript/core";
 
 const prefix = isIOS ? "Models.scnassets/" : "";
 const postfix = isIOS ? ".dae" : ".glb";

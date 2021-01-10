@@ -1,4 +1,4 @@
-import * as application from 'tns-core-modules/application';
+import { Application } from "@nativescript/core";
 import { ARAddVideoOptions, ARVideoNode } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
@@ -88,7 +88,7 @@ export class ARVideo extends ARCommonNode implements ARVideoNode {
     materialPlane.firstMaterial.doubleSided = true;
 
     if (options.loop !== false) {
-      const AVPlayerItemDidPlayToEndTimeNotificationObserver = application.ios.addNotificationObserver(
+      const AVPlayerItemDidPlayToEndTimeNotificationObserver = Application.ios.addNotificationObserver(
           AVPlayerItemDidPlayToEndTimeNotification,
           (notification: NSNotification) => {
             // const player = this.plane.firstMaterial.diffuse.contents;

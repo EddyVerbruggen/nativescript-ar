@@ -1,6 +1,5 @@
-import * as fs from "tns-core-modules/file-system";
+import { Http, File } from "@nativescript/core";
 
-import * as http from "tns-core-modules/http";
 import { ARAddModelOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
@@ -34,8 +33,8 @@ export class ARModel extends ARCommonNode {
 
   private static download(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      http.getFile(url).then(
-          (file: fs.File) => {
+      Http.getFile(url).then(
+          (file: File) => {
             console.log(">>> downloaded to " + file.path);
             resolve(file.path);
           },

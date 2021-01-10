@@ -1,6 +1,4 @@
-import * as application from "tns-core-modules/application";
-import { ImageSource } from "tns-core-modules/image-source";
-import * as utils from "tns-core-modules/utils/utils";
+import { Utils, ImageSource, Application, AndroidApplication } from "@nativescript/core";
 import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneDetectionOrientation, ARPlaneTappedEventData, ARPosition, ARRotation, ARTrackingFaceEventData, ARTrackingImageDetectedEventData, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { TNSArFragmentForImageDetection } from "./imagefragment.android";
 import { ARBox } from "./nodes/android/arbox";
@@ -275,7 +273,7 @@ export class AR extends ARBase {
       _origin = null;
     }
     // destroy AR fragment
-    const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
+    const supportFragmentManager = (Application.android.foregroundActivity || Application.android.startActivity).getSupportFragmentManager();
     supportFragmentManager.beginTransaction().remove(_fragment).commit();
   }
 
@@ -482,13 +480,13 @@ export class AR extends ARBase {
         }, 1000);
       }
 
-      const supportFragmentManager = (application.android.foregroundActivity || application.android.startActivity).getSupportFragmentManager();
+      const supportFragmentManager = (Application.android.foregroundActivity || Application.android.startActivity).getSupportFragmentManager();
       supportFragmentManager.beginTransaction().add(this.nativeView.getId(), _fragment).commit();
 
       // no need for these - the fragment will manage session suspending etc.. unless we get crashes which are not caused by livesync..
-      // application.android.on(application.AndroidApplication.activityResumedEvent, (args: any) => {
+      // Application.android.on(AndroidApplication.activityResumedEvent, (args: any) => {
       // });
-      // application.android.on(application.AndroidApplication.activityPausedEvent, (args: any) => {
+      // Application.android.on(AndroidApplication.activityPausedEvent, (args: any) => {
       // });
 
       _fragment.setOnTapArPlaneListener(new com.google.ar.sceneform.ux.BaseArFragment.OnTapArPlaneListener({
@@ -562,9 +560,10 @@ export class AR extends ARBase {
     return _fragment;
   }
 
-  get android(): any {
-    return this.nativeView;
-  }
+  // COMMENTED BECAUSE IT FIRES TS ERROR
+  // get android(): any {
+  //   return this.nativeView;
+  // }
 
   togglePlaneVisibility(to: boolean): void {
     _fragment.getArSceneView().getPlaneRenderer().setVisible(to);
@@ -696,7 +695,7 @@ export class AR extends ARBase {
     if (!hasPermission) {
       hasPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ===
           ContentPackageName.ContextCompat.checkSelfPermission(
-              utils.ad.getApplicationContext(),
+              Utils.ad.getApplicationContext(),
               permission);
     }
     return hasPermission;
@@ -709,20 +708,20 @@ export class AR extends ARBase {
       if (args.requestCode === permissionRequestCode) {
         for (let i = 0; i < args.permissions.length; i++) {
           if (args.grantResults[i] === android.content.pm.PackageManager.PERMISSION_DENIED) {
-            application.off(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+            Application.off(AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
             reject && reject("Please allow access to external storage and try again.");
             return;
           }
         }
-        application.off(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+        Application.off(AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
         onPermissionGranted();
       }
     };
 
-    application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
+    Application.android.on(AndroidApplication.activityRequestPermissionsEvent, onPermissionEvent);
 
     AppPackageName.ActivityCompat.requestPermissions(
-        application.android.foregroundActivity || application.android.startActivity,
+        Application.android.foregroundActivity || Application.android.startActivity,
         [permission],
         permissionRequestCode
     );

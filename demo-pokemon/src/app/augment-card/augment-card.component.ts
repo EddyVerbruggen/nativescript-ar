@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
-import { RouterExtensions } from "nativescript-angular";
+import { RouterExtensions } from "@nativescript/angular";
 import { ARCommonNode, ARTrackingImageDetectedEventData } from "nativescript-ar";
-import { isIOS } from "tns-core-modules/platform";
+import { isIOS } from "@nativescript/core";
 import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
 import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
 

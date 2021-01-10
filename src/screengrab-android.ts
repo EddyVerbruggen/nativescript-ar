@@ -1,4 +1,4 @@
-import { ImageSource, fromNativeSource } from "tns-core-modules/image-source";
+import { ImageSource } from "@nativescript/core";
 
 export class FragmentScreenGrab {
 
@@ -17,7 +17,7 @@ export class FragmentScreenGrab {
 
         onPixelCopyFinished: (copyResult: number) => {
           if (copyResult === android.view.PixelCopy.SUCCESS) {
-            resolve(fromNativeSource(bitmap));
+            resolve(ImageSource.fromDataSync(bitmap));
           } else {
             reject("Field to copy screen image");
           }

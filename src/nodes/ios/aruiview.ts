@@ -1,9 +1,8 @@
-import { screen } from "tns-core-modules/platform";
-import { View } from "tns-core-modules/ui/core/view";
+import { Screen, View } from "@nativescript/core";
 import { ARDimensions2D, ARUIViewOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
-const pixelsPerMeter = 200 * screen.mainScreen.scale;
+const pixelsPerMeter = 200 * Screen.mainScreen.scale;
 
 const main_queue = dispatch_get_current_queue();
 
@@ -43,7 +42,7 @@ export class ARUIView extends ARCommonNode {
 
         // the NativeScript View x/y ratio is different than the camera ratio, so compensate for the difference, otherwise the view is vertically compressed
         const cameraRatio = Math.max(sceneView.session.currentFrame.camera.imageResolution.height, sceneView.session.currentFrame.camera.imageResolution.width) / Math.min(sceneView.session.currentFrame.camera.imageResolution.height, sceneView.session.currentFrame.camera.imageResolution.width);
-        const screenRatio = Math.max(screen.mainScreen.heightPixels, screen.mainScreen.widthPixels) / Math.min(screen.mainScreen.heightPixels, screen.mainScreen.widthPixels);
+        const screenRatio = Math.max(Screen.mainScreen.heightPixels, Screen.mainScreen.widthPixels) / Math.min(Screen.mainScreen.heightPixels, Screen.mainScreen.widthPixels);
         const yStretchCompensation = (cameraRatio + screenRatio) / 2;
         console.log("yStretchCompensation: " + yStretchCompensation);
 

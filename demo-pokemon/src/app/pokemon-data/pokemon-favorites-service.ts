@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import * as ApplicationSettings from "tns-core-modules/application-settings";
+import { ApplicationSettings } from "@nativescript/core";
 import { Pokemon } from "./pokemon";
 
 const FAVORITES_KEY = "FAVORITES";

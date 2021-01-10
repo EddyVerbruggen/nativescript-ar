@@ -1,9 +1,4 @@
-import { Color } from "tns-core-modules/color";
-import { EventData } from "tns-core-modules/data/observable";
-import { ImageSource } from "tns-core-modules/image-source";
-import { ContentView } from "tns-core-modules/ui/content-view";
-import { Property, View } from "tns-core-modules/ui/core/view";
-import { booleanConverter } from "tns-core-modules/ui/core/view-base";
+import { Color, ImageSource, ContentView, EventData, Property, View, booleanConverter } from "@nativescript/core";
 
 export type ARDebugLevel = "NONE" | "WORLD_ORIGIN" | "FEATURE_POINTS" | "PHYSICS_SHAPES";
 
