@@ -1,4 +1,4 @@
-import { fromFileOrResource, fromUrl, ImageSource } from "tns-core-modules/image-source";
+import { ImageSource } from "@nativescript/core";
 import { ARAddImageOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
@@ -10,12 +10,12 @@ export class ARImage extends ARCommonNode {
     if (typeof options.image === "string") {
 
       if (options.image.indexOf("://") >= 0) {
-        return fromUrl(options.image).then(function (image) {
+        return ImageSource.fromUrl(options.image).then(function (image) {
           options.image = image;
           return ARImage.create(options, renderer);
         });
       }
-      options.image = fromFileOrResource(options.image);
+      options.image = ImageSource.fromFileOrResourceSync(options.image);
     }
 
     return new Promise<ARImage>(async (resolve, reject) => {

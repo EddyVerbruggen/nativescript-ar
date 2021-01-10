@@ -1,4 +1,4 @@
-import * as utils from "tns-core-modules/utils/utils";
+import { Utils } from "@nativescript/core";
 import { ARAddModelOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 import { ARCommonGeometryNode } from "./arcommongeometry";
@@ -10,7 +10,7 @@ export class ARModel extends ARCommonGeometryNode {
     return new Promise<ARModel>((resolve, reject) => {
 
       let model;
-      const context = utils.ad.getApplicationContext();
+      const context = Utils.ad.getApplicationContext();
       if (options.name.indexOf(".glb") > 0 || options.name.indexOf(".gltf") > 0) {
         model = ARModel.getGLTFSource(options.name);
       } else {
@@ -37,7 +37,7 @@ export class ARModel extends ARCommonGeometryNode {
   }
 
   static getGLTFSource(asset: string): com.google.ar.sceneform.assets.RenderableSource {
-    const context = utils.ad.getApplicationContext();
+    const context = Utils.ad.getApplicationContext();
 
     const type = (asset.indexOf(".glb") > 0)
         ? com.google.ar.sceneform.assets.RenderableSource.SourceType.GLB

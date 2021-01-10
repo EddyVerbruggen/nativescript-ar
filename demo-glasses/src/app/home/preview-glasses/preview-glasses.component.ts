@@ -1,9 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { PageRoute, RouterExtensions } from "nativescript-angular/router";
+import { RouterExtensions } from "@nativescript/angular";
 import { ARFaceTrackingActions, ARTrackingFaceEventData } from 'nativescript-ar/ar-common';
 import { switchMap } from "rxjs/operators";
-import { Color } from "tns-core-modules/color";
-import { Page } from "tns-core-modules/ui/page/page";
+import { Color, Page } from "@nativescript/core";
 import { GlassesService } from "~/app/services/glasses.service";
 
 @Component({

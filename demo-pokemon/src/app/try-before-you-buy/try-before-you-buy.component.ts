@@ -1,9 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { RouterExtensions } from "nativescript-angular";
+import { RouterExtensions } from "@nativescript/angular";
 import { AR, ARCommonNode, ARMaterial, ARPlaneTappedEventData } from "nativescript-ar";
-import { Color } from "tns-core-modules/color";
-import { isIOS } from "tns-core-modules/platform";
-import { action } from "tns-core-modules/ui/dialogs";
+import { Color, Action, isIOS } from "@nativescript/core";
 import { Pokemon } from "~/app/pokemon-data/pokemon";
 import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
 import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
@@ -73,7 +71,7 @@ export class TryBeforeYouBuyComponent implements OnInit {
     private async pokemonPicker(): Promise<Pokemon> {
         const options: Array<string> = [];
         this.pokemonList.map(p => options.push(p.name));
-        const pickedItem: string = await action("Pick a Pokémon", "Cancel", options);
+        const pickedItem: string = await Action("Pick a Pokémon", "Cancel", options);
         return this.pokemonList[options.indexOf(pickedItem)];
     }
 }

@@ -1,6 +1,5 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptCommonModule } from "nativescript-angular/common";
-import { registerElement } from "nativescript-angular/element-registry";
+import { NativeScriptCommonModule, registerElement } from "@nativescript/angular";
 import { PagerModule } from 'nativescript-pager/angular';
 
 import { HomeRoutingModule } from "./home-routing.module";

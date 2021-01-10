@@ -1,4 +1,4 @@
-import * as application from "tns-core-modules/application";
+import { Application } from "@nativescript/core";
 
 const DEFAULT_FRAMERATE = 30;
 const DEFAULT_BITRATE = 10000000;
@@ -157,7 +157,7 @@ export class VideoRecorder {
 
   public setVideoQualityAuto(): void {
 
-    const orientation = application.android.context.getResources().getConfiguration().orientation;
+    const orientation = Application.android.context.getResources().getConfiguration().orientation;
     this.setVideoQuality(android.media.CamcorderProfile.QUALITY_2160P, orientation);
   }
 

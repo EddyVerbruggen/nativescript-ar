@@ -1,6 +1,4 @@
-import { Color } from "tns-core-modules/color";
-import { Folder, knownFolders, path } from "tns-core-modules/file-system";
-import * as utils from "tns-core-modules/utils/utils";
+import { Color, Utils, Folder, knownFolders, path } from "@nativescript/core";
 import { ARMaterial, ARMaterialProperty, ARMaterialWrapMode } from "../../ar-common";
 
 export class ARMaterialFactory {
@@ -30,7 +28,7 @@ export class ARMaterialFactory {
     return new Promise<void>((resolve, reject) => {
 
       com.google.ar.sceneform.rendering.MaterialFactory.makeOpaqueWithColor(
-          utils.ad.getApplicationContext(),
+          Utils.ad.getApplicationContext(),
           new com.google.ar.sceneform.rendering.Color(color))
           .thenAccept(new (<any>java.util).function.Consumer({
             accept: material => {
@@ -150,7 +148,7 @@ export class ARMaterialFactory {
 
           promise.then(() => {
 
-            let context = utils.ad.getApplicationContext();
+            let context = Utils.ad.getApplicationContext();
             let model = com.google.ar.sceneform.assets.RenderableSource.builder().setSource(
                 context, android.net.Uri.parse(modelPath), com.google.ar.sceneform.assets.RenderableSource.SourceType.GLTF2
             ).build();
@@ -198,7 +196,7 @@ const copyAsset = (asset: string, to: string): Promise<void> => {
 
   return new Promise((resolve, reject) => {
 
-    const context = utils.ad.getApplicationContext();
+    const context = Utils.ad.getApplicationContext();
     // const uri=android.net.Uri.parse(asset)
     let input = context.getAssets().open(asset);
     let out = new java.io.FileOutputStream(new java.io.File(to));

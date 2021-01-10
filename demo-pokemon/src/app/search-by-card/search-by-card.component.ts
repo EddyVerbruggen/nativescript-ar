@@ -1,9 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
-import { RouterExtensions } from "nativescript-angular";
+import { RouterExtensions } from "@nativescript/angular";
 import { ARTrackingImageDetectedEventData } from "nativescript-ar";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
-import * as app from "tns-core-modules/application";
-import { View } from "tns-core-modules/ui/core/view";
+import { View, Application } from "@nativescript/core";
 import { Pokemon } from "~/app/pokemon-data/pokemon";
 import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
 import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
@@ -35,7 +34,7 @@ export class SearchByCardComponent implements OnInit {
     }
 
     onDrawerButtonTap(): void {
-        const sideDrawer = <RadSideDrawer>app.getRootView();
+        const sideDrawer = <RadSideDrawer>Application.getRootView();
         sideDrawer.showDrawer();
     }
 

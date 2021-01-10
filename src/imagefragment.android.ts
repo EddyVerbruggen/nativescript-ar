@@ -1,5 +1,4 @@
-import { fromFileOrResource, fromUrl } from "tns-core-modules/image-source";
-import * as utils from "tns-core-modules/utils/utils";
+import { Utils, ImageSource } from "@nativescript/core";
 
 export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.ArFragment {
 
@@ -59,7 +58,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
   public addImagesInFolder(name: string, imageWidthMeters?: number) {
     let width = imageWidthMeters || -1;
 
-    const context = utils.ad.getApplicationContext();
+    const context = Utils.ad.getApplicationContext();
     const assetManager = context.getAssets();
     let list = assetManager.list(name);
 
@@ -113,7 +112,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
 
   private loadImgDatabase(asset: string) {
     try {
-      const context = utils.ad.getApplicationContext();
+      const context = Utils.ad.getApplicationContext();
       const assetManager = context.getAssets();
       let is = assetManager.open(asset);
       this.augmentedImageDatabase = (<any>com.google.ar).core.AugmentedImageDatabase.deserialize(this.session, is);
@@ -127,7 +126,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
   }
 
   private readContentWidth(asset: string) {
-    const context = utils.ad.getApplicationContext();
+    const context = Utils.ad.getApplicationContext();
     const assetManager = context.getAssets();
 
     let text = "";
@@ -202,11 +201,11 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
           name = asset.split('/').pop().split('.').slice(0, -1).join('.');
         }
 
-        const context = utils.ad.getApplicationContext();
+        const context = Utils.ad.getApplicationContext();
         const assetManager = context.getAssets();
 
         if (asset.indexOf("://") >= 0) {
-          fromUrl(asset).then((image) => {
+          ImageSource.fromUrl(asset).then((image) => {
             this.addBitmap(image.android, name, width);
           }).catch(console.error);
           return;
@@ -223,7 +222,7 @@ export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.A
         }
 
         try {
-          image = fromFileOrResource(asset);
+          image = ImageSource.fromFileOrResourceSync(asset);
           this.addBitmap(image.android, name, width);
           return;
         } catch (e) {

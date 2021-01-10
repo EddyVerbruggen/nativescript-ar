@@ -1,4 +1,4 @@
-import { Color } from "tns-core-modules/color";
+import { Color } from "@nativescript/core";
 import { ARMaterial, ARMaterialProperty, ARMaterialWrapMode } from "../../ar-common";
 
 export class ARMaterialFactory {

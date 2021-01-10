@@ -1,12 +1,11 @@
-import { screen } from "tns-core-modules/platform";
-import * as utils from "tns-core-modules/utils/utils";
+import { Utils, Screen } from "@nativescript/core";
 import { ARAddOptions, ARCommonNode as IARCommonNode, ARDimensions2D, ARNodeInteraction, ARPosition, ARRotation, ARScale } from "../../ar-common";
 
 declare const java: any;
 
 export abstract class ARCommonNode implements IARCommonNode {
   static camera: com.google.ar.sceneform.Camera;
-  static screenScale = screen.mainScreen.scale;
+  static screenScale = Screen.mainScreen.scale;
 
   id: string;
   android: com.google.ar.sceneform.Node;
@@ -299,7 +298,7 @@ export abstract class ARCommonNode implements IARCommonNode {
       }
 
       com.google.ar.sceneform.rendering.MaterialFactory.makeOpaqueWithColor(
-          utils.ad.getApplicationContext(),
+          Utils.ad.getApplicationContext(),
           new com.google.ar.sceneform.rendering.Color(android.graphics.Color.MAGENTA))
           .thenAccept(new java.util.function.Consumer({
             accept: material => {
@@ -317,4 +316,3 @@ export abstract class ARCommonNode implements IARCommonNode {
     return degrees * (3.14159265359 / 180);
   }
 }
-

@@ -1,7 +1,6 @@
-import * as application from "tns-core-modules/application";
-import { fromNativeSource, ImageSource } from "tns-core-modules/image-source";
-import { device } from "tns-core-modules/platform";
-import lazy from "tns-core-modules/utils/lazy";
+import { Device, ImageSource, Application } from "@nativescript/core";
+
+
 import { AR as ARBase, ARAddBoxOptions, ARAddImageOptions, ARAddModelOptions, ARAddOptions, ARAddPlaneOptions, ARAddSphereOptions, ARAddTextOptions, ARAddTubeOptions, ARAddVideoOptions, ARCommonNode, ARDebugLevel, ARFaceTrackingActions, ARImageTrackingActions, ARImageTrackingOptions, ARLoadedEventData, ARPlaneDetectedEventData, ARPlaneDetectionOrientation, ARPlaneTappedEventData, ARPosition, ARRotation, ARSceneTappedEventData, ARTrackingFaceEventData, ARTrackingFaceEventType, ARTrackingImageDetectedEventData, ARTrackingMode, ARUIViewOptions, ARVideoNode } from "./ar-common";
 import { ARBox } from "./nodes/ios/arbox";
 import { ARGroup } from "./nodes/ios/argroup";
@@ -20,7 +19,7 @@ export { ARDebugLevel, ARTrackingMode };
 declare const ARImageAnchor: any;
 const main_queue = dispatch_get_current_queue();
 
-const sdkVersion = lazy(() => parseInt(device.sdkVersion));
+const sdkVersion =  parseInt(Device.sdkVersion);
 
 const ARState = {
   planes: new Map<string, ARPlane>(),
@@ -174,7 +173,7 @@ export class AR extends ARBase {
   public grabScreenshot(): Promise<ImageSource> {
     return new Promise((resolve, reject) => {
       if (this.sceneView) {
-        resolve(fromNativeSource(this.sceneView.snapshot()));
+        resolve(ImageSource.fromDataSync(this.sceneView.snapshot()));
         return;
       }
       reject("sceneView is not available");
@@ -191,7 +190,7 @@ export class AR extends ARBase {
 
       if (this.recorder.status === RecordARStatus.ReadyToRecord) {
         this.recorder.record();
-        resolve();
+        resolve(true);
       } else {
         reject();
       }
@@ -226,7 +225,7 @@ export class AR extends ARBase {
     config.planeDetection = arPlaneDetection;
 
     // TODO pass this in - currently this is configured to occlude human bodies, see https://developer.apple.com/documentation/arkit/arconfiguration/3089121-framesemantics?language=objc
-    if (sdkVersion() >= 13) {
+    if (sdkVersion >= 13) {
       // note that this requires at least the A12 chip (iPhone Xs and newer), so add this try-catch to prevent a crash on fi. an iPhone X
       try {
         config.frameSemantics = ARFrameSemantics.PersonSegmentationWithDepth;
@@ -1151,7 +1150,7 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
     this.plane.firstMaterial.diffuse.contents = videoPlayer;
 
     if (loop === true) {
-      this.AVPlayerItemDidPlayToEndTimeNotificationObserver = application.ios.addNotificationObserver(
+      this.AVPlayerItemDidPlayToEndTimeNotificationObserver = Application.ios.addNotificationObserver(
           AVPlayerItemDidPlayToEndTimeNotification,
           (notification: NSNotification) => {
             // const player = this.plane.firstMaterial.diffuse.contents;
@@ -1167,7 +1166,7 @@ class ARImageTrackingActionsImpl implements ARImageTrackingActions {
 
   stopVideoLoop(): void {
     if (this.AVPlayerItemDidPlayToEndTimeNotificationObserver) {
-      application.ios.removeNotificationObserver(
+      Application.ios.removeNotificationObserver(
           this.AVPlayerItemDidPlayToEndTimeNotificationObserver,
           AVPlayerItemDidPlayToEndTimeNotification
       );

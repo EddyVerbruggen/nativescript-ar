@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { Routes } from "@angular/router";
-import { NativeScriptRouterModule } from "nativescript-angular/router";
+import { NativeScriptRouterModule } from "@nativescript/angular";
 import { PokemonSearchResultComponent } from "~/app/search-by-card/pokemon-search-result/pokemon-search-result.component";
 import { SearchByCardComponent } from "./search-by-card.component";
 

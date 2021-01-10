@@ -1,4 +1,4 @@
-import * as utils from "tns-core-modules/utils/utils";
+import { Utils } from "@nativescript/core";
 import { ARUIViewOptions } from "../../ar-common";
 import { ARCommonNode } from "./arcommon";
 
@@ -9,7 +9,7 @@ export class ARUIView extends ARCommonNode {
     return new Promise<ARUIView>(async (resolve, reject) => {
       const node = ARCommonNode.createNode(options, fragment);
 
-      const context = utils.ad.getApplicationContext();
+      const context = Utils.ad.getApplicationContext();
       const container = new android.widget.LinearLayout(context);
 
       container.setOrientation(android.widget.LinearLayout.VERTICAL);
