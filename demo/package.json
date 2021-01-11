@@ -1,30 +1,23 @@
 {
-  "nativescript": {
-    "id": "org.nativescript.plugindemo.ar",
-    "tns-android": {
-      "version": "6.1.1"
-    },
-    "tns-ios": {
-      "version": "6.1.1"
-    }
-  },
   "dependencies": {
     "nativescript-ar": "../src",
     "nativescript-flashlight": "^1.2.1",
-    "nativescript-theme-core": "^2.0.24",
+    "nativescript-theme-core": "~1.0.6",
     "nativescript-unit-test-runner": "0.7.0",
-    "@nativescript/core": "^7.0.13"
+    "@nativescript/core": "~7.1.0"
   },
   "devDependencies": {
+    "@nativescript/ios": "7.1.0",
+    "@nativescript/types": "~7.0.4",
+    "@nativescript/webpack": "~3.0.8",
     "@types/jasmine": "~2.8.0",
-    "nativescript-dev-webpack": "~1.0.0",
-    "tns-platform-declarations": "~6.0.5",
-    "tslint": "~5.4.3",
-    "typescript": "~3.4.5"
+    "tslint": "~6.1.3",
+    "typescript": "~4.0.5"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
     "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**' --exclude '**/typings/**'",
     "generate-android-snapshot": "generate-android-snapshot --targetArchs arm,arm64,ia32 --install"
-  }
+  },
+  "main": "app.js"
 }

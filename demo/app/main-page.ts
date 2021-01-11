@@ -1,10 +1,10 @@
-import { Observable, Page, isIOS } from "@nativescript/core";
+import { EventData, Page, isIOS } from "@nativescript/core";
 import { HelloWorldModel } from './main-view-model';
 
 const flashlight = require("nativescript-flashlight");
 
 // Event handler for Page 'loaded' event attached in main-page.xml
-export function pageLoaded(args: Observable.EventData) {
+export function pageLoaded(args: EventData) {
   // Get the event sender
   const page = <Page>args.object;
   let model = new HelloWorldModel();

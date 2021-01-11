@@ -1,18 +1,18 @@
 {
   "name": "nativescript-ar",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "NativeScript Augmented Reality plugin. ARKit on iOS and (with the help of Sceneform) ARCore on Android.",
   "main": "ar",
   "typings": "index.d.ts",
   "nativescript": {
     "platforms": {
-      "android": "3.0.0",
-      "ios": "3.0.0"
+      "android": "7.0.0",
+      "ios": "7.0.0"
     }
   },
   "scripts": {
     "tsc": "tsc -skipLibCheck",
-    "tsc.demo": "npm run tsc ../demo/*.ts",
+    "tsc.demo": "npm run tsc ../demo/app/*.ts",
     "build": "npm i && npm run tsc",
     "postclone": "npm i && cd ../demo && npm i && cd ../src && npm run plugin.link",
     "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
@@ -20,7 +20,7 @@
     "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude '**/node_modules/**' --exclude '**/tns_modules/**' --exclude '**/typings/**' --exclude '**/platforms/**'",
     "plugin.link": "npm link && cd ../demo && npm link nativescript-ar && cd ../src",
     "plugin.tscwatch": "npm run tsc -- -w",
-    "demo.ios": "npm i && npm run tsc && npm run tsc.demo && cd ../demo && tns run ios",
+    "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios",
     "demo.android": "npm i && npm run tsc && tns plugin build && npm run tsc.demo && cd ../demo && tns run android",
     "demo.plainjs.ios": "npm i && npm run tsc && cd ../demo-plainjs && tns run ios",
     "demo.plainjs.android": "npm i && npm run tsc && tns plugin build && cd ../demo-plainjs && tns run android",
@@ -65,10 +65,10 @@
   "devDependencies": {
     "nativescript-dev-typescript": "~0.10.0",
     "rimraf": "^2.5.0",
-    "@nativescript/core": "^7.0.13",
-    "tns-platform-declarations": "next",
+    "@nativescript/core": "~7.0.13",
+    "@nativescript/types": "~7.0.4",
     "tslint": "~5.4.3",
-    "typescript": "~3.4.5"
+    "typescript": "~4.0.5"
   },
   "dependencies": {},
   "bootstrapper": "nativescript-plugin-seed"
