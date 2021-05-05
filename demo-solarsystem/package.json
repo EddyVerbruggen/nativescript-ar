@@ -14,7 +14,7 @@
     }
   },
   "dependencies": {
-    "nativescript-ar": "file:../publish/package/nativescript-ar-1.1.0.tgz",
+    "nativescript-ar": "file:../publish/package/nativescript-ar-2.0.0.tgz",
     "nativescript-audio": "~5.0.5",
     "nativescript-theme-core": "^2.0.24",
     "nativescript-toasty": "~2.0.1",

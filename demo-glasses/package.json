@@ -21,7 +21,7 @@
     "@angular/platform-browser-dynamic": "~11.0.0",
     "@angular/router": "~11.0.0",
     "@nativescript/angular": "~11.0.0",
-    "nativescript-ar": "file:../publish/package/nativescript-ar-1.1.0.tgz",
+    "nativescript-ar": "file:../publish/package/nativescript-ar-2.0.0.tgz",
     "nativescript-pager": "~11.0.10",
     "nativescript-theme-core": "^2.0.24",
     "reflect-metadata": "~0.1.12",

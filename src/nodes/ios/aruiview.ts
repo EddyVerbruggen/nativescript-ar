@@ -93,6 +93,7 @@ export class ARUIView extends ARCommonNode {
   }
 }
 
+@NativeClass()
 class ArPlaneViewController extends UIViewController {
   childView: View;
   materialPlane: SCNPlane;

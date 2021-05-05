@@ -1,6 +1,5 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptCommonModule } from "@nativescript/angular";
-import { PokemonSearchResultComponent } from "./pokemon-search-result/pokemon-search-result.component";
 import { SearchByCardRoutingModule } from "./search-by-card-routing.module";
 import { SearchByCardComponent } from "./search-by-card.component";
 
@@ -11,7 +10,6 @@ import { SearchByCardComponent } from "./search-by-card.component";
     ],
     declarations: [
         SearchByCardComponent,
-        PokemonSearchResultComponent
     ],
     schemas: [
         NO_ERRORS_SCHEMA

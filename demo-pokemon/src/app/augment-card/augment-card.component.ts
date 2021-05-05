@@ -68,7 +68,7 @@ export class AugmentCardComponent {
                         const rotateDegreesPerSecond = 60;
                         interval = setInterval(() => {
                             nodeInteraction.node.rotateBy({x: 0, y: rotateDegreesPerSecond / fps, z: 0});
-                        }, 1000 / fps);
+                        }, 1000 / fps) as any;
                     }
                 }
             });
