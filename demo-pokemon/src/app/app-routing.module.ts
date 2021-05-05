@@ -4,11 +4,11 @@ import { NativeScriptRouterModule } from "@nativescript/angular";
 
 const routes: Routes = [
     {path: "", redirectTo: "/home", pathMatch: "full"},
-    {path: "home", loadChildren: "../app/home/home.module#HomeModule"},
-    {path: "augment-card", loadChildren: "../app/augment-card/augment-card.module#AugmentCardModule"},
-    {path: "search-by-card", loadChildren: "../app/search-by-card/search-by-card.module#SearchByCardModule"},
-    {path: "try-before-you-buy", loadChildren: "../app/try-before-you-buy/try-before-you-buy.module#TryBeforeYouBuyModule"},
-    {path: "settings", loadChildren: "../app/settings/settings.module#SettingsModule"}
+    {path: "home", loadChildren: () => import("../app/home/home.module").then(m=>m.HomeModule)},
+    {path: "augment-card", loadChildren: () => import("../app/augment-card/augment-card.module").then(m=>m.AugmentCardModule)},
+    {path: "search-by-card", loadChildren: () => import("../app/search-by-card/search-by-card.module").then(m=>m.SearchByCardModule)},
+    {path: "try-before-you-buy", loadChildren: () => import("../app/try-before-you-buy/try-before-you-buy.module").then(m=>m.TryBeforeYouBuyModule)},
+    {path: "settings", loadChildren: () => import("../app/settings/settings.module").then(m=>m.SettingsModule)}
 ];
 
 @NgModule({
