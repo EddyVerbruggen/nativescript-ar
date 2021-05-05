@@ -14,6 +14,7 @@ import { HomeComponent } from "./home.component";
     ],
     schemas: [
         NO_ERRORS_SCHEMA
-    ]
+    ],
+    providers: []
 })
 export class HomeModule { }

@@ -2,9 +2,9 @@ import { Component, OnInit } from "@angular/core";
 import { RouterExtensions } from "@nativescript/angular";
 import { AR, ARCommonNode, ARMaterial, ARPlaneTappedEventData } from "nativescript-ar";
 import { Color, Dialogs, isIOS } from "@nativescript/core";
-import { Pokemon } from "~/app/pokemon-data/pokemon";
-import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
-import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
+import { Pokemon } from "../../app/pokemon-data/pokemon";
+import { PokemonDataService } from "../../app/pokemon-data/pokemon-data-service";
+import { PokemonFavoritesService } from "../../app/pokemon-data/pokemon-favorites-service";
 
 @Component({
     selector: "TryBeforeYouBuy",

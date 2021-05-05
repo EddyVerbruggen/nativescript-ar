@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { knownFolders } from "@nativescript/core";
-import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
+import { PokemonFavoritesService } from "../../app/pokemon-data/pokemon-favorites-service";
 import { Pokemon } from "./pokemon";
 
 @Injectable()

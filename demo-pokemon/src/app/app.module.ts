@@ -1,8 +1,8 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptModule, registerElement } from "@nativescript/angular";
 import { NativeScriptUISideDrawerModule } from "nativescript-ui-sidedrawer/angular";
-import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
-import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
+import { PokemonDataService } from "../app/pokemon-data/pokemon-data-service";
+import { PokemonFavoritesService } from "../app/pokemon-data/pokemon-favorites-service";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 
