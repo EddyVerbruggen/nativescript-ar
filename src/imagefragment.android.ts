@@ -1,5 +1,6 @@
 import { Utils, ImageSource } from "@nativescript/core";
 
+@NativeClass()
 export class TNSArFragmentForImageDetection extends com.google.ar.sceneform.ux.ArFragment {
 
   augmentedImageDatabase: any;

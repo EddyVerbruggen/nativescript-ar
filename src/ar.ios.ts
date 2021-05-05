@@ -779,7 +779,7 @@ export class AR extends ARBase {
   }
 }
 
-
+@NativeClass()
 class ScenePinchHandlerImpl extends NSObject {
   private _owner: WeakRef<AR>;
 
@@ -798,6 +798,7 @@ class ScenePinchHandlerImpl extends NSObject {
   };
 }
 
+@NativeClass()
 class SceneTapHandlerImpl extends NSObject {
   private _owner: WeakRef<AR>;
 
@@ -816,6 +817,7 @@ class SceneTapHandlerImpl extends NSObject {
   };
 }
 
+@NativeClass()
 class SceneLongPressHandlerImpl extends NSObject {
   private _owner: WeakRef<AR>;
 
@@ -834,6 +836,7 @@ class SceneLongPressHandlerImpl extends NSObject {
   };
 }
 
+@NativeClass()
 class ScenePanHandlerImpl extends NSObject {
   private _owner: WeakRef<AR>;
 
@@ -852,6 +855,7 @@ class ScenePanHandlerImpl extends NSObject {
   };
 }
 
+@NativeClass()
 class SceneRotationHandlerImpl extends NSObject {
   private _owner: WeakRef<AR>;
 
@@ -870,6 +874,7 @@ class SceneRotationHandlerImpl extends NSObject {
   };
 }
 
+@NativeClass()
 class ARSCNViewDelegateImpl extends NSObject implements ARSCNViewDelegate {
   public static ObjCProtocols = [];
 
@@ -1212,6 +1217,7 @@ class ARFaceTrackingActionsImpl implements ARFaceTrackingActions {
   }
 }
 
+@NativeClass()
 class ARSessionDelegateImpl extends NSObject implements ARSessionDelegate {
   public static ObjCProtocols = [];
 
@@ -1241,6 +1247,7 @@ class ARSessionDelegateImpl extends NSObject implements ARSessionDelegate {
   }
 }
 
+@NativeClass()
 class SCNPhysicsContactDelegateImpl extends NSObject implements SCNPhysicsContactDelegate {
   public static ObjCProtocols = [SCNPhysicsContactDelegate];
 

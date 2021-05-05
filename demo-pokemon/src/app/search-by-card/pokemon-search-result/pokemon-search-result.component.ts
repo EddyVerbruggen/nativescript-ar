@@ -1,8 +1,8 @@
 import { Component, OnDestroy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { Pokemon } from "~/app/pokemon-data/pokemon";
-import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
+import { Pokemon } from "../../../app/pokemon-data/pokemon";
+import { PokemonDataService } from "../../../app/pokemon-data/pokemon-data-service";
 
 @Component({
     selector: "PokemonSearchResult",

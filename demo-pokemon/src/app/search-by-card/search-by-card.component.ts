@@ -3,9 +3,9 @@ import { RouterExtensions } from "@nativescript/angular";
 import { ARTrackingImageDetectedEventData } from "nativescript-ar";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import { View, Application } from "@nativescript/core";
-import { Pokemon } from "~/app/pokemon-data/pokemon";
-import { PokemonDataService } from "~/app/pokemon-data/pokemon-data-service";
-import { PokemonFavoritesService } from "~/app/pokemon-data/pokemon-favorites-service";
+import { Pokemon } from "../../app/pokemon-data/pokemon";
+import { PokemonDataService } from "../../app/pokemon-data/pokemon-data-service";
+import { PokemonFavoritesService } from "../../app/pokemon-data/pokemon-favorites-service";
 
 const DEFAULT_SCAN_HINT = "Scan a Pokémon card";
 
